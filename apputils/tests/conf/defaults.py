@@ -20,11 +20,23 @@ TUPLES_SETTING = (
 # Model/class and module settings
 # -----------------------------------------------------------------------------
 
-MODEL_SETTING = 'tests.DefaultModel'
+VALID_MODEL = 'tests.DefaultModel'
 
-CLASS_SETTING = 'tests.classes.DefaultClass'
+INCORRECT_FORMAT_MODEL = 'apputils.tests.DefaultModel'
 
-MODULE_SETTING = 'tests.modules.default_module'
+UNAVAILABLE_MODEL = 'apputils.UnavailableModel'
+
+VALID_OBJECT = 'apputils.tests.classes.DefaultClass'
+
+INCORRECT_FORMAT_OBJECT = 'DefaultClass'
+
+MODULE_UNAVAILABLE_OBJECT = 'apputils.non_existent_module.Class'
+
+OBJECT_UNAVAILABLE_OBJECT = 'apputils.tests.classes.NonExistent'
+
+VALID_MODULE = 'apputils.tests.modules.default_module'
+
+UNAVAILABLE_MODULE = 'apputils.tests.modules.non_existent_module'
 
 
 # -----------------------------------------------------------------------------
