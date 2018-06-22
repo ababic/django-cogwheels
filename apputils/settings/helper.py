@@ -1,4 +1,3 @@
-import warnings
 from importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 from django.core.signals import setting_changed
@@ -31,12 +30,10 @@ class BaseAppSettingsHelper:
                 k: v for k, v in module.__dict__.items() if k.isupper()
             }
         except ImportError:
-            raise ImproperlyConfigured(
+            raise ImproperlyConfigured(_(
                 "The 'defaults_path' value provided for {class_name} is "
-                "invalid. '{value}' is not a valid python import path.".format(
-                    class_name=cls.__name__,
-                    value=module_path,
-                ))
+                "invalid. '{value}' is not a valid python import path."
+            ).format(class_name=cls.__name__, value=module_path))
 
     def perepare_deprecation_data(self):
         """
@@ -54,37 +51,33 @@ class BaseAppSettingsHelper:
             old name when the new setting is requested.
         """
         if not isinstance(self._deprecations, (list, tuple)):
-            raise ImproperlyConfigured(
-                "'deprecations' must be a list or tuple, not {}.".format(
-                    type(self._deprecations).__name__
-                )
-            )
+            raise ImproperlyConfigured(_(
+                "'deprecations' must be a list or tuple, not {}."
+            ).format(type(self._deprecations).__name__))
 
         self._deprecated_settings = {}
-        self._renamed_settings = {}
+        self._replacement_settings = {}
 
         for item in self._deprecations:
             item.prefix = self._prefix
             self._deprecated_settings[item.setting_name] = item
             if not self.in_defaults(item.setting_name):
-                raise ImproperlyConfigured(
+                raise ImproperlyConfigured(_(
                     "'{setting_name}' cannot be found in the defaults module. "
                     "A value should remain present there until the end of the "
-                    "setting's deprecation period.".format(
-                        setting_name=item.setting_name,
-                    )
-                )
+                    "setting's deprecation period."
+                ).format(setting_name=item.setting_name))
             if item.replacement_name and item.is_renamed:
                 self._replacement_settings[item.replacement_name] = item
                 if not self.in_defaults(item.replacement_name):
-                    raise ImproperlyConfigured(
+                    raise ImproperlyConfigured(_(
                         "'{replacement_name}' is not a valid replacement "
                         "for {setting_name}. Please ensure {replacement_name} "
-                        "has been added to the defaults module.".format(
-                            replacement_name=item.replacement_name,
-                            setting_name=item.setting_name,
-                        )
-                    )
+                        "has been added to the defaults module."
+                    ).format(
+                        replacement_name=item.replacement_name,
+                        setting_name=item.setting_name,
+                    ))
 
     def clear_caches(self, **kwargs):
         self._import_cache = {}
@@ -98,14 +91,13 @@ class BaseAppSettingsHelper:
             return self._defaults[setting_name]
         except KeyError:
             pass
-        raise ImproperlyConfigured(
+        raise ImproperlyConfigured(_(
             "No default value could be found for '{setting_name}'. Setting "
-            "names should always be uppercase, and a default value must be "
-            "added to '{default_module}' for any app settings you wish to "
-            "support.".format(
-                setting_name=setting_name, default_module=self._defaults_path
-            )
-        )
+            "names should always be uppercase, and a default value must "
+            "always be added to '{default_module}'."
+        ).format(
+            setting_name=setting_name, default_module=self._defaults_path
+        ))
 
     def __getattr__(self, name):
         if self.in_defaults(name):
@@ -119,6 +111,16 @@ class BaseAppSettingsHelper:
 
     def is_overridden(self, setting_name):
         return hasattr(self._django_settings, self._prefix + setting_name)
+
+    def make_invalid_setting_message(self, setting_name, additional_text,
+                                     *args, **kwargs):
+        if self.is_overridden(setting_name):
+            msg = "Your {} setting value is invalid. ".format(
+                self._prefix + setting_name)
+        else:
+            msg = "The default {} setting value is invalid. ".format(
+                setting_name)
+        return msg + additional_text.format(*args, **kwargs)
 
     def get(self, setting_name):
         """
@@ -168,13 +170,13 @@ class BaseAppSettingsHelper:
             self._import_cache[setting_name] = result
             return result
         except ImportError:
-            raise ImproperlyConfigured(
-                "'{value}' is not a valid import path. {setting_name} must be "
-                "a full dotted python module import path e.g. "
-                "'project.app.module'.".format(
-                    value=setting_value,
-                    setting_name=self._prefix + setting_name,
-                ))
+            raise ImproperlyConfigured(self.make_invalid_setting_message(
+                setting_name,
+                "No module could be found with the path '{value}'. Please "
+                "use a full, valid import path (e.g. 'project.app.module'), "
+                "and avoid using relative paths.",
+                value=setting_value
+            ))
 
     def get_object(self, setting_name):
         """
@@ -191,45 +193,38 @@ class BaseAppSettingsHelper:
             return self._import_cache[setting_name]
 
         setting_value = getattr(self, setting_name)
+
         try:
             module_path, object_name = setting_value.rsplit(".", 1)
             result = getattr(import_module(module_path), object_name)
             self._import_cache[setting_name] = result
             return result
         except ValueError:
-            raise ImproperlyConfigured(
-                "Your {setting_name} setting value is invalid. '{value}' is "
-                "not a valid object import path. Please use a full dotted "
-                "python import path with the object name at the end, e.g. "
-                "'project.app.module.method' or 'project.app.module.Class'."
-                .format(
-                    setting_name=self._prefix + setting_name,
-                    value=setting_value,
-                )
-            )
+            raise ImproperlyConfigured(self.make_invalid_setting_message(
+                setting_name,
+                "'{value}' is not a valid object import path. Please use a "
+                "full, valid import path with the object name at the "
+                "end (e.g. 'project.app.module.method' or "
+                "'project.app.module.Class'), and avoid using relative paths.",
+                value=setting_value
+            ))
         except ImportError:
-            raise ImproperlyConfigured(
-                "Your {setting_name} setting value is invalid. The app or "
-                "module '{module_path}' could not be found. Have you "
-                "committed these files yet? Remember not to use relative "
-                "paths in setting values"
-                .format(
-                    setting_name=self._prefix + setting_name,
-                    module_path=module_path,
-                )
-            )
+            raise ImproperlyConfigured(self.make_invalid_setting_message(
+                setting_name,
+                "No module could be found with the path '{module_path}'. "
+                "Please use a full, valid import path with the object name at "
+                "the end (e.g. 'project.app.module.method' or "
+                "'project.app.module.Class'), and avoid using relative paths.",
+                module_path=module_path
+            ))
         except AttributeError:
-            raise ImproperlyConfigured(
-                "Your {setting_name} setting value is invalid. No object "
-                "could be found in '{module_path}' with the name "
-                "'{object_name}'. Could it have been renamed, or "
-                "moved elsewhere?"
-                .format(
-                    setting_name=self._prefix + setting_name,
-                    module_path=module_path,
-                    object_name=object_name,
-                )
-            )
+            raise ImproperlyConfigured(self.make_invalid_setting_message(
+                setting_name,
+                "No object could be found in '{module_path}' with the name "
+                "'{object_name}'. Could it have been moved or renamed?",
+                module_path=module_path,
+                object_name=object_name,
+            ))
 
     def get_model(self, setting_name):
         """
@@ -244,83 +239,21 @@ class BaseAppSettingsHelper:
 
         from django.apps import apps  # delay import until needed
         setting_value = getattr(self, setting_name)
+
         try:
             result = apps.get_model(setting_value)
             self._model_cache[setting_name] = result
             return result
         except ValueError:
-            raise ImproperlyConfigured(
-                "{setting_name} must be in the format 'app_label.model_name'."
-                .format(setting_name=self._prefix + setting_name))
+            raise ImproperlyConfigured(self.make_invalid_setting_message(
+                setting_name,
+                "Model strings must be in the format 'app_label.ModelName', "
+                "which '{value}' does not adhere to.",
+                value=setting_value
+            ))
         except LookupError:
-            raise ImproperlyConfigured(
-                "{setting_name} refers to model '{model_string}' that has not "
-                "been installed.".format(
-                    model_string=setting_value,
-                    setting_name=self._prefix + setting_name,
-                ))
-
-
-class AppSettingDeprecation:
-    """
-    A class to store details about a deprecated app setting, and to help
-    raise deprecation warnings when the deprecated setting is used somehow.
-    """
-    def __init__(self, setting_name, renamed_to=None, superseded_by=None,
-                 warning_category=None):
-        self.setting_name = setting_name
-        self.replacement_name = renamed_to or superseded_by
-        self.is_renamed = renamed_to is not None
-        self.warning_category = warning_category or DeprecationWarning
-        self._prefix = ''
-
-    @property
-    def prefix(self):
-        return self._prefix
-
-    @prefix.setter
-    def prefix(self, value):
-        self._prefix = value
-
-    def warn_if_referenced_directly(self):
-        if self.replacement_name is not None:
-            if self.is_renamed:
-                msg = _(
-                    "The {setting_name} app setting has been renamed to "
-                    "{replacement_name}. You should update your code to "
-                    "reference this new attribute on the app settings module "
-                    "instead."
-                )
-            else:
-                msg = _(
-                    "The {setting_name} app setting is deprecated in favour "
-                    "of using {replacement_name}. You should update your code "
-                    "to reference this new attribute on the app settings "
-                    "module instead. You may want to check the latest release "
-                    "notes for more information, as it isn't a like-for-like "
-                    "replacement."
-                )
-        else:
-            msg = _(
-                "The {setting_name} app setting is deprecated. You may want "
-                "to check the latest release notes for more information."
-            )
-        warnings.warn(
-            msg.format(
-                setting_name=self.setting_name,
-                replacement_name=self.replacement_name,
-            ),
-            category=self.warning_category
-        )
-
-    def warn_if_deprecated_value_used_by_replacement(self):
-        warnings.warn(
-            "The {setting_name} setting has been renamed to "
-            "{replacement_name}. Please update your project's "
-            "Django settings to use this new name instead, or your "
-            "override will fail to work in future versions.".format(
-                setting_name=self.prefix + self.setting_name,
-                replacement_name=self.prefix + self.replacement_name,
-            ),
-            category=self.warning_category
-        )
+            raise ImproperlyConfigured(self.make_invalid_setting_message(
+                setting_name,
+                "The model '{value}' does not appear to be installed.",
+                value=setting_value,
+            ))
