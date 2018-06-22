@@ -192,18 +192,44 @@ class BaseAppSettingsHelper:
 
         setting_value = getattr(self, setting_name)
         try:
-            module_path, class_name = setting_value.rsplit(".", 1)
-            result = getattr(import_module(module_path), class_name)
+            module_path, object_name = setting_value.rsplit(".", 1)
+            result = getattr(import_module(module_path), object_name)
             self._import_cache[setting_name] = result
             return result
-        except(ImportError, ValueError):
+        except ValueError:
             raise ImproperlyConfigured(
-                "'{value}' is not a valid import path. {setting_name} must be "
-                "a full dotted python import path e.g. "
-                "'project.app.module.Class'.".format(
-                    value=setting_value,
+                "Your {setting_name} setting value is invalid. '{value}' is "
+                "not a valid object import path. Please use a full dotted "
+                "python import path with the object name at the end, e.g. "
+                "'project.app.module.method' or 'project.app.module.Class'."
+                .format(
                     setting_name=self._prefix + setting_name,
-                ))
+                    value=setting_value,
+                )
+            )
+        except ImportError:
+            raise ImproperlyConfigured(
+                "Your {setting_name} setting value is invalid. The app or "
+                "module '{module_path}' could not be found. Have you "
+                "committed these files yet? Remember not to use relative "
+                "paths in setting values"
+                .format(
+                    setting_name=self._prefix + setting_name,
+                    module_path=module_path,
+                )
+            )
+        except AttributeError:
+            raise ImproperlyConfigured(
+                "Your {setting_name} setting value is invalid. No object "
+                "could be found in '{module_path}' with the name "
+                "'{object_name}'. Could it have been renamed, or "
+                "moved elsewhere?"
+                .format(
+                    setting_name=self._prefix + setting_name,
+                    module_path=module_path,
+                    object_name=object_name,
+                )
+            )
 
     def get_model(self, setting_name):
         """
