@@ -1,5 +1,5 @@
 import sys
-from apputils.settings import BaseAppSettingsHelper
+from apputils.app_settings import BaseAppSettingsHelper, DeprecatedAppSetting
 
 
 class TestAppSettingsHelper(BaseAppSettingsHelper):

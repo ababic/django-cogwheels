@@ -2,15 +2,15 @@ import warnings
 from django.utils.translation import ugettext_lazy as _
 
 
-class SettingDeprecation:
+class DeprecatedAppSetting:
     """
-    An instance of ``SettingDeprecation`` stores details about a deprecated
-    app setting, and helps to raise warnings associated with that deprecation.
+    An instance of ``DeprecatedAppSetting`` stores details about a deprecated
+    app setting, and helps to raise warnings related with that deprecation.
     """
-    def __init__(self, setting_name, renamed_to=None, superseded_by=None,
+    def __init__(self, setting_name, renamed_to=None, replaced_by=None,
                  warning_category=None):
         self.setting_name = setting_name
-        self.replacement_name = renamed_to or superseded_by
+        self.replacement_name = renamed_to or replaced_by
         self.is_renamed = renamed_to is not None
         self.warning_category = warning_category or DeprecationWarning
         self._prefix = ''
