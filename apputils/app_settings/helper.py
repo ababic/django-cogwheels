@@ -113,16 +113,17 @@ class BaseAppSettingsHelper:
                     "A value should remain present there until the end of the "
                     "setting's deprecation period."
                 ).format(setting_name=item.setting_name))
-            if item.replacement_name and item.is_renamed:
+            if item.replacement_name:
                 self._replacement_settings[item.replacement_name] = item
                 if not self.in_defaults(item.replacement_name):
                     raise ImproperlyConfigured(_(
                         "'{replacement_name}' is not a valid replacement "
                         "for {setting_name}. Please ensure {replacement_name} "
-                        "has been added to the defaults module."
+                        "has been added to {defaults_module_path}."
                     ).format(
                         replacement_name=item.replacement_name,
                         setting_name=item.setting_name,
+                        defaults_module_path=self._defaults_path,
                     ))
 
     def clear_caches(self, **kwargs):
