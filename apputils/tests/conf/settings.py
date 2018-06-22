@@ -9,13 +9,13 @@ class TestAppSettingsHelper(BaseAppSettingsHelper):
     deprecations = (
         DeprecatedAppSetting('DEPRECATED_SETTING'),
         DeprecatedAppSetting(
-            'RENAMED_SETTING',
-            renamed_to='RENAMED_TO_SETTING',
+            'RENAMED_SETTING_OLD',
+            renamed_to='RENAMED_SETTING_NEW',
             warning_category=warning_classes.removed_in_next_version_warning,
         ),
         DeprecatedAppSetting(
-            'REPLACED_SETTING',
-            replaced_by='REPLACED_WITH_SETTING',
+            'REPLACED_SETTING_OLD',
+            replaced_by='REPLACED_SETTING_NEW',
             warning_category=warning_classes.removed_in_following_version_warning,
         ),
     )

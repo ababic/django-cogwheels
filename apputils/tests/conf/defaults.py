@@ -43,12 +43,12 @@ UNAVAILABLE_MODULE = 'apputils.tests.modules.imaginary_module'
 # Deprecations
 # -----------------------------------------------------------------------------
 
-DEPRECATED_SETTING = 'i-am-deprecated'
+DEPRECATED_SETTING = 'deprecated'
 
-RENAMED_SETTING = 'i-have-been-renamed'
+RENAMED_SETTING_OLD = 'renamed_old'
 
-RENAMED_TO_SETTING = 'i-am-a-direct-replacement-of-another-setting'
+RENAMED_SETTING_NEW = 'renamed_new'
 
-SUPERSEDED_SETTING = 'i-have-been-superseded'
+REPLACED_SETTING_OLD = 'replaced_old'
 
-SUCCESSOR_SETTING = 'i-have-succeeded-another-setting'
+REPLACED_SETTING_NEW = 'replaced_new'
