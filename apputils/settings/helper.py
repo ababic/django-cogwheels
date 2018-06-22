@@ -4,6 +4,49 @@ from django.core.signals import setting_changed
 from django.utils.translation import ugettext_lazy as _
 
 
+class HelperMethodAttrWrapper:
+    """
+    ``BaseAppSettingsHelper`` creates several instances of this class on
+    initialisation to allow developers to neatly reference settings to get a
+    value cast as a certain type of object. Behind the scenes, attribute
+    requests on ``HelperMethodAttrWrapper`` instance are forwarded on to
+    one of the helper instance's 'get_x()' methods.
+
+    For example, if you want the actual python module referenced by a setting,
+    instead of doing this:
+
+    ``appsettingshelper.get_module('MODULE_SETTING_NAME')``
+
+    The 'modules' ``HelperMethodAttrWrapper`` instance (set as an attribute
+    on every setting helper) allows you to do this:
+
+    ``appsettingshelper.modules.MODULE_SETTING_NAME``
+
+    An 'objects' attribute also allows you to neatly access python objects from
+    setting values too, like:
+
+    ``appsettingshelper.objects.OBJECT_SETTING_NAME``
+
+    And 'models' allows you to access Django models, like:
+
+    ``appsettingshelper.models.MODEL_SETTING_NAME``
+
+    """
+    def __init__(self, settings_helper, getter_method_name):
+        self.settings_helper = settings_helper
+        self.getter_method_name = getter_method_name
+
+    def __getattr__(self, name):
+        if self.settings_helper.in_defaults(name):
+            return self.get_value_via_helper_method(name)
+        raise AttributeError("{} object has no attribute '{}'".format(
+            self.settings_helper.__class__.__name__, name))
+
+    def get_value_via_helper_method(self, setting_name):
+        method = getattr(self.settings_helper, self.getter_method_name)
+        return method(setting_name)
+
+
 class BaseAppSettingsHelper:
 
     prefix = ''
@@ -20,6 +63,9 @@ class BaseAppSettingsHelper:
         self._model_cache = {}
         self._deprecations = deprecations or self.__class__.deprecations
         self.perepare_deprecation_data()
+        self.modules = HelperMethodAttrWrapper(self, 'get_module')
+        self.objects = HelperMethodAttrWrapper(self, 'get_object')
+        self.models = HelperMethodAttrWrapper(self, 'get_model')
         setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
 
     @classmethod
@@ -115,11 +161,13 @@ class BaseAppSettingsHelper:
     def make_invalid_setting_message(self, setting_name, additional_text,
                                      *args, **kwargs):
         if self.is_overridden(setting_name):
-            msg = "Your {} setting value is invalid. ".format(
+            msg = _("Your {} setting value is invalid. ").format(
                 self._prefix + setting_name)
         else:
-            msg = "The default {} setting value is invalid. ".format(
-                setting_name)
+            msg = _(
+                "The default value defined by the app developer for the "
+                "{} app setting is invalid. "
+            ).format(setting_name)
         return msg + additional_text.format(*args, **kwargs)
 
     def get(self, setting_name):
@@ -204,8 +252,8 @@ class BaseAppSettingsHelper:
                 setting_name,
                 "'{value}' is not a valid object import path. Please use a "
                 "full, valid import path with the object name at the "
-                "end (e.g. 'project.app.module.method' or "
-                "'project.app.module.Class'), and avoid using relative paths.",
+                "end (e.g. 'project.app.module.object'), and avoid using "
+                "relative paths.",
                 value=setting_value
             ))
         except ImportError:
@@ -213,8 +261,8 @@ class BaseAppSettingsHelper:
                 setting_name,
                 "No module could be found with the path '{module_path}'. "
                 "Please use a full, valid import path with the object name at "
-                "the end (e.g. 'project.app.module.method' or "
-                "'project.app.module.Class'), and avoid using relative paths.",
+                "the end (e.g. 'project.app.module.object'), and avoid using "
+                "relative paths.",
                 module_path=module_path
             ))
         except AttributeError:
