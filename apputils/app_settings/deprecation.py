@@ -29,17 +29,15 @@ class DeprecatedAppSetting:
                 msg = _(
                     "The {setting_name} app setting has been renamed to "
                     "{replacement_name}. You should update your code to "
-                    "reference this new attribute on the app settings module "
-                    "instead."
+                    "reference this new setting instead."
                 )
             else:
                 msg = _(
                     "The {setting_name} app setting is deprecated in favour "
                     "of using {replacement_name}. You should update your code "
-                    "to reference this new attribute on the app settings "
-                    "module instead. You may want to check the latest release "
-                    "notes for more information, as it isn't a like-for-like "
-                    "replacement."
+                    "to reference this new setting instead. However, we would "
+                    "suggest looking at the release notes for more "
+                    "information beforehand."
                 )
         else:
             msg = _(
