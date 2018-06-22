@@ -4,7 +4,3 @@ from apputils.versioning import get_version
 # release must be one of alpha, beta, rc, or final
 VERSION = (0, 0, 1, 'alpha', 0)
 __version__ = get_version(VERSION)
-
-
-from apputils.settings.helper import BaseAppSettingsHelper
-from apputils.settings.deprecation import SettingDeprecation
