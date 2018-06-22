@@ -36,7 +36,7 @@ class DeprecatedAppSetting:
                     "The {setting_name} app setting is deprecated in favour "
                     "of using {replacement_name}. You should update your code "
                     "to reference this new setting instead. However, we would "
-                    "suggest looking at the release notes for more "
+                    "recommend looking at the release notes for more "
                     "information beforehand."
                 )
         else:
