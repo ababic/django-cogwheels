@@ -1,6 +1,6 @@
-.. image:: https://travis-ci.org/ababic/django-app-utils.svg?branch=master
+.. image:: https://travis-ci.com/ababic/django-app-utils.svg?branch=master
     :alt: Build Status
-    :target: https://travis-ci.org/ababic/django-app-utils
+    :target: https://travis-ci.com/ababic/django-app-utils
 
 .. image:: https://codecov.io/gh/ababic/django-app-utils/branch/master/graph/badge.svg
     :alt: Code coverage
