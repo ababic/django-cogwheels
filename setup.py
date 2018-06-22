@@ -11,11 +11,6 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 base_url = "https://github.com/ababic/django-app-utils/"
 download_url = '%starball/v%s' % (base_url, __version__)
 
-# Necessary dependencies
-install_requires = [
-    "Django>=1.11,<2.1",
-]
-
 # Testing dependencies
 testing_extras = [
     "coverage",
@@ -65,7 +60,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],
-    install_requires=install_requires,
     python_requires='>=3.4,<3.7',
     extras_require={
         'testing': testing_extras,
