@@ -61,7 +61,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],
-    install_requires=[],
+    install_requires=['django'],
     python_requires='>=3.4,<3.7',
     extras_require={
         'testing': testing_extras,
