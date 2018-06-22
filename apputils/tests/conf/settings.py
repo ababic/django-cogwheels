@@ -1,5 +1,5 @@
 import sys
-from apputils.conf import BaseAppSettingsHelper
+from apputils import BaseAppSettingsHelper
 
 
 class TestAppSettingsHelper(BaseAppSettingsHelper):
