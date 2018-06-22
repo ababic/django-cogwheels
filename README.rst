@@ -1,3 +1,11 @@
+.. image:: https://travis-ci.org/ababic/django-app-utils.svg?branch=master
+    :alt: Build Status
+    :target: https://travis-ci.org/ababic/django-app-utils
+
+.. image:: https://codecov.io/gh/ababic/django-app-utils/branch/master/graph/badge.svg
+    :alt: Code coverage
+    :target: https://codecov.io/gh/ababic/django-app-utils
+
 ================
 Django App Utils
 ================
