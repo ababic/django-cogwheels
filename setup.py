@@ -1,6 +1,6 @@
 import os
 from setuptools import setup, find_packages
-from apputils import __version__, stable_branch_name
+from apputils import __version__
 
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()
@@ -10,7 +10,6 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 base_url = "https://github.com/ababic/django-app-utils/"
 download_url = '%starball/v%s' % (base_url, __version__)
-branch_url = "%stree/stable/%s" % (base_url, stable_branch_name)
 
 # Testing dependencies
 testing_extras = [
@@ -44,7 +43,7 @@ setup(
     license="MIT",
     keywords="django reusable app settings config utils",
     download_url=download_url,
-    url=branch_url,
+    url=base_url,
     include_package_data=True,
     zip_safe=False,
     classifiers=[
