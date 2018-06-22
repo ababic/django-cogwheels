@@ -30,13 +30,13 @@ VALID_OBJECT = 'apputils.tests.classes.DefaultClass'
 
 INCORRECT_FORMAT_OBJECT = 'DefaultClass'
 
-MODULE_UNAVAILABLE_OBJECT = 'apputils.non_existent_module.Class'
+MODULE_UNAVAILABLE_OBJECT = 'apputils.imaginary_module.Class'
 
 OBJECT_UNAVAILABLE_OBJECT = 'apputils.tests.classes.NonExistent'
 
 VALID_MODULE = 'apputils.tests.modules.default_module'
 
-UNAVAILABLE_MODULE = 'apputils.tests.modules.non_existent_module'
+UNAVAILABLE_MODULE = 'apputils.tests.modules.imaginary_module'
 
 
 # -----------------------------------------------------------------------------
