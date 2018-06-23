@@ -55,13 +55,22 @@ class BaseAppSettingsHelper:
 
     def __init__(self, prefix=None, defaults_path=None, deprecations=None):
         from django.conf import settings
-        self._prefix = prefix or self.__class__.prefix
-        self._defaults_path = defaults_path or self.__class__.defaults_path
+        if prefix is not None:
+            self._prefix = prefix
+        else:
+            self._prefix = self.__class__.prefix
+        if defaults_path is not None:
+            self._defaults_path = defaults_path
+        else:
+            self._defaults_path = self.__class__.defaults_path
+        if deprecations is not None:
+            self._deprecations = deprecations
+        else:
+            self._deprecations = self.__class__.deprecations
         self._defaults = self.load_defaults(self._defaults_path)
         self._django_settings = settings
         self._import_cache = {}
         self._model_cache = {}
-        self._deprecations = deprecations or self.__class__.deprecations
         self.perepare_deprecation_data()
         self.modules = HelperMethodAttrWrapper(self, 'get_module')
         self.objects = HelperMethodAttrWrapper(self, 'get_object')
@@ -98,7 +107,7 @@ class BaseAppSettingsHelper:
         """
         if not isinstance(self._deprecations, (list, tuple)):
             raise ImproperlyConfigured(_(
-                "'deprecations' must be a list or tuple, not {}."
+                "'deprecations' must be a list or tuple, not a {}."
             ).format(type(self._deprecations).__name__))
 
         self._deprecated_settings = {}
