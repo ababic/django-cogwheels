@@ -12,7 +12,7 @@ class TestGetValueMethod(AppSettingTestCase):
             defaults.INTEGER_SETTING
         )
 
-    @override_settings(TEST_INTEGER_SETTING=1234)
+    @override_settings(APPUTILS_TESTS_INTEGER_SETTING=1234)
     def test_integer_setting_returns_user_defined_value_if_overridden(self):
         result = self.appsettingshelper.get_raw('INTEGER_SETTING')
         self.assertNotEqual(result, defaults.INTEGER_SETTING)
@@ -24,7 +24,7 @@ class TestGetValueMethod(AppSettingTestCase):
             defaults.BOOLEAN_SETTING
         )
 
-    @override_settings(TEST_BOOLEAN_SETTING=True)
+    @override_settings(APPUTILS_TESTS_BOOLEAN_SETTING=True)
     def test_boolean_setting_returns_user_defined_value_if_overridden(self):
         result = self.appsettingshelper.get_raw('BOOLEAN_SETTING')
         self.assertNotEqual(result, defaults.BOOLEAN_SETTING)
@@ -36,7 +36,7 @@ class TestGetValueMethod(AppSettingTestCase):
             defaults.STRING_SETTING
         )
 
-    @override_settings(TEST_STRING_SETTING='abc')
+    @override_settings(APPUTILS_TESTS_STRING_SETTING='abc')
     def test_string_setting_returns_user_defined_value_if_overridden(self):
         result = self.appsettingshelper.get_raw('STRING_SETTING')
         self.assertNotEqual(result, defaults.STRING_SETTING)
@@ -48,7 +48,7 @@ class TestGetValueMethod(AppSettingTestCase):
             defaults.TUPLES_SETTING
         )
 
-    @override_settings(TEST_TUPLES_SETTING=())
+    @override_settings(APPUTILS_TESTS_TUPLES_SETTING=())
     def test_tuples_setting_returns_user_defined_value_if_overridden(self):
         result = self.appsettingshelper.get_raw('TUPLES_SETTING')
         self.assertNotEqual(result, defaults.TUPLES_SETTING)

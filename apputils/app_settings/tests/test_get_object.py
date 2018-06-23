@@ -7,32 +7,32 @@ from apputils.tests.classes import DefaultClass, ReplacementClass
 
 class TestValidObjectSettingOverride(AppSettingTestCase):
     """
-    Tests the effect of overriding ``TEST_VALID_OBJECT``
+    Tests the effect of overriding ``APPUTILS_TESTS_VALID_OBJECT``
     """
     def test_returns_default_class_by_default(self):
         self.assertEqual(
             self.appsettingshelper.get_object('VALID_OBJECT'), DefaultClass,
         )
 
-    @override_settings(TEST_VALID_OBJECT='apputils.tests.classes.ReplacementClass')
+    @override_settings(APPUTILS_TESTS_VALID_OBJECT='apputils.tests.classes.ReplacementClass')
     def test_successful_override(self):
         self.assertEqual(
             self.appsettingshelper.get_object('VALID_OBJECT'), ReplacementClass
         )
 
-    @override_settings(TEST_VALID_OBJECT=1)
+    @override_settings(APPUTILS_TESTS_VALID_OBJECT=1)
     def test_raises_error_when_value_is_not_a_string(self):
         message_expected = (
-            "Your TEST_VALID_OBJECT setting value is invalid. A value of type "
+            "Your APPUTILS_TESTS_VALID_OBJECT setting value is invalid. A value of type "
             "'str' is required, but the current value is of type 'int'."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
-    @override_settings(TEST_VALID_OBJECT='no_dots_here')
+    @override_settings(APPUTILS_TESTS_VALID_OBJECT='no_dots_here')
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "Your TEST_VALID_OBJECT setting value is invalid. 'no_dots_here' "
+            "Your APPUTILS_TESTS_VALID_OBJECT setting value is invalid. 'no_dots_here' "
             "is not a valid object import path. Please use a full, valid "
             "import path with the object name at the end (e.g. "
             "'project.app.module.object'), and avoid using relative paths."
@@ -40,10 +40,10 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
-    @override_settings(TEST_VALID_OBJECT='project.app.module.Class')
+    @override_settings(APPUTILS_TESTS_VALID_OBJECT='project.app.module.Class')
     def test_raises_error_when_module_does_not_exist(self):
         message_expected = (
-            "Your TEST_VALID_OBJECT setting value is invalid. No module could "
+            "Your APPUTILS_TESTS_VALID_OBJECT setting value is invalid. No module could "
             "be found with the path 'project.app.module'. Please use a full, "
             "valid import path with the object name at the end (e.g. "
             "'project.app.module.object'), and avoid using relative paths."
@@ -51,10 +51,10 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
-    @override_settings(TEST_VALID_OBJECT='apputils.tests.classes.NonExistentClass')
+    @override_settings(APPUTILS_TESTS_VALID_OBJECT='apputils.tests.classes.NonExistentClass')
     def test_raises_error_object_not_found_in_module(self):
         message_expected = (
-            "Your TEST_VALID_OBJECT setting value is invalid. No object could "
+            "Your APPUTILS_TESTS_VALID_OBJECT setting value is invalid. No object could "
             "be found in 'apputils.tests.classes' with the name "
             "'NonExistentClass'. Could it have been moved or renamed?"
         )
@@ -71,19 +71,21 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
 
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "The value used for INCORRECT_FORMAT_OBJECT in apputils.tests.conf.defaults is invalid. 'DefaultClass' "
-            "is not a valid object import path. Please use a full, valid "
-            "import path with the object name at the end (e.g. "
-            "'project.app.module.object'), and avoid using relative paths."
+            "The value used for INCORRECT_FORMAT_OBJECT in apputils.tests.conf"
+            ".defaults is invalid. 'DefaultClass' is not a valid object "
+            "import path. Please use a full, valid import path with the "
+            "object name at the end (e.g. 'project.app.module.object'), and "
+            "avoid using relative paths."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_object('INCORRECT_FORMAT_OBJECT')
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The value used for MODULE_UNAVAILABLE_OBJECT in apputils.tests.conf.defaults is invalid. No module could be found with the path "
-            "'apputils.imaginary_module'. Please use a full, valid import "
-            "path with the object name at the end (e.g. "
+            "The value used for MODULE_UNAVAILABLE_OBJECT in apputils.tests"
+            ".conf.defaults is invalid. No module could be found with the "
+            "path 'apputils.imaginary_module'. Please use a full, valid "
+            "import path with the object name at the end (e.g. "
             "'project.app.module.object'), and avoid using relative paths."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
@@ -91,7 +93,8 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
 
     def test_raises_error_when_object_unavailable(self):
         message_expected = (
-            "The value used for OBJECT_UNAVAILABLE_OBJECT in apputils.tests.conf.defaults is invalid. No object could be found in "
+            "The value used for OBJECT_UNAVAILABLE_OBJECT in apputils.tests"
+            ".conf.defaults is invalid. No object could be found in "
             "'apputils.tests.classes' with the name 'NonExistent'. Could it "
             "have been moved or renamed?"
         )

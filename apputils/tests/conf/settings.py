@@ -4,8 +4,6 @@ from apputils.maintenance import warning_classes
 
 
 class TestAppSettingsHelper(BaseAppSettingsHelper):
-    prefix = 'TEST_'
-    defaults_path = 'apputils.tests.conf.defaults'
     deprecations = (
         DeprecatedAppSetting('DEPRECATED_SETTING'),
         DeprecatedAppSetting(

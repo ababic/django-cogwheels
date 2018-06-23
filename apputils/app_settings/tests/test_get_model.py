@@ -7,43 +7,44 @@ from apputils.tests.models import DefaultModel, ReplacementModel
 
 class TestValidModelSettingOverride(AppSettingTestCase):
     """
-    Tests the effect of overriding ``TEST_VALID_MODEL``
+    Tests the effect of overriding ``APPUTILS_TESTS_VALID_MODEL``
     """
     def test_returns_default_model_by_default(self):
         self.assertEqual(
             self.appsettingshelper.get_model('VALID_MODEL'), DefaultModel,
         )
 
-    @override_settings(TEST_VALID_MODEL='tests.ReplacementModel')
+    @override_settings(APPUTILS_TESTS_VALID_MODEL='tests.ReplacementModel')
     def test_successful_override(self):
         self.assertEqual(
             self.appsettingshelper.get_model('VALID_MODEL'), ReplacementModel
         )
 
-    @override_settings(TEST_VALID_MODEL=1)
+    @override_settings(APPUTILS_TESTS_VALID_MODEL=1)
     def test_raises_error_when_value_is_not_a_string(self):
         message_expected = (
-            "Your TEST_VALID_MODEL setting value is invalid. A value of type "
-            "'str' is required, but the current value is of type 'int'."
+            "Your APPUTILS_TESTS_VALID_MODEL setting value is invalid. A "
+            "value of type 'str' is required, but the current value is of "
+            "type 'int'."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('VALID_MODEL')
 
-    @override_settings(TEST_VALID_MODEL='no_dots_here')
+    @override_settings(APPUTILS_TESTS_VALID_MODEL='no_dots_here')
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "Your TEST_VALID_MODEL setting value is invalid. Model strings "
-            "must be in the format 'app_label.Model', which 'no_dots_here' "
-            "does not adhere to."
+            "Your APPUTILS_TESTS_VALID_MODEL setting value is invalid. Model "
+            "strings must be in the format 'app_label.Model', which "
+            "'no_dots_here' does not adhere to."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('VALID_MODEL')
 
-    @override_settings(TEST_VALID_MODEL='tests.NonExistentModel')
+    @override_settings(APPUTILS_TESTS_VALID_MODEL='tests.NonExistentModel')
     def test_raises_error_when_model_not_installed(self):
         message_expected = (
-            "Your TEST_VALID_MODEL setting value is invalid. The model "
-            "'tests.NonExistentModel' does not appear to be installed."
+            "Your APPUTILS_TESTS_VALID_MODEL setting value is invalid. The "
+            "model 'tests.NonExistentModel' does not appear to be installed."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('VALID_MODEL')
@@ -58,7 +59,8 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "The value used for INCORRECT_FORMAT_MODEL in apputils.tests.conf.defaults is invalid. Model strings must be in the format "
+            "The value used for INCORRECT_FORMAT_MODEL in apputils.tests.conf"
+            ".defaults is invalid. Model strings must be in the format "
             "'app_label.Model', which 'apputils.tests.DefaultModel' does not "
             "adhere to."
         )
@@ -67,8 +69,9 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_model_not_installed(self):
         message_expected = (
-            "The value used for UNAVAILABLE_MODEL in apputils.tests.conf.defaults is invalid. The model 'apputils.UnavailableModel' does not "
-            "appear to be installed."
+            "The value used for UNAVAILABLE_MODEL in apputils.tests.conf"
+            ".defaults is invalid. The model 'apputils.UnavailableModel' does "
+            "not appear to be installed."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('UNAVAILABLE_MODEL')

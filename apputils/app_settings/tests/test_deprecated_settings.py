@@ -36,13 +36,13 @@ class TestRenamedSetting(AppSettingTestCase):
                 defaults.RENAMED_SETTING_OLD,
             )
 
-    @override_settings(TEST_RENAMED_SETTING_OLD='ooolaalaa')
+    @override_settings(APPUTILS_TESTS_RENAMED_SETTING_OLD='ooolaalaa')
     def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
         expected_message = (
-            "The TEST_RENAMED_SETTING_OLD setting has been renamed to "
-            "TEST_RENAMED_SETTING_NEW. Please update your project's Django "
-            "settings to use this new name instead, or your override will "
-            "fail to work in future versions."
+            "The APPUTILS_TESTS_RENAMED_SETTING_OLD setting has been renamed "
+            "to APPUTILS_TESTS_RENAMED_SETTING_NEW. Please update your "
+            "project's Django settings to use this new name instead, or your "
+            "override will fail to work in future versions."
         )
         with self.assertWarns(
             warning_classes.removed_in_next_version_warning,
@@ -72,13 +72,13 @@ class TestReplaceedSetting(AppSettingTestCase):
                 defaults.REPLACED_SETTING_OLD,
             )
 
-    @override_settings(TEST_REPLACED_SETTING_OLD='ooolaalaa')
+    @override_settings(APPUTILS_TESTS_REPLACED_SETTING_OLD='ooolaalaa')
     def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
         expected_message = (
-            "The TEST_REPLACED_SETTING_OLD setting has been renamed to "
-            "TEST_REPLACED_SETTING_NEW. Please update your project's Django "
-            "settings to use this new name instead, or your override will "
-            "fail to work in future versions."
+            "The APPUTILS_TESTS_REPLACED_SETTING_OLD setting has been renamed "
+            "to APPUTILS_TESTS_REPLACED_SETTING_NEW. Please update your "
+            "project's Django settings to use this new name instead, or your "
+            "override will fail to work in future versions."
         )
         with self.assertWarns(
             warning_classes.removed_in_following_version_warning,

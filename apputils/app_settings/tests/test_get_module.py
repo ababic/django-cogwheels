@@ -7,35 +7,36 @@ from apputils.tests.modules import default_module, replacement_module
 
 class TestValidModuleSettingOverride(AppSettingTestCase):
     """
-    Tests the effect of overriding ``TEST_VALID_MODULE``
+    Tests the effect of overriding ``APPUTILS_TESTS_VALID_MODULE``
     """
     def test_returns_default_module_by_default(self):
         self.assertIs(
             self.appsettingshelper.get_module('VALID_MODULE'), default_module,
         )
 
-    @override_settings(TEST_VALID_MODULE='apputils.tests.modules.replacement_module')
+    @override_settings(APPUTILS_TESTS_VALID_MODULE='apputils.tests.modules.replacement_module')
     def test_successful_override(self):
         self.assertIs(
             self.appsettingshelper.get_module('VALID_MODULE'), replacement_module
         )
 
-    @override_settings(TEST_VALID_MODULE=1)
+    @override_settings(APPUTILS_TESTS_VALID_MODULE=1)
     def test_raises_error_when_value_is_not_a_string(self):
         message_expected = (
-            "Your TEST_VALID_MODULE setting value is invalid. A value of type "
-            "'str' is required, but the current value is of type 'int'."
+            "Your APPUTILS_TESTS_VALID_MODULE setting value is invalid. A "
+            "value of type 'str' is required, but the current value is of "
+            "type 'int'."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_module('VALID_MODULE')
 
-    @override_settings(TEST_VALID_MODULE='project.app.module')
+    @override_settings(APPUTILS_TESTS_VALID_MODULE='project.app.module')
     def test_raises_error_when_module_does_not_exist(self):
         message_expected = (
-            "Your TEST_VALID_MODULE setting value is invalid. No module could "
-            "be found with the path 'project.app.module'. Please use a full, "
-            "valid import path (e.g. 'project.app.module'), and avoid using "
-            "relative paths."
+            "Your APPUTILS_TESTS_VALID_MODULE setting value is invalid. No "
+            "module could be found with the path 'project.app.module'. Please "
+            "use a full, valid import path (e.g. 'project.app.module'), and "
+            "avoid using relative paths."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_module('VALID_MODULE')
@@ -50,7 +51,8 @@ class TestInvalidDefaultModuleSettings(AppSettingTestCase):
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The value used for UNAVAILABLE_MODULE in apputils.tests.conf.defaults is invalid. No module could be found with the path "
+            "The value used for UNAVAILABLE_MODULE in apputils.tests.conf"
+            ".defaults is invalid. No module could be found with the path "
             "'apputils.tests.modules.imaginary_module'. Please use a full, "
             "valid import path (e.g. 'project.app.module'), and avoid using "
             "relative paths."
