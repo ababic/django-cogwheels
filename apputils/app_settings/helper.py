@@ -139,16 +139,15 @@ class BaseAppSettingsHelper:
         except KeyError:
             pass
         raise ImproperlyConfigured(_(
-            "No default value could be found for '{setting_name}'. Setting "
-            "names should always be uppercase, and a default value must "
-            "always be added to '{default_module}'."
+            "No default value could be found in {default_module} with the "
+            "name '{setting_name}'."
         ).format(
             setting_name=setting_name, default_module=self._defaults_path
         ))
 
     def __getattr__(self, name):
         if self.in_defaults(name):
-            return self.get(name)
+            return self.get_raw(name)
         raise AttributeError("{} object has no attribute '{}'".format(
             self.__class__.__name__, name))
 
@@ -159,26 +158,29 @@ class BaseAppSettingsHelper:
     def is_overridden(self, setting_name):
         return hasattr(self._django_settings, self._prefix + setting_name)
 
-    def make_invalid_setting_message(self, setting_name, additional_text,
-                                     *args, **kwargs):
+    def raise_invalid_setting_value_error(
+        self, setting_name, additional_text, *args, **kwargs
+    ):
         if self.is_overridden(setting_name):
-            msg = _("Your {} setting value is invalid. ").format(
-                self._prefix + setting_name)
+            message = _(
+                "Your {} setting value is invalid. "
+            ).format(self._prefix + setting_name)
         else:
-            msg = _(
-                "The default value defined by the app developer for the "
-                "{} app setting is invalid. "
+            message = _(
+                "The default value defined for the {} app setting is invalid. "
             ).format(setting_name)
-        return msg + additional_text.format(*args, **kwargs)
 
-    def get(self, setting_name):
+        message += additional_text.format(*args, **kwargs)
+        raise ImproperlyConfigured(message)
+
+    def get_raw(self, setting_name):
         """
         Returns the value of the app setting named by ``setting_name``.
         If the setting is unavailable in the Django settings module, then the
-        default value from the ``defaults`` dictionary is returned.
+        default value from the ``defaults`` module is returned.
 
         If the setting is deprecated, a suitable deprecation warning will be
-        raised, to help inform developers of the change.
+        raised to help inform developers of the change.
 
         If the named setting replaces a deprecated setting, and no user defined
         setting name is defined using the new name, the method will look for a
@@ -200,10 +202,23 @@ class BaseAppSettingsHelper:
 
         return self.get_default_value(setting_name)
 
+    def get_and_enforce_type(self, setting_name, required_type):
+        setting_value = getattr(self, setting_name)
+        if not isinstance(setting_value, required_type):
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "A value of type '{required_type}' is required, but a "
+                    "'{current_type}' was supplied."
+                ),
+                required_type=required_type.__name__,
+                current_type=type(setting_value).__name__,
+            )
+        return setting_value
+
     def get_module(self, setting_name):
         """
         Returns a python module referenced by an app setting who's value should
-        be a string representation of a valid python import path.
+        be a valid python import path, defined as a string.
 
         Will not work for relative paths.
 
@@ -213,67 +228,75 @@ class BaseAppSettingsHelper:
         if setting_name in self._import_cache:
             return self._import_cache[setting_name]
 
-        setting_value = getattr(self, setting_name)
+        setting_value = self.get_and_enforce_type(setting_name, str)
+
         try:
             result = import_module(setting_value)
             self._import_cache[setting_name] = result
             return result
         except ImportError:
-            raise ImproperlyConfigured(self.make_invalid_setting_message(
-                setting_name,
-                "No module could be found with the path '{value}'. Please "
-                "use a full, valid import path (e.g. 'project.app.module'), "
-                "and avoid using relative paths.",
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "No module could be found with the path '{value}'. Please "
+                    "use a full, valid import path (e.g. 'project.app.module')"
+                    ", and avoid using relative paths."
+                ),
                 value=setting_value
-            ))
+            )
 
     def get_object(self, setting_name):
         """
         Returns a python class, method, or other object referenced by
-        an app setting who's value should be a string representation of a valid
-        python import path.
+        an app setting who's value should be a valid python import path,
+        defined as a string.
 
         Will not work for relative paths.
 
         Raises an ``ImproperlyConfigured`` error if the setting value is not
-        a valid import path, or the object is not found in the imported module.
+        a valid import path, or the object cannot be found in the specified
+        module.
         """
         if setting_name in self._import_cache:
             return self._import_cache[setting_name]
 
-        setting_value = getattr(self, setting_name)
+        setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
             module_path, object_name = setting_value.rsplit(".", 1)
+        except ValueError:
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "'{value}' is not a valid object import path. Please use "
+                    "a full, valid import path with the object name at the "
+                    "end (e.g. 'project.app.module.object'), and avoid using "
+                    "relative paths."
+                ),
+                value=setting_value
+            )
+        try:
             result = getattr(import_module(module_path), object_name)
             self._import_cache[setting_name] = result
             return result
-        except ValueError:
-            raise ImproperlyConfigured(self.make_invalid_setting_message(
-                setting_name,
-                "'{value}' is not a valid object import path. Please use a "
-                "full, valid import path with the object name at the "
-                "end (e.g. 'project.app.module.object'), and avoid using "
-                "relative paths.",
-                value=setting_value
-            ))
         except ImportError:
-            raise ImproperlyConfigured(self.make_invalid_setting_message(
-                setting_name,
-                "No module could be found with the path '{module_path}'. "
-                "Please use a full, valid import path with the object name at "
-                "the end (e.g. 'project.app.module.object'), and avoid using "
-                "relative paths.",
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "No module could be found with the path '{module_path}'. "
+                    "Please use a full, valid import path with the object "
+                    "name at the end (e.g. 'project.app.module.object'), and "
+                    "avoid using relative paths."
+                ),
                 module_path=module_path
-            ))
+            )
         except AttributeError:
-            raise ImproperlyConfigured(self.make_invalid_setting_message(
-                setting_name,
-                "No object could be found in '{module_path}' with the name "
-                "'{object_name}'. Could it have been moved or renamed?",
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "No object could be found in '{module_path}' with the "
+                    "name '{object_name}'. Could it have been moved or "
+                    "renamed?"
+                ),
                 module_path=module_path,
                 object_name=object_name,
-            ))
+            )
 
     def get_model(self, setting_name):
         """
@@ -286,23 +309,25 @@ class BaseAppSettingsHelper:
         if setting_name in self._model_cache:
             return self._model_cache[setting_name]
 
-        from django.apps import apps  # delay import until needed
-        setting_value = getattr(self, setting_name)
+        setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
+            from django.apps import apps  # delay import until needed
             result = apps.get_model(setting_value)
             self._model_cache[setting_name] = result
             return result
         except ValueError:
-            raise ImproperlyConfigured(self.make_invalid_setting_message(
-                setting_name,
-                "Model strings must be in the format 'app_label.ModelName', "
-                "which '{value}' does not adhere to.",
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "Model strings must be in the format 'app_label.Model', "
+                    "which '{value}' does not adhere to."
+                ),
                 value=setting_value
-            ))
+            )
         except LookupError:
-            raise ImproperlyConfigured(self.make_invalid_setting_message(
-                setting_name,
-                "The model '{value}' does not appear to be installed.",
-                value=setting_value,
-            ))
+            self.raise_invalid_setting_value_error(
+                setting_name, _(
+                    "The model '{value}' does not appear to be installed."
+                ),
+                value=setting_value
+            )
