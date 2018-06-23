@@ -58,8 +58,7 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "The default value defined for the INCORRECT_FORMAT_MODEL app "
-            "setting is invalid. Model strings must be in the format "
+            "The value used for INCORRECT_FORMAT_MODEL in apputils.tests.conf.defaults is invalid. Model strings must be in the format "
             "'app_label.Model', which 'apputils.tests.DefaultModel' does not "
             "adhere to."
         )
@@ -68,8 +67,7 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_model_not_installed(self):
         message_expected = (
-            "The default value defined for the UNAVAILABLE_MODEL app setting "
-            "is invalid. The model 'apputils.UnavailableModel' does not "
+            "The value used for UNAVAILABLE_MODEL in apputils.tests.conf.defaults is invalid. The model 'apputils.UnavailableModel' does not "
             "appear to be installed."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):

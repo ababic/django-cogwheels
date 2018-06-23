@@ -142,7 +142,8 @@ class BaseAppSettingsHelper:
             "No default value could be found in {default_module} with the "
             "name '{setting_name}'."
         ).format(
-            setting_name=setting_name, default_module=self._defaults_path
+            setting_name=setting_name,
+            default_module=self._defaults_path,
         ))
 
     def __getattr__(self, name):
@@ -163,14 +164,17 @@ class BaseAppSettingsHelper:
     ):
         if self.is_overridden(setting_name):
             message = _(
-                "Your {} setting value is invalid. "
+                "Your {} setting value is invalid."
             ).format(self._prefix + setting_name)
         else:
             message = _(
-                "The default value defined for the {} app setting is invalid. "
-            ).format(setting_name)
-
-        message += additional_text.format(*args, **kwargs)
+                "The value used for {setting_name} in {defaults_module} is "
+                "invalid."
+            ).format(
+                setting_name=setting_name,
+                defaults_module=self._defaults_path,
+            )
+        message += ' ' + additional_text.format(*args, **kwargs)
         raise ImproperlyConfigured(message)
 
     def get_raw(self, setting_name):

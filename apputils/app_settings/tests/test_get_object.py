@@ -71,8 +71,7 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
 
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "The default value defined for the "
-            "INCORRECT_FORMAT_OBJECT app setting is invalid. 'DefaultClass' "
+            "The value used for INCORRECT_FORMAT_OBJECT in apputils.tests.conf.defaults is invalid. 'DefaultClass' "
             "is not a valid object import path. Please use a full, valid "
             "import path with the object name at the end (e.g. "
             "'project.app.module.object'), and avoid using relative paths."
@@ -82,8 +81,7 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The default value defined for the MODULE_UNAVAILABLE_OBJECT app "
-            "setting is invalid. No module could be found with the path "
+            "The value used for MODULE_UNAVAILABLE_OBJECT in apputils.tests.conf.defaults is invalid. No module could be found with the path "
             "'apputils.imaginary_module'. Please use a full, valid import "
             "path with the object name at the end (e.g. "
             "'project.app.module.object'), and avoid using relative paths."
@@ -93,8 +91,7 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
 
     def test_raises_error_when_object_unavailable(self):
         message_expected = (
-            "The default value defined for the OBJECT_UNAVAILABLE_OBJECT app "
-            "setting is invalid. No object could be found in "
+            "The value used for OBJECT_UNAVAILABLE_OBJECT in apputils.tests.conf.defaults is invalid. No object could be found in "
             "'apputils.tests.classes' with the name 'NonExistent'. Could it "
             "have been moved or renamed?"
         )

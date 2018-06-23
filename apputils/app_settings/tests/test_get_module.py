@@ -50,8 +50,7 @@ class TestInvalidDefaultModuleSettings(AppSettingTestCase):
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The default value defined for the UNAVAILABLE_MODULE app setting "
-            "is invalid. No module could be found with the path "
+            "The value used for UNAVAILABLE_MODULE in apputils.tests.conf.defaults is invalid. No module could be found with the path "
             "'apputils.tests.modules.imaginary_module'. Please use a full, "
             "valid import path (e.g. 'project.app.module'), and avoid using "
             "relative paths."
