@@ -20,6 +20,15 @@ class TestValidModelSettingOverride(AppSettingTestCase):
             self.appsettingshelper.get_model('VALID_MODEL'), ReplacementModel
         )
 
+    @override_settings(TEST_VALID_MODEL=1)
+    def test_raises_error_when_value_is_not_a_string(self):
+        message_expected = (
+            "Your TEST_VALID_MODEL setting value is invalid. A value of type "
+            "'str' is required, but the current value is of type 'int'."
+        )
+        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
+            self.appsettingshelper.get_model('VALID_MODEL')
+
     @override_settings(TEST_VALID_MODEL='no_dots_here')
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (

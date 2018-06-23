@@ -207,8 +207,8 @@ class BaseAppSettingsHelper:
         if not isinstance(setting_value, required_type):
             self.raise_invalid_setting_value_error(
                 setting_name, _(
-                    "A value of type '{required_type}' is required, but a "
-                    "'{current_type}' was supplied."
+                    "A value of type '{required_type}' is required, but the "
+                    "current value is of type '{current_type}'."
                 ),
                 required_type=required_type.__name__,
                 current_type=type(setting_value).__name__,

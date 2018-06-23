@@ -20,6 +20,15 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
             self.appsettingshelper.get_module('VALID_MODULE'), replacement_module
         )
 
+    @override_settings(TEST_VALID_MODULE=1)
+    def test_raises_error_when_value_is_not_a_string(self):
+        message_expected = (
+            "Your TEST_VALID_MODULE setting value is invalid. A value of type "
+            "'str' is required, but the current value is of type 'int'."
+        )
+        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
+            self.appsettingshelper.get_module('VALID_MODULE')
+
     @override_settings(TEST_VALID_MODULE='project.app.module')
     def test_raises_error_when_module_does_not_exist(self):
         message_expected = (
