@@ -10,26 +10,14 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
     Tests the effect of overriding ``TEST_VALID_MODULE``
     """
     def test_returns_default_module_by_default(self):
-        # Using 'get_module()' directly
         self.assertIs(
             self.appsettingshelper.get_module('VALID_MODULE'), default_module,
         )
 
-        # Using the 'modules' attribute shortcut
-        self.assertIs(
-            self.appsettingshelper.modules.VALID_MODULE, default_module,
-        )
-
     @override_settings(TEST_VALID_MODULE='apputils.tests.modules.replacement_module')
     def test_successful_override(self):
-        # Using 'get_module()' directly
         self.assertIs(
             self.appsettingshelper.get_module('VALID_MODULE'), replacement_module
-        )
-
-        # Using the 'modules' attribute shortcut
-        self.assertIs(
-            self.appsettingshelper.modules.VALID_MODULE, replacement_module
         )
 
     @override_settings(TEST_VALID_MODULE='project.app.module')
@@ -40,14 +28,8 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
             "valid import path (e.g. 'project.app.module'), and avoid using "
             "relative paths."
         )
-
-        # Using 'get_module()' directly
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_module('VALID_MODULE')
-
-        # Using the 'modules' attribute shortcut
-        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
-            self.appsettingshelper.modules.VALID_MODULE
 
 
 class TestInvalidDefaultModuleSettings(AppSettingTestCase):
@@ -59,18 +41,11 @@ class TestInvalidDefaultModuleSettings(AppSettingTestCase):
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The default value defined by the app developer for the "
+            "The default value defined for the "
             "UNAVAILABLE_MODULE app setting is invalid. No module could be "
             "found with the path 'apputils.tests.modules.imaginary_module'. "
             "Please use a full, valid import path (e.g. 'project.app.module')"
             ", and avoid using relative paths."
-
         )
-
-        # Using 'get_module()' directly
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_module('UNAVAILABLE_MODULE')
-
-        # Using the 'modules' attribute shortcut
-        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
-            self.appsettingshelper.modules.UNAVAILABLE_MODULE
