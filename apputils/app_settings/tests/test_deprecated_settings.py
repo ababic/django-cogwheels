@@ -1,4 +1,3 @@
-import warnings
 from django.test import override_settings
 
 from apputils.maintenance import warning_classes
@@ -89,4 +88,3 @@ class TestReplaceedSetting(AppSettingTestCase):
                 self.appsettingshelper.REPLACED_SETTING_NEW,
                 'ooolaalaa'
             )
-
