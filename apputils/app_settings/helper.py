@@ -49,20 +49,15 @@ class HelperMethodAttrWrapper:
 
 class BaseAppSettingsHelper:
 
-    prefix = ''
+    prefix = None
     defaults_path = None
     deprecations = ()
 
     def __init__(self, prefix=None, defaults_path=None, deprecations=None):
         from django.conf import settings
-        if prefix is not None:
-            self._prefix = prefix
-        else:
-            self._prefix = self.__class__.prefix
-        if defaults_path is not None:
-            self._defaults_path = defaults_path
-        else:
-            self._defaults_path = self.__class__.defaults_path
+
+        self._prefix = self.get_prefix_value(prefix)
+        self._defaults_path = self.get_defaults_module_path(defaults_path)
         if deprecations is not None:
             self._deprecations = deprecations
         else:
@@ -76,6 +71,47 @@ class BaseAppSettingsHelper:
         self.objects = HelperMethodAttrWrapper(self, 'get_object')
         self.models = HelperMethodAttrWrapper(self, 'get_model')
         setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
+
+    @property
+    def module_path_split(self):
+        return self.__class__.__module__.split('.')
+
+    def get_prefix_value(self, init_supplied_val):
+        """
+        Return a value to use for this object's ``_prefix`` attribute. If no
+        value was provided to __init__(), and no value has been set on the
+        class using the ``prefix`` attribute, a default value is returned,
+        based on where the helper class is defined. For example:
+
+        - If the class is defined in ``myapp.conf.settings``, the value would
+          be "MYAPP_".
+        - If the class is defined in ``myapp.subapp.conf.settings``, the value
+          would be "MYAPP_SUBAPP_".
+        """
+        if init_supplied_val is not None:
+            return init_supplied_val
+        if self.__class__.prefix is not None:
+            return self.__class__.prefix
+        return '_'.join(self.module_path_split[:-2]).upper() + '_'
+
+    def get_defaults_module_path(self, init_supplied_val):
+        """
+        Return a value to use for this object's ``_defaults_path`` attribute.
+        If no value was provided to __init__(), and no value has been
+        set as on the class using the ``defaults_path`` attribute, a default
+        value is returned, based on where the helper class is defined.
+        For example:
+
+        - If the class is defined in ``myapp.conf.settings``, the return value
+          would be "myapp.conf.defaults".
+        - If the class is defined in ``myapp.subapp.conf.settings``, the return
+          value would be "myapp.conf.subapp.defaults".
+        """
+        if init_supplied_val is not None:
+            return init_supplied_val
+        if self.__class__.defaults_path is not None:
+            return self.__class__.defaults_path
+        return '.'.join(self.module_path_split[:-1]) + ".defaults"
 
     @classmethod
     def load_defaults(cls, module_path):
