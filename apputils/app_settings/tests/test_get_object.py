@@ -73,22 +73,21 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The default value defined for the "
-            "MODULE_UNAVAILABLE_OBJECT app setting is invalid. No module "
-            "could be found with the path 'apputils.imaginary_module'. Please "
-            "use a full, valid import path with the object name at the end "
-            "(e.g. 'project.app.module.object'), and avoid using relative "
-            "paths."
+            "The default value defined for the MODULE_UNAVAILABLE_OBJECT app "
+            "setting is invalid. No module could be found with the path "
+            "'apputils.imaginary_module'. Please use a full, valid import "
+            "path with the object name at the end (e.g. "
+            "'project.app.module.object'), and avoid using relative paths."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_object('MODULE_UNAVAILABLE_OBJECT')
 
     def test_raises_error_when_object_unavailable(self):
         message_expected = (
-            "The default value defined for the "
-            "OBJECT_UNAVAILABLE_OBJECT app setting is invalid. No object "
-            "could be found in 'apputils.tests.classes' with the name "
-            "'NonExistent'. Could it have been moved or renamed?"
+            "The default value defined for the OBJECT_UNAVAILABLE_OBJECT app "
+            "setting is invalid. No object could be found in "
+            "'apputils.tests.classes' with the name 'NonExistent'. Could it "
+            "have been moved or renamed?"
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_object('OBJECT_UNAVAILABLE_OBJECT')

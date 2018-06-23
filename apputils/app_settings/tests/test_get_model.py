@@ -24,8 +24,8 @@ class TestValidModelSettingOverride(AppSettingTestCase):
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
             "Your TEST_VALID_MODEL setting value is invalid. Model strings "
-            "must be in the format 'app_label.Model', which "
-            "'no_dots_here' does not adhere to."
+            "must be in the format 'app_label.Model', which 'no_dots_here' "
+            "does not adhere to."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('VALID_MODEL')
@@ -49,19 +49,19 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "The default value defined for the "
-            "INCORRECT_FORMAT_MODEL app setting is invalid. Model strings "
-            "must be in the format 'app_label.Model', which "
-            "'apputils.tests.DefaultModel' does not adhere to."
+            "The default value defined for the INCORRECT_FORMAT_MODEL app "
+            "setting is invalid. Model strings must be in the format "
+            "'app_label.Model', which 'apputils.tests.DefaultModel' does not "
+            "adhere to."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('INCORRECT_FORMAT_MODEL')
 
     def test_raises_error_when_model_not_installed(self):
         message_expected = (
-            "The default value defined for the "
-            "UNAVAILABLE_MODEL app setting is invalid. The model "
-            "'apputils.UnavailableModel' does not appear to be installed."
+            "The default value defined for the UNAVAILABLE_MODEL app setting "
+            "is invalid. The model 'apputils.UnavailableModel' does not "
+            "appear to be installed."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('UNAVAILABLE_MODEL')
