@@ -114,10 +114,16 @@ class BaseAppSettingsHelper:
 
     @classmethod
     def load_defaults(cls, module_path):
-        module = import_module(module_path)
+        module = cls.import_module(module_path)
         return {
             k: v for k, v in module.__dict__.items() if k.isupper()
         }
+
+    @staticmethod
+    def import_module(module_path):
+        """A simple wrapper for importlib.import_module(). Added to allow
+        unittest.mock.patch to be used in tests."""
+        return import_module(module_path)
 
     def perepare_deprecation_data(self):
         """
@@ -272,7 +278,7 @@ class BaseAppSettingsHelper:
         setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
-            result = import_module(setting_value)
+            result = self.import_module(setting_value)
             self._import_cache[setting_name] = result
             return result
         except ImportError:
@@ -315,7 +321,7 @@ class BaseAppSettingsHelper:
                 value=setting_value
             )
         try:
-            result = getattr(import_module(module_path), object_name)
+            result = getattr(self.import_module(module_path), object_name)
             self._import_cache[setting_name] = result
             return result
         except ImportError:
