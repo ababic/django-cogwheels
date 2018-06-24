@@ -1,3 +1,6 @@
+.. image:: https://raw.githubusercontent.com/ababic/django-cogwheels/master/docs/source/_static/django-cogwheels-logo.svg
+    :alt: Django Cogwheels
+
 .. image:: https://travis-ci.com/ababic/django-cogwheels.svg?branch=master
     :alt: Build Status
     :target: https://travis-ci.com/ababic/django-cogwheels
@@ -6,9 +9,9 @@
     :alt: Code coverage
     :target: https://codecov.io/gh/ababic/django-cogwheels
 
-================
-Django Cogwheels
-================
+======================
+About Django Cogwheels
+======================
 
 .. caution:: 
     Cogwheels is still in the early stages of development, and isn't recommended for use in production projects just yet.
