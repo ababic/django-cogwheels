@@ -1,7 +1,7 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
-from cogwheels.app_settings import BaseAppSettingsHelper, DeprecatedAppSetting
+from cogwheels.helpers import BaseAppSettingsHelper, DeprecatedAppSetting
 
 
 class TestSettingsHelper(BaseAppSettingsHelper):

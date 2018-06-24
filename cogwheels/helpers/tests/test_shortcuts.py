@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from cogwheels.app_settings import BaseAppSettingsHelper
+from cogwheels.helpers import BaseAppSettingsHelper
 from cogwheels.tests.base import AppSettingTestCase
 
 

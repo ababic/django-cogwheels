@@ -1,2 +1,2 @@
-from .helper import BaseAppSettingsHelper # noqa
+from .settings import BaseAppSettingsHelper # noqa
 from .deprecation import DeprecatedAppSetting # noqa

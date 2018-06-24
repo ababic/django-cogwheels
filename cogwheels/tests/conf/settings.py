@@ -1,5 +1,5 @@
 import sys
-from cogwheels.app_settings import BaseAppSettingsHelper, DeprecatedAppSetting
+from cogwheels.helpers import BaseAppSettingsHelper, DeprecatedAppSetting
 from cogwheels.maintenance import warning_classes
 
 
