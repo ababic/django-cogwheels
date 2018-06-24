@@ -8,7 +8,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-base_url = "https://github.com/ababic/django-app-utils/"
+base_url = "https://github.com/ababic/django-cogwheels/"
 download_url = '%starball/v%s' % (base_url, __version__)
 
 # Testing dependencies
@@ -32,7 +32,7 @@ development_extras = [
 ]
 
 setup(
-    name="django-app-utils",
+    name="django-cogwheels",
     version=__version__,
     author="Andy Babic",
     author_email="andyjbabic@gmail.com",

@@ -1,44 +1,56 @@
-.. image:: https://travis-ci.com/ababic/django-app-utils.svg?branch=master
+.. image:: https://travis-ci.com/ababic/django-cogwheels.svg?branch=master
     :alt: Build Status
-    :target: https://travis-ci.com/ababic/django-app-utils
+    :target: https://travis-ci.com/ababic/django-cogwheels
 
-.. image:: https://codecov.io/gh/ababic/django-app-utils/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/ababic/django-cogwheels/branch/master/graph/badge.svg
     :alt: Code coverage
-    :target: https://codecov.io/gh/ababic/django-app-utils
+    :target: https://codecov.io/gh/ababic/django-cogwheels
 
 ================
-Django App Utils
+Django Cogwheels
 ================
 
-This is a new project. A description will be added here soon.
+.. caution:: 
+    Cogwheels is still in the early stages of development, and isn't recommended for use in production projects just yet.
+
+A handy API to let you create and maintain 'user overridable settings' in your Django package, framework or reuseable app.
+
+Give your users the flexibility they deserve, and allow them to:
+
+- Override basic python type values such as: strings, integers, booleans, decimals and floats.
+- Override structured python type values such as: lists, tuples and dictionaries.
+- Use custom Django models in place of the ones you provide.
+- Use custom python classes, objects or entire modules in place of you provide.
 
 
-What does this app do?
-======================
+Goodness for you and other maintainers
+======================================
 
+Cogwheels provides you with:
 
-Feature 1
----------
+- A stable, documented, well tested, standardised approach for implementing overridable settings.
+- A way to clearly define and communicate the deprecation status of overridable settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue support them during the deprecation period.
+- Helpful error messages when default values provided for Model, Class, method or modules are invalid.
 
-More information will be added here soon.
+Goodness for your users
+=======================
 
+Cogwheels gives them:
 
-Feature 2
----------
-
-More information will be added here soon.
+- Helpful, consistent error messages when their Model, Class, method or module override settings are incorrectly formatted, or cannot be imported.
+- Helpful, consistent deprecation warnings when they are overriding a setting that has been renamed, replaced or flagged for removal.
 
 
 Installation instructions
 =========================
 
-More information will be added here soon.
+Documentation coming soon.
 
 
 Usage Guide
 ===========
 
-More information will be added here soon.
+Documentation coming soon.
 
 
 Compatibility
