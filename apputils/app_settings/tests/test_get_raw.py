@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
 from apputils.tests.base import AppSettingTestCase
@@ -5,6 +6,10 @@ from apputils.tests.conf import defaults
 
 
 class TestGetValueMethod(AppSettingTestCase):
+
+    def test_raises_error_if_no_default_defined(self):
+        with self.assertRaises(ImproperlyConfigured):
+            self.appsettingshelper.get_raw('NOT_REAL_SETTING')
 
     def test_integer_setting_returns_default_value_by_default(self):
         self.assertEqual(
