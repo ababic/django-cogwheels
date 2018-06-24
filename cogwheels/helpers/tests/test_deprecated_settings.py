@@ -2,7 +2,6 @@ from django.test import override_settings
 
 from cogwheels.tests.base import AppSettingTestCase
 from cogwheels.tests.conf import defaults
-from cogwheels.utils import warning_classes
 
 
 class TestDeprecatedSetting(AppSettingTestCase):
@@ -27,10 +26,7 @@ class TestRenamedSetting(AppSettingTestCase):
             "RENAMED_SETTING_NEW. You should update your code to reference "
             "this new setting instead."
         )
-        with self.assertWarns(
-            warning_classes.removed_in_next_version_warning,
-            msg=expected_message
-        ):
+        with self.assertWarns(DeprecationWarning, msg=expected_message):
             self.assertEqual(
                 self.appsettingshelper.RENAMED_SETTING_OLD,
                 defaults.RENAMED_SETTING_OLD,
@@ -44,10 +40,7 @@ class TestRenamedSetting(AppSettingTestCase):
             "project's Django settings to use this new name instead, or your "
             "override will fail to work in future versions."
         )
-        with self.assertWarns(
-            warning_classes.removed_in_next_version_warning,
-            msg=expected_message
-        ):
+        with self.assertWarns(DeprecationWarning, msg=expected_message):
             self.assertEqual(
                 self.appsettingshelper.RENAMED_SETTING_NEW,
                 'ooolaalaa'
@@ -63,10 +56,7 @@ class TestReplaceedSetting(AppSettingTestCase):
             "reference this new setting instead. However, we would recommend "
             "looking at the release notes for more information beforehand."
         )
-        with self.assertWarns(
-            warning_classes.removed_in_following_version_warning,
-            msg=expected_message
-        ):
+        with self.assertWarns(PendingDeprecationWarning, msg=expected_message):
             self.assertEqual(
                 self.appsettingshelper.REPLACED_SETTING_OLD,
                 defaults.REPLACED_SETTING_OLD,
@@ -75,15 +65,12 @@ class TestReplaceedSetting(AppSettingTestCase):
     @override_settings(COGWHEELS_TESTS_REPLACED_SETTING_OLD='ooolaalaa')
     def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
         expected_message = (
-            "The COGWHEELS_TESTS_REPLACED_SETTING_OLD setting has been renamed "
-            "to COGWHEELS_TESTS_REPLACED_SETTING_NEW. Please update your "
-            "project's Django settings to use this new name instead, or your "
-            "override will fail to work in future versions."
+            "The COGWHEELS_TESTS_REPLACED_SETTING_OLD setting has been "
+            "renamed to COGWHEELS_TESTS_REPLACED_SETTING_NEW. Please update "
+            "your project's Django settings to use this new name instead, or "
+            "your override will fail to work in future versions."
         )
-        with self.assertWarns(
-            warning_classes.removed_in_following_version_warning,
-            msg=expected_message
-        ):
+        with self.assertWarns(PendingDeprecationWarning, msg=expected_message):
             self.assertEqual(
                 self.appsettingshelper.REPLACED_SETTING_NEW,
                 'ooolaalaa'
