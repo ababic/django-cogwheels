@@ -153,17 +153,23 @@ class BaseAppSettingsHelper:
             self._deprecated_settings[item.setting_name] = item
             if not self.in_defaults(item.setting_name):
                 raise ImproperlyConfigured(_(
-                    "'{setting_name}' cannot be found in the defaults module. "
-                    "A value should remain present there until the end of the "
-                    "setting's deprecation period."
-                ).format(setting_name=item.setting_name))
+                    "There is an issue with one of your setting deprecation "
+                    "definitions. '{setting_name}' could not be found in "
+                    "{defaults_module_path}. Please ensure a default value "
+                    "remains there until the end of the setting's deprecation "
+                    "period."
+                ).format(
+                    setting_name=item.setting_name,
+                    defaults_module_path=self._defaults_path,
+                ))
             if item.replacement_name:
                 self._replacement_settings[item.replacement_name] = item
                 if not self.in_defaults(item.replacement_name):
                     raise ImproperlyConfigured(_(
-                        "'{replacement_name}' is not a valid replacement "
-                        "for {setting_name}. Please ensure {replacement_name} "
-                        "has been added to {defaults_module_path}."
+                        "There is an issue with one of your settings "
+                        "deprecation definitions. '{replacement_name}' is not "
+                        "a valid replacement for '{setting_name}', as no such "
+                        "value can be found in {defaults_module_path}."
                     ).format(
                         replacement_name=item.replacement_name,
                         setting_name=item.setting_name,
