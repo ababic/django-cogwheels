@@ -1,5 +1,6 @@
-.. image:: https://raw.githubusercontent.com/ababic/django-cogwheels/master/docs/source/_static/django-cogwheels-logo.svg
+.. image:: https://raw.githubusercontent.com/ababic/django-cogwheels/master/docs/source/_static/django-cogwheels-logo.png
     :alt: Django Cogwheels
+    :width: 275
 
 .. image:: https://travis-ci.com/ababic/django-cogwheels.svg?branch=master
     :alt: Build Status
