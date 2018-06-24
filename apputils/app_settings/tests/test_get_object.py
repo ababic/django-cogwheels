@@ -10,13 +10,13 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
     Tests the effect of overriding ``APPUTILS_TESTS_VALID_OBJECT``
     """
     def test_returns_default_class_by_default(self):
-        self.assertEqual(
+        self.assertIs(
             self.appsettingshelper.get_object('VALID_OBJECT'), DefaultClass,
         )
 
     @override_settings(APPUTILS_TESTS_VALID_OBJECT='apputils.tests.classes.ReplacementClass')
     def test_successful_override(self):
-        self.assertEqual(
+        self.assertIs(
             self.appsettingshelper.get_object('VALID_OBJECT'), ReplacementClass
         )
 

@@ -10,13 +10,13 @@ class TestValidModelSettingOverride(AppSettingTestCase):
     Tests the effect of overriding ``APPUTILS_TESTS_VALID_MODEL``
     """
     def test_returns_default_model_by_default(self):
-        self.assertEqual(
+        self.assertIs(
             self.appsettingshelper.get_model('VALID_MODEL'), DefaultModel,
         )
 
     @override_settings(APPUTILS_TESTS_VALID_MODEL='tests.ReplacementModel')
     def test_successful_override(self):
-        self.assertEqual(
+        self.assertIs(
             self.appsettingshelper.get_model('VALID_MODEL'), ReplacementModel
         )
 
