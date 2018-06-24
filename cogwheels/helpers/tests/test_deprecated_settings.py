@@ -1,8 +1,8 @@
 from django.test import override_settings
 
-from cogwheels.maintenance import warning_classes
 from cogwheels.tests.base import AppSettingTestCase
 from cogwheels.tests.conf import defaults
+from cogwheels.utils import warning_classes
 
 
 class TestDeprecatedSetting(AppSettingTestCase):

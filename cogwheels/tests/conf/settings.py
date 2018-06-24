@@ -1,6 +1,7 @@
 import sys
+
 from cogwheels.helpers import BaseAppSettingsHelper, DeprecatedAppSetting
-from cogwheels.maintenance import warning_classes
+from cogwheels.utils import warning_classes
 
 
 class TestAppSettingsHelper(BaseAppSettingsHelper):
