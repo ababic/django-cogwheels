@@ -22,7 +22,7 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
         settings.get_module('VALID_MODULE')
         settings.get_module('VALID_MODULE')
         settings.get_module('VALID_MODULE')
-        mocked_method.assert_called_once()
+        self.assertEqual(mocked_method.call_count, 1)
 
     @override_settings(APPUTILS_TESTS_VALID_MODULE='apputils.tests.modules.replacement_module')
     def test_successful_override(self):

@@ -23,7 +23,7 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
         settings.get_object('VALID_OBJECT')
         settings.get_object('VALID_OBJECT')
         settings.get_object('VALID_OBJECT')
-        mocked_method.assert_called_once()
+        self.assertEqual(mocked_method.call_count, 1)
 
     @override_settings(APPUTILS_TESTS_VALID_OBJECT='apputils.tests.classes.ReplacementClass')
     def test_successful_override(self):
