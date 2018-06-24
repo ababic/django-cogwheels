@@ -16,8 +16,8 @@ DATABASES = {
 }
 
 INSTALLED_APPS = (
-    'apputils',
-    'apputils.tests',
+    'cogwheels',
+    'cogwheels.tests',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -27,7 +27,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 )
 
-ROOT_URLCONF = 'apputils.tests.urls'
+ROOT_URLCONF = 'cogwheels.tests.urls'
 SECRET_KEY = 'aint-no-secrets-here'
 
 # =============================================================================

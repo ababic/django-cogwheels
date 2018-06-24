@@ -1,11 +1,11 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
-from apputils.app_settings import BaseAppSettingsHelper, DeprecatedAppSetting
+from cogwheels.app_settings import BaseAppSettingsHelper, DeprecatedAppSetting
 
 
 class TestSettingsHelper(BaseAppSettingsHelper):
-    defaults_path = 'apputils.tests.conf.defaults'
+    defaults_path = 'cogwheels.tests.conf.defaults'
     prefix = 'TEST_'
     deprecations = ()
 
@@ -20,7 +20,7 @@ class TestHelperInit(TestCase):
         )
 
     def test_providing_defaults_path_overrides_the_class_attribute_value(self):
-        test_val = 'apputils'
+        test_val = 'cogwheels'
         self.assertIs(
             TestSettingsHelper(defaults_path=test_val)._defaults_path,
             test_val

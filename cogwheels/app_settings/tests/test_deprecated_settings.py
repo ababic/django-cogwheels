@@ -1,8 +1,8 @@
 from django.test import override_settings
 
-from apputils.maintenance import warning_classes
-from apputils.tests.base import AppSettingTestCase
-from apputils.tests.conf import defaults
+from cogwheels.maintenance import warning_classes
+from cogwheels.tests.base import AppSettingTestCase
+from cogwheels.tests.conf import defaults
 
 
 class TestDeprecatedSetting(AppSettingTestCase):
@@ -36,11 +36,11 @@ class TestRenamedSetting(AppSettingTestCase):
                 defaults.RENAMED_SETTING_OLD,
             )
 
-    @override_settings(APPUTILS_TESTS_RENAMED_SETTING_OLD='ooolaalaa')
+    @override_settings(COGWHEELS_TESTS_RENAMED_SETTING_OLD='ooolaalaa')
     def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
         expected_message = (
-            "The APPUTILS_TESTS_RENAMED_SETTING_OLD setting has been renamed "
-            "to APPUTILS_TESTS_RENAMED_SETTING_NEW. Please update your "
+            "The COGWHEELS_TESTS_RENAMED_SETTING_OLD setting has been renamed "
+            "to COGWHEELS_TESTS_RENAMED_SETTING_NEW. Please update your "
             "project's Django settings to use this new name instead, or your "
             "override will fail to work in future versions."
         )
@@ -72,11 +72,11 @@ class TestReplaceedSetting(AppSettingTestCase):
                 defaults.REPLACED_SETTING_OLD,
             )
 
-    @override_settings(APPUTILS_TESTS_REPLACED_SETTING_OLD='ooolaalaa')
+    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING_OLD='ooolaalaa')
     def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
         expected_message = (
-            "The APPUTILS_TESTS_REPLACED_SETTING_OLD setting has been renamed "
-            "to APPUTILS_TESTS_REPLACED_SETTING_NEW. Please update your "
+            "The COGWHEELS_TESTS_REPLACED_SETTING_OLD setting has been renamed "
+            "to COGWHEELS_TESTS_REPLACED_SETTING_NEW. Please update your "
             "project's Django settings to use this new name instead, or your "
             "override will fail to work in future versions."
         )

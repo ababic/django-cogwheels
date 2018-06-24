@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from apputils.app_settings import BaseAppSettingsHelper
-from apputils.tests.base import AppSettingTestCase
+from cogwheels.app_settings import BaseAppSettingsHelper
+from cogwheels.tests.base import AppSettingTestCase
 
 
 class TestModelsShortcut(AppSettingTestCase):

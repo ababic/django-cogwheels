@@ -2,14 +2,14 @@ from unittest.mock import patch
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
-from apputils.tests.conf import settings
-from apputils.tests.base import AppSettingTestCase
-from apputils.tests.modules import default_module, replacement_module
+from cogwheels.tests.conf import settings
+from cogwheels.tests.base import AppSettingTestCase
+from cogwheels.tests.modules import default_module, replacement_module
 
 
 class TestValidModuleSettingOverride(AppSettingTestCase):
     """
-    Tests the effect of overriding ``APPUTILS_TESTS_VALID_MODULE``
+    Tests the effect of overriding ``COGWHEELS_TESTS_VALID_MODULE``
     """
     def test_returns_default_module_by_default(self):
         self.assertIs(
@@ -24,26 +24,26 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
         settings.get_module('VALID_MODULE')
         self.assertEqual(mocked_method.call_count, 1)
 
-    @override_settings(APPUTILS_TESTS_VALID_MODULE='apputils.tests.modules.replacement_module')
+    @override_settings(COGWHEELS_TESTS_VALID_MODULE='cogwheels.tests.modules.replacement_module')
     def test_successful_override(self):
         self.assertIs(
             self.appsettingshelper.get_module('VALID_MODULE'), replacement_module
         )
 
-    @override_settings(APPUTILS_TESTS_VALID_MODULE=1)
+    @override_settings(COGWHEELS_TESTS_VALID_MODULE=1)
     def test_raises_error_when_value_is_not_a_string(self):
         message_expected = (
-            "Your APPUTILS_TESTS_VALID_MODULE setting value is invalid. A "
+            "Your COGWHEELS_TESTS_VALID_MODULE setting value is invalid. A "
             "value of type 'str' is required, but the current value is of "
             "type 'int'."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_module('VALID_MODULE')
 
-    @override_settings(APPUTILS_TESTS_VALID_MODULE='project.app.module')
+    @override_settings(COGWHEELS_TESTS_VALID_MODULE='project.app.module')
     def test_raises_error_when_module_does_not_exist(self):
         message_expected = (
-            "Your APPUTILS_TESTS_VALID_MODULE setting value is invalid. No "
+            "Your COGWHEELS_TESTS_VALID_MODULE setting value is invalid. No "
             "module could be found with the path 'project.app.module'. Please "
             "use a full, valid import path (e.g. 'project.app.module'), and "
             "avoid using relative paths."
@@ -61,9 +61,9 @@ class TestInvalidDefaultModuleSettings(AppSettingTestCase):
 
     def test_raises_error_when_module_unavailable(self):
         message_expected = (
-            "The value used for UNAVAILABLE_MODULE in apputils.tests.conf"
+            "The value used for UNAVAILABLE_MODULE in cogwheels.tests.conf"
             ".defaults is invalid. No module could be found with the path "
-            "'apputils.tests.modules.imaginary_module'. Please use a full, "
+            "'cogwheels.tests.modules.imaginary_module'. Please use a full, "
             "valid import path (e.g. 'project.app.module'), and avoid using "
             "relative paths."
         )

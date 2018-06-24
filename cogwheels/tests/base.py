@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from apputils.tests.conf import settings
+from cogwheels.tests.conf import settings
 
 
 class AppSettingTestCase(TestCase):

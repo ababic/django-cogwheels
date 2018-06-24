@@ -18,7 +18,7 @@ If you'd like a runnable Django project to help with development of this app, fo
 
     .. code-block:: console
 
-        mkvirtualenv apputils
+        mkvirtualenv cogwheels
         setvirtualenvproject
         pip install -e '.[development,docs]' -U
 
@@ -26,8 +26,8 @@ If you'd like a runnable Django project to help with development of this app, fo
 
     .. code-block:: console
 
-        cp apputils/development/settings.py.example apputils/development/settings.py
-        cp apputils/development/urls.py.example apputils/development/urls.py
+        cp cogwheels/development/settings.py.example cogwheels/development/settings.py
+        cp cogwheels/development/urls.py.example cogwheels/development/urls.py
 
 4.  Create ``manage.py`` by copying the example provided:
 

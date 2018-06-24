@@ -2,14 +2,14 @@ from unittest.mock import patch
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
-from apputils.tests.conf import settings
-from apputils.tests.base import AppSettingTestCase
-from apputils.tests.models import DefaultModel, ReplacementModel
+from cogwheels.tests.conf import settings
+from cogwheels.tests.base import AppSettingTestCase
+from cogwheels.tests.models import DefaultModel, ReplacementModel
 
 
 class TestValidModelSettingOverride(AppSettingTestCase):
     """
-    Tests the effect of overriding ``APPUTILS_TESTS_VALID_MODEL``
+    Tests the effect of overriding ``COGWHEELS_TESTS_VALID_MODEL``
     """
     def test_returns_default_model_by_default(self):
         self.assertIs(
@@ -24,36 +24,36 @@ class TestValidModelSettingOverride(AppSettingTestCase):
         settings.get_model('VALID_MODEL')
         self.assertEqual(mocked_method.call_count, 1)
 
-    @override_settings(APPUTILS_TESTS_VALID_MODEL='tests.ReplacementModel')
+    @override_settings(COGWHEELS_TESTS_VALID_MODEL='tests.ReplacementModel')
     def test_successful_override(self):
         self.assertIs(
             self.appsettingshelper.get_model('VALID_MODEL'), ReplacementModel
         )
 
-    @override_settings(APPUTILS_TESTS_VALID_MODEL=1)
+    @override_settings(COGWHEELS_TESTS_VALID_MODEL=1)
     def test_raises_error_when_value_is_not_a_string(self):
         message_expected = (
-            "Your APPUTILS_TESTS_VALID_MODEL setting value is invalid. A "
+            "Your COGWHEELS_TESTS_VALID_MODEL setting value is invalid. A "
             "value of type 'str' is required, but the current value is of "
             "type 'int'."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('VALID_MODEL')
 
-    @override_settings(APPUTILS_TESTS_VALID_MODEL='no_dots_here')
+    @override_settings(COGWHEELS_TESTS_VALID_MODEL='no_dots_here')
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "Your APPUTILS_TESTS_VALID_MODEL setting value is invalid. Model "
+            "Your COGWHEELS_TESTS_VALID_MODEL setting value is invalid. Model "
             "strings must be in the format 'app_label.Model', which "
             "'no_dots_here' does not adhere to."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
             self.appsettingshelper.get_model('VALID_MODEL')
 
-    @override_settings(APPUTILS_TESTS_VALID_MODEL='tests.NonExistentModel')
+    @override_settings(COGWHEELS_TESTS_VALID_MODEL='tests.NonExistentModel')
     def test_raises_error_when_model_not_installed(self):
         message_expected = (
-            "Your APPUTILS_TESTS_VALID_MODEL setting value is invalid. The "
+            "Your COGWHEELS_TESTS_VALID_MODEL setting value is invalid. The "
             "model 'tests.NonExistentModel' does not appear to be installed."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
@@ -69,9 +69,9 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_format_is_invalid(self):
         message_expected = (
-            "The value used for INCORRECT_FORMAT_MODEL in apputils.tests.conf"
+            "The value used for INCORRECT_FORMAT_MODEL in cogwheels.tests.conf"
             ".defaults is invalid. Model strings must be in the format "
-            "'app_label.Model', which 'apputils.tests.DefaultModel' does not "
+            "'app_label.Model', which 'cogwheels.tests.DefaultModel' does not "
             "adhere to."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
@@ -79,8 +79,8 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
 
     def test_raises_error_when_model_not_installed(self):
         message_expected = (
-            "The value used for UNAVAILABLE_MODEL in apputils.tests.conf"
-            ".defaults is invalid. The model 'apputils.UnavailableModel' does "
+            "The value used for UNAVAILABLE_MODEL in cogwheels.tests.conf"
+            ".defaults is invalid. The model 'cogwheels.UnavailableModel' does "
             "not appear to be installed."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, message_expected):

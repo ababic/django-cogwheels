@@ -50,8 +50,8 @@ coverage.xml
 # Django stuff:
 *.log
 manage.py
-apputils/settings/development.py
-apputils/development/*
+cogwheels/settings/development.py
+cogwheels/development/*
 
 # Sphinx documentation
 docs/_build/
