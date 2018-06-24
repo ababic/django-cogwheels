@@ -1,6 +1,9 @@
+from unittest.mock import patch
+
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
+from apputils.tests.conf import settings
 from apputils.tests.base import AppSettingTestCase
 from apputils.tests.classes import DefaultClass, ReplacementClass
 
@@ -13,6 +16,14 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
         self.assertIs(
             self.appsettingshelper.get_object('VALID_OBJECT'), DefaultClass,
         )
+
+    @patch.object(settings, 'import_module')
+    def test_returns_from_cache_after_first_import(self, mocked_method):
+        settings.clear_caches()
+        settings.get_object('VALID_OBJECT')
+        settings.get_object('VALID_OBJECT')
+        settings.get_object('VALID_OBJECT')
+        mocked_method.assert_called_once()
 
     @override_settings(APPUTILS_TESTS_VALID_OBJECT='apputils.tests.classes.ReplacementClass')
     def test_successful_override(self):
