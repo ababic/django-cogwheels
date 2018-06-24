@@ -115,16 +115,10 @@ class BaseAppSettingsHelper:
 
     @classmethod
     def load_defaults(cls, module_path):
-        try:
-            module = import_module(module_path)
-            return {
-                k: v for k, v in module.__dict__.items() if k.isupper()
-            }
-        except ImportError:
-            raise ImproperlyConfigured(_(
-                "The 'defaults_path' value provided for {class_name} is "
-                "invalid. '{value}' is not a valid python import path."
-            ).format(class_name=cls.__name__, value=module_path))
+        module = import_module(module_path)
+        return {
+            k: v for k, v in module.__dict__.items() if k.isupper()
+        }
 
     def perepare_deprecation_data(self):
         """
