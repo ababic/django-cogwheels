@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+<svg version="1.2" baseProfile="tiny" id="Layer_1" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
 	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="264.5px" height="115px"
-	 viewBox="-41.5 -103.5 264.5 115" enable-background="new -41.5 -103.5 264.5 115" xml:space="preserve">
-<title>logo-django</title>
-<description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+	 viewBox="-41.5 -103.5 264.5 115" overflow="inherit" xml:space="preserve">
 <g>
 	<g id="logo-django" transform="translate(-8.000000, -5.000000)" sketch:type="MSArtboardGroup">
 		<path id="Shape" sketch:type="MSShapeGroup" d="M-21.24-19.5h5.691V6.583c-2.915,0.552-5.061,0.769-7.383,0.769
