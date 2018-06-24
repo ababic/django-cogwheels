@@ -13,7 +13,7 @@ Django Cogwheels
 .. caution:: 
     Cogwheels is still in the early stages of development, and isn't recommended for use in production projects just yet.
 
-A handy API to let you create and maintain 'user overridable settings' in your Django package, framework or reuseable app.
+A handy API to allow you to more easily offer and maintain 'user overridable settings' in your Django package, framework or reuseable app.
 
 Give your users the flexibility they deserve, and allow them to:
 

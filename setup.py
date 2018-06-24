@@ -36,11 +36,15 @@ setup(
     version=__version__,
     author="Andy Babic",
     author_email="andyjbabic@gmail.com",
-    description="",
+    description=(
+        "A handy API to allow you to more easily offer and maintain 'user "
+        "overridable settings' in your Django package, framework or reuseable "
+        "app."
+    ),
     long_description=README,
     packages=find_packages(),
     license="MIT",
-    keywords="django reusable app settings config utils",
+    keywords="django package reusable app settings config API utility",
     download_url=download_url,
     url=base_url,
     include_package_data=True,
