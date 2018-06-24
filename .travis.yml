@@ -21,4 +21,4 @@ script:
 - tox
 
 after_success: 
-- codecov
+- codecov --token=d1c52f52-bbc0-4eeb-b7dd-e4ac89504b93
