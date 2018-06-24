@@ -65,7 +65,6 @@ class BaseAppSettingsHelper:
         self._defaults = self.load_defaults(self._defaults_path)
         self._django_settings = settings
         self._import_cache = {}
-        self._model_cache = {}
         self.perepare_deprecation_data()
         self.modules = HelperMethodAttrWrapper(self, 'get_module')
         self.objects = HelperMethodAttrWrapper(self, 'get_object')
@@ -167,7 +166,6 @@ class BaseAppSettingsHelper:
 
     def clear_caches(self, **kwargs):
         self._import_cache = {}
-        self._model_cache = {}
 
     def in_defaults(self, setting_name):
         return setting_name in self._defaults
@@ -349,15 +347,15 @@ class BaseAppSettingsHelper:
         Raises an ``ImproperlyConfigured`` error if the setting value is not
         in the correct format, or refers to a model that is not available.
         """
-        if setting_name in self._model_cache:
-            return self._model_cache[setting_name]
+        if setting_name in self._import_cache:
+            return self._import_cache[setting_name]
 
         setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
             from django.apps import apps  # delay import until needed
             result = apps.get_model(setting_value)
-            self._model_cache[setting_name] = result
+            self._import_cache[setting_name] = result
             return result
         except ValueError:
             self.raise_invalid_setting_value_error(
