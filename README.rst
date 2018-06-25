@@ -29,16 +29,12 @@ Give your users the flexibility they deserve, and allow them to:
 Goodness for you and other maintainers
 ======================================
 
-Cogwheels provides you with:
-
-- A stable, documented, well tested, standardised approach for implementing overridable settings.
-- A way to clearly define and communicate the deprecation status of overridable settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue support them during the deprecation period.
-- Helpful error messages when default values provided for Model, Class, method or modules are invalid.
+- A stable, documented, standardised approach for implementing overridable app-specific settings.
+- A way to clearly define and communicate the deprecation status of app settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue to support them during the deprecation period.
+- Helpful, consistent error messages when default values provided for Model, Class, method or module settings are invalid.
 
 Goodness for your users
-=======================
-
-Cogwheels gives them:
+=======================:
 
 - Helpful, consistent error messages when their Model, Class, method or module override settings are incorrectly formatted, or cannot be imported.
 - Helpful, consistent deprecation warnings when they are overriding a setting that has been renamed, replaced or flagged for removal.
