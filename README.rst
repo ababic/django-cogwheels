@@ -34,7 +34,7 @@ Goodness for you and other maintainers
 - Helpful, consistent error messages when default values provided for Model, Class, method or module settings are invalid.
 
 Goodness for your users
-=======================:
+=======================
 
 - Helpful, consistent error messages when their Model, Class, method or module override settings are incorrectly formatted, or cannot be imported.
 - Helpful, consistent deprecation warnings when they are overriding a setting that has been renamed, replaced or flagged for removal.
