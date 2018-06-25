@@ -1,5 +1,4 @@
 import warnings
-from django.utils.translation import ugettext_lazy as _
 
 
 class DeprecatedAppSetting:
@@ -26,13 +25,13 @@ class DeprecatedAppSetting:
     def warn_if_referenced_directly(self):
         if self.replacement_name is not None:
             if self.is_renamed:
-                msg = _(
+                msg = (
                     "The {setting_name} app setting has been renamed to "
                     "{replacement_name}. You should update your code to "
                     "reference this new setting instead."
                 )
             else:
-                msg = _(
+                msg = (
                     "The {setting_name} app setting is deprecated in favour "
                     "of using {replacement_name}. You should update your code "
                     "to reference this new setting instead. However, we would "
@@ -40,7 +39,7 @@ class DeprecatedAppSetting:
                     "information beforehand."
                 )
         else:
-            msg = _(
+            msg = (
                 "The {setting_name} app setting is deprecated. You may want "
                 "to check the latest release notes for more information."
             )
@@ -53,12 +52,14 @@ class DeprecatedAppSetting:
         )
 
     def warn_if_deprecated_value_used_by_replacement(self):
-        warnings.warn(_(
+        warnings.warn(
             "The {setting_name} setting has been renamed to "
             "{replacement_name}. Please update your project's "
             "Django settings to use this new name instead, or your "
             "override will fail to work in future versions."
-        ).format(
-            setting_name=self.prefix + self.setting_name,
-            replacement_name=self.prefix + self.replacement_name,
-        ), category=self.warning_category)
+            .format(
+                setting_name=self.prefix + self.setting_name,
+                replacement_name=self.prefix + self.replacement_name,
+            ),
+            category=self.warning_category
+        )
