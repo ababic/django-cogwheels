@@ -21,7 +21,7 @@ class InvalidSettingValueFormat(SettingValueError):
     pass
 
 
-class SettingValueNotImportable(SettingValueError):
+class SettingValueNotImportable(ImportError, SettingValueError):
     """The value of a setting is the correct type, and correctly formatted,
     but the specified model, module or object could not be imported.
     """
