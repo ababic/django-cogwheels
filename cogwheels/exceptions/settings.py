@@ -10,18 +10,18 @@ class SettingValueError(ImproperlyConfigured, ValueError):
     pass
 
 
-class SettingValueTypeError(SettingValueError):
+class InvalidSettingValueType(SettingValueError):
     """The value of a setting is not the correct type."""
     pass
 
 
-class SettingValueFormatError(SettingValueError):
+class InvalidSettingValueFormat(SettingValueError):
     """The value of a setting is the correct type, but is incorrectly
     formatted."""
     pass
 
 
-class SettingValueImportError(SettingValueError):
+class UnimportableSettingValue(SettingValueError):
     """The value of a setting is the correct type, and correctly formatted,
     but the specified model, module or object could not be imported.
     """
@@ -34,16 +34,16 @@ class DefaultSettingValueMixin:
     pass
 
 
-class DefaultSettingValueTypeError(DefaultSettingValueMixin, SettingValueTypeError):
-    """As SettingValueTypeError, but specifically for a 'default' value."""
+class InvalidDefaultSettingValueType(DefaultSettingValueMixin, InvalidSettingValueType):
+    """As InvalidSettingValueType, but specifically for a 'default' value."""
     pass
 
 
-class DefaultSettingValueFormatError(DefaultSettingValueMixin, SettingValueFormatError):
-    """As SettingValueFormatError, but specifically for a default value."""
+class InvalidDefaultSettingValueFormat(DefaultSettingValueMixin, InvalidSettingValueFormat):
+    """As InvalidSettingValueFormat, but specifically for a default value."""
     pass
 
 
-class DefaultSettingValueImportError(DefaultSettingValueMixin, SettingValueImportError):
-    """As SettingValueImportError, but specifically for a default value."""
+class UnimportableDefaultSettingValue(DefaultSettingValueMixin, UnimportableSettingValue):
+    """As UnimportableSettingValue, but specifically for a default value."""
     pass
