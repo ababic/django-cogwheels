@@ -21,29 +21,29 @@ class InvalidSettingValueFormat(SettingValueError):
     pass
 
 
-class UnimportableSettingValue(SettingValueError):
+class SettingValueImportError(SettingValueError):
     """The value of a setting is the correct type, and correctly formatted,
     but the specified model, module or object could not be imported.
     """
     pass
 
 
-class DefaultSettingValueMixin:
+class DefaultSettingError:
     """Used as a mixin for exception classes that concern a 'default' setting
     value specifically (i.e. one provided by the app maintainer)."""
     pass
 
 
-class InvalidDefaultSettingValueType(DefaultSettingValueMixin, InvalidSettingValueType):
+class InvalidDefaultSettingValueType(DefaultSettingError, InvalidSettingValueType):
     """As InvalidSettingValueType, but specifically for a 'default' value."""
     pass
 
 
-class InvalidDefaultSettingValueFormat(DefaultSettingValueMixin, InvalidSettingValueFormat):
+class InvalidDefaultSettingValueFormat(DefaultSettingError, InvalidSettingValueFormat):
     """As InvalidSettingValueFormat, but specifically for a default value."""
     pass
 
 
-class UnimportableDefaultSettingValue(DefaultSettingValueMixin, UnimportableSettingValue):
-    """As UnimportableSettingValue, but specifically for a default value."""
+class DefaultSettingValueImportError(DefaultSettingError, SettingValueImportError):
+    """As SettingValueImportError, but specifically for a default value."""
     pass
