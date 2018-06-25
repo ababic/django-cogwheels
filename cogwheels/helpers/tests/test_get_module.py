@@ -1,7 +1,7 @@
 from unittest.mock import patch
-from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
+from cogwheels import exceptions
 from cogwheels.tests.conf import settings
 from cogwheels.tests.base import AppSettingTestCase
 from cogwheels.tests.modules import default_module, replacement_module
@@ -31,24 +31,13 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
         )
 
     @override_settings(COGWHEELS_TESTS_VALID_MODULE=1)
-    def test_raises_error_when_value_is_not_a_string(self):
-        message_expected = (
-            "Your COGWHEELS_TESTS_VALID_MODULE setting value is invalid. A "
-            "value of type 'str' is required, but the current value is of "
-            "type 'int'."
-        )
-        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
+    def test_raises_correct_error_type_when_value_is_not_a_string(self):
+        with self.assertRaises(exceptions.InvalidSettingValueType):
             self.appsettingshelper.get_module('VALID_MODULE')
 
     @override_settings(COGWHEELS_TESTS_VALID_MODULE='project.app.module')
-    def test_raises_error_when_module_does_not_exist(self):
-        message_expected = (
-            "Your COGWHEELS_TESTS_VALID_MODULE setting value is invalid. No "
-            "module could be found with the path 'project.app.module'. Please "
-            "use a full, valid import path (e.g. 'project.app.module'), and "
-            "avoid using relative paths."
-        )
-        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
+    def test_raises_correct_error_type_when_module_not_importable(self):
+        with self.assertRaises(exceptions.SettingValueNotImportable):
             self.appsettingshelper.get_module('VALID_MODULE')
 
 
@@ -59,13 +48,6 @@ class TestInvalidDefaultModuleSettings(AppSettingTestCase):
     app developer is invalid.
     """
 
-    def test_raises_error_when_module_unavailable(self):
-        message_expected = (
-            "The value used for UNAVAILABLE_MODULE in cogwheels.tests.conf"
-            ".defaults is invalid. No module could be found with the path "
-            "'cogwheels.tests.modules.imaginary_module'. Please use a full, "
-            "valid import path (e.g. 'project.app.module'), and avoid using "
-            "relative paths."
-        )
-        with self.assertRaisesMessage(ImproperlyConfigured, message_expected):
+    def test_raises_correct_error_type_when_module_unavailable(self):
+        with self.assertRaises(exceptions.DefaultValueNotImportable):
             self.appsettingshelper.get_module('UNAVAILABLE_MODULE')
