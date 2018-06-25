@@ -1,9 +1,9 @@
-class AttributeToMethodCallHelper:
+class AttrRefererToMethodHelper:
     """
     ``BaseAppSettingsHelper`` creates several instances of this class on
     initialisation to allow developers to neatly reference settings to get a
     value cast as a certain type of object. Behind the scenes, attribute
-    requests on ``AttributeToMethodCallHelper`` instance are forwarded on to
+    requests on ``AttrRefererToMethodHelper`` instance are forwarded on to
     one of the helper instance's 'get_x()' methods.
 
     For example, if you want the actual python module referenced by a setting,
@@ -11,7 +11,7 @@ class AttributeToMethodCallHelper:
 
     ``appsettingshelper.get_module('MODULE_SETTING_NAME')``
 
-    The 'modules' ``AttributeToMethodCallHelper`` instance (set as an attribute
+    The 'modules' ``AttrRefererToMethodHelper`` instance (set as an attribute
     on every setting helper) allows you to do this:
 
     ``appsettingshelper.modules.MODULE_SETTING_NAME``

@@ -11,7 +11,7 @@ from cogwheels.exceptions.deprecations import (
     DuplicateDeprecationError, DuplicateDeprecationReplacementError,
 )
 
-from .utils import AttrToMethodCallHelper
+from .utils import AttrRefererToMethodHelper
 
 
 class BaseAppSettingsHelper:
@@ -33,9 +33,9 @@ class BaseAppSettingsHelper:
         self._django_settings = settings
         self._import_cache = {}
         self.perepare_deprecation_data()
-        self.modules = AttrToMethodCallHelper(self, 'get_module')
-        self.objects = AttrToMethodCallHelper(self, 'get_object')
-        self.models = AttrToMethodCallHelper(self, 'get_model')
+        self.modules = AttrRefererToMethodHelper(self, 'get_module')
+        self.objects = AttrRefererToMethodHelper(self, 'get_object')
+        self.models = AttrRefererToMethodHelper(self, 'get_model')
         setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
 
     @property
