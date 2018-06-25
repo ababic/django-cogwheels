@@ -1,6 +1,6 @@
 import os
 from setuptools import setup, find_packages
-from cogwheels import __version__
+from cogwheels.version import __version__
 
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()
