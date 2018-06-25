@@ -1,19 +1,14 @@
 from importlib import import_module
 from django.core.signals import setting_changed
-from cogwheels.exceptions.deprecations import (
-    IncorrectDeprecationsValueType,
-    InvalidDeprecationDefinition,
-    DuplicateDeprecationError,
-    DuplicateDeprecationReplacementError,
+from cogwheels import (
+    InvalidSettingValueType, InvalidSettingValueFormat,
+    InvalidDefaultValueType, InvalidDefaultValueFormat,
+    SettingValueNotImportable, DefaultValueNotImportable,
 )
-from cogwheels.exceptions.settings import (
+from cogwheels.exceptions.deprecations import (
     ImproperlyConfigured,
-    InvalidSettingValueType,
-    InvalidSettingValueFormat,
-    SettingValueNotImportable,
-    InvalidDefaultValueType,
-    InvalidDefaultValueFormat,
-    DefaultValueNotImportable,
+    IncorrectDeprecationsValueType, InvalidDeprecationDefinition,
+    DuplicateDeprecationError, DuplicateDeprecationReplacementError,
 )
 
 
