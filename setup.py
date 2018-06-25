@@ -37,9 +37,8 @@ setup(
     author="Andy Babic",
     author_email="andyjbabic@gmail.com",
     description=(
-        "A handy API to allow you to more easily offer and maintain 'user "
-        "overridable settings' in your Django package, framework or reuseable "
-        "app."
+        "Rock solid app-specific settings management for your Django package, "
+        "framework or reusable app."
     ),
     long_description=README,
     packages=find_packages(),
