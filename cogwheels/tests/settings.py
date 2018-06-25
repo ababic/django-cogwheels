@@ -16,8 +16,6 @@ DATABASES = {
 }
 
 INSTALLED_APPS = (
-    'cogwheels',
-    'cogwheels.tests',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -25,6 +23,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'cogwheels',
+    'cogwheels.tests',
 )
 
 ROOT_URLCONF = 'cogwheels.tests.urls'
