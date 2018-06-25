@@ -28,22 +28,22 @@ class SettingValueImportError(SettingValueError):
     pass
 
 
-class DefaultSettingError:
+class DefaultSettingValueError:
     """Used as a mixin for exception classes that concern a 'default' setting
     value specifically (i.e. one provided by the app maintainer)."""
     pass
 
 
-class InvalidDefaultSettingValueType(DefaultSettingError, InvalidSettingValueType):
+class InvalidDefaultValueType(DefaultSettingValueError, InvalidSettingValueType):
     """As InvalidSettingValueType, but specifically for a 'default' value."""
     pass
 
 
-class InvalidDefaultSettingValueFormat(DefaultSettingError, InvalidSettingValueFormat):
+class InvalidDefaultValueFormat(DefaultSettingValueError, InvalidSettingValueFormat):
     """As InvalidSettingValueFormat, but specifically for a default value."""
     pass
 
 
-class DefaultSettingValueImportError(DefaultSettingError, SettingValueImportError):
+class DefaultValueImportError(DefaultSettingValueError, SettingValueImportError):
     """As SettingValueImportError, but specifically for a default value."""
     pass
