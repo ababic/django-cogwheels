@@ -25,7 +25,6 @@ Give your users the flexibility they deserve, and allow them to:
 - Use custom Django models in place of the ones you provide.
 - Use custom python classes, objects or entire modules in place of you provide.
 
-
 Goodness for you and other maintainers
 ======================================
 
@@ -41,17 +40,10 @@ Goodness for your users
 - Helpful, consistent error messages when their Model, Class, method or module override settings are incorrectly formatted, or cannot be imported.
 - Helpful, consistent deprecation warnings when they are overriding a setting that has been renamed, replaced or flagged for removal.
 
+Quick start guide
+=================
 
-Installation instructions
-=========================
-
-Documentation coming soon.
-
-
-Usage Guide
-===========
-
-Documentation coming soon.
+More info coming soon!
 
 
 Compatibility
