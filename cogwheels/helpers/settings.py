@@ -34,15 +34,15 @@ class BaseAppSettingsHelper:
 
         # Define 'models' reference shortcut and cache
         self.models = AttrRefererToMethodHelper(self, 'get_model')
-        self._model_cache = {}
+        self._models_cache = {}
 
         # Define 'modules' reference shortcut and cache
         self.modules = AttrRefererToMethodHelper(self, 'get_module')
-        self._module_cache = {}
+        self._modules_cache = {}
 
         # Define 'object' reference shortcut and cache
         self.objects = AttrRefererToMethodHelper(self, 'get_object')
-        self._object_cache = {}
+        self._objects_cache = {}
 
         setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
 
@@ -182,9 +182,9 @@ class BaseAppSettingsHelper:
                 self._replacement_settings[item.replacement_name] = item
 
     def clear_caches(self, **kwargs):
-        self._model_cache = {}
-        self._module_cache = {}
-        self._object_cache = {}
+        self._models_cache = {}
+        self._modules_cache = {}
+        self._objects_cache = {}
 
     def in_defaults(self, setting_name):
         return setting_name in self._defaults
@@ -293,14 +293,14 @@ class BaseAppSettingsHelper:
         Raises an ``ImproperlyConfigured`` error if the setting value is not
         a valid import path.
         """
-        if setting_name in self._module_cache:
-            return self._module_cache[setting_name]
+        if setting_name in self._modules_cache:
+            return self._modules_cache[setting_name]
 
         setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
             result = self.import_module(setting_value)
-            self._module_cache[setting_name] = result
+            self._modules_cache[setting_name] = result
             return result
         except ImportError:
             self.raise_setting_error(
@@ -327,8 +327,8 @@ class BaseAppSettingsHelper:
         a valid import path, or the object cannot be found in the specified
         module.
         """
-        if setting_name in self._object_cache:
-            return self._object_cache[setting_name]
+        if setting_name in self._objects_cache:
+            return self._objects_cache[setting_name]
 
         setting_value = self.get_and_enforce_type(setting_name, str)
 
@@ -348,7 +348,7 @@ class BaseAppSettingsHelper:
             )
         try:
             result = getattr(self.import_module(module_path), object_name)
-            self._object_cache[setting_name] = result
+            self._objects_cache[setting_name] = result
             return result
         except ImportError:
             self.raise_setting_error(
@@ -384,15 +384,15 @@ class BaseAppSettingsHelper:
         Raises an ``ImproperlyConfigured`` error if the setting value is not
         in the correct format, or refers to a model that is not available.
         """
-        if setting_name in self._model_cache:
-            return self._model_cache[setting_name]
+        if setting_name in self._models_cache:
+            return self._models_cache[setting_name]
 
         setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
             from django.apps import apps  # delay import until needed
             result = apps.get_model(setting_value)
-            self._model_cache[setting_name] = result
+            self._models_cache[setting_name] = result
             return result
         except ValueError:
             self.raise_setting_error(
