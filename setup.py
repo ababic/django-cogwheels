@@ -24,6 +24,7 @@ documentation_extras = [
 
 # Development dependencies
 development_extras = [
+    "Django>=2.0,<2.1",
     "ipdb",
     "werkzeug",
     "django-extensions",
