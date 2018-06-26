@@ -1,4 +1,5 @@
 from importlib import import_module
+from django.conf import settings as django_settings
 from django.core.signals import setting_changed
 from cogwheels import (
     OverrideValueTypeInvalid, OverrideValueFormatInvalid, OverrideValueNotImportable,
@@ -19,23 +20,30 @@ class BaseAppSettingsHelper:
     deprecations = ()
 
     def __init__(self, prefix=None, defaults_path=None, deprecations=None):
-        from django.conf import settings
-
+        # The basics
         self._prefix = self.get_prefix_value(prefix)
         self._defaults_path = self.get_defaults_module_path(defaults_path)
+        self._defaults = self.load_defaults(self._defaults_path)
+
+        # Deprecation data loading
         if deprecations is not None:
             self._deprecations = deprecations
         else:
             self._deprecations = self.__class__.deprecations
-        self._defaults = self.load_defaults(self._defaults_path)
-        self._django_settings = settings
-        self._model_cache = {}
-        self._module_cache = {}
-        self._object_cache = {}
         self.perepare_deprecation_data()
-        self.modules = AttrRefererToMethodHelper(self, 'get_module')
-        self.objects = AttrRefererToMethodHelper(self, 'get_object')
+
+        # Define 'models' reference shortcut and cache
         self.models = AttrRefererToMethodHelper(self, 'get_model')
+        self._model_cache = {}
+
+        # Define 'modules' reference shortcut and cache
+        self.modules = AttrRefererToMethodHelper(self, 'get_module')
+        self._module_cache = {}
+
+        # Define 'object' reference shortcut and cache
+        self.objects = AttrRefererToMethodHelper(self, 'get_object')
+        self._object_cache = {}
+
         setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
 
     @property
@@ -203,10 +211,10 @@ class BaseAppSettingsHelper:
 
     def get_user_defined_value(self, setting_name):
         attr_name = self._prefix + setting_name
-        return getattr(self._django_settings, attr_name)
+        return getattr(django_settings, attr_name)
 
     def is_overridden(self, setting_name):
-        return hasattr(self._django_settings, self._prefix + setting_name)
+        return hasattr(django_settings, self._prefix + setting_name)
 
     def raise_setting_error(
         self, setting_name, user_value_error_class, default_value_error_class,
