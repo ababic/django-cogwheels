@@ -32,17 +32,17 @@ class TestValidModelSettingOverride(AppSettingTestCase):
 
     @override_settings(COGWHEELS_TESTS_VALID_MODEL=1)
     def test_raises_correct_error_type_when_user_defined_value_is_not_a_string(self):
-        with self.assertRaises(exceptions.InvalidSettingValueType):
+        with self.assertRaises(exceptions.OverrideValueTypeInvalid):
             self.appsettingshelper.get_model('VALID_MODEL')
 
     @override_settings(COGWHEELS_TESTS_VALID_MODEL='no_dots_here')
     def test_raises_correct_error_type_when_format_is_invalid(self):
-        with self.assertRaises(exceptions.InvalidSettingValueFormat):
+        with self.assertRaises(exceptions.OverrideValueFormatInvalid):
             self.appsettingshelper.get_model('VALID_MODEL')
 
     @override_settings(COGWHEELS_TESTS_VALID_MODEL='tests.NonExistentModel')
     def test_raises_correct_error_type_when_model_not_importable(self):
-        with self.assertRaises(exceptions.SettingValueNotImportable):
+        with self.assertRaises(exceptions.OverrideValueNotImportable):
             self.appsettingshelper.get_model('VALID_MODEL')
 
 
@@ -54,7 +54,7 @@ class TestInvalidDefaultModelSettings(AppSettingTestCase):
     """
 
     def test_raises_correct_error_type_when_format_is_invalid(self):
-        with self.assertRaises(exceptions.InvalidDefaultValueFormat):
+        with self.assertRaises(exceptions.DefaultValueFormatInvalid):
             self.appsettingshelper.get_model('INCORRECT_FORMAT_MODEL')
 
     def test_raises_correct_error_type_when_model_not_importable(self):

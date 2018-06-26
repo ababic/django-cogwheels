@@ -1,16 +1,14 @@
 from importlib import import_module
 from django.core.signals import setting_changed
 from cogwheels import (
-    InvalidSettingValueType, InvalidSettingValueFormat,
-    InvalidDefaultValueType, InvalidDefaultValueFormat,
-    SettingValueNotImportable, DefaultValueNotImportable,
+    OverrideValueTypeInvalid, OverrideValueFormatInvalid, OverrideValueNotImportable,
+    DefaultValueTypeInvalid, DefaultValueFormatInvalid, DefaultValueNotImportable,
 )
 from cogwheels.exceptions.deprecations import (
     ImproperlyConfigured,
     IncorrectDeprecationsValueType, InvalidDeprecationDefinition,
     DuplicateDeprecationError, DuplicateDeprecationReplacementError,
 )
-
 from .utils import AttrRefererToMethodHelper
 
 
@@ -262,8 +260,8 @@ class BaseAppSettingsHelper:
         if not isinstance(setting_value, required_type):
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=InvalidSettingValueType,
-                default_value_error_class=InvalidDefaultValueType,
+                user_value_error_class=OverrideValueTypeInvalid,
+                default_value_error_class=DefaultValueTypeInvalid,
                 additional_text=(
                     "The value is expected to be a '{required_type}', but a "
                     "value of type '{current_type}' was found."
@@ -295,7 +293,7 @@ class BaseAppSettingsHelper:
         except ImportError:
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=SettingValueNotImportable,
+                user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
                 additional_text=(
                     "No module could be found matching the path '{value}'. "
@@ -327,8 +325,8 @@ class BaseAppSettingsHelper:
         except ValueError:
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=InvalidSettingValueFormat,
-                default_value_error_class=InvalidDefaultValueFormat,
+                user_value_error_class=OverrideValueFormatInvalid,
+                default_value_error_class=DefaultValueFormatInvalid,
                 additional_text=(
                     "'{value}' is not a valid object import path. Please use "
                     "a full (not relative) import path with the object name "
@@ -343,7 +341,7 @@ class BaseAppSettingsHelper:
         except ImportError:
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=SettingValueNotImportable,
+                user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
                 additional_text=(
                     "No module could be found matching the path "
@@ -356,7 +354,7 @@ class BaseAppSettingsHelper:
         except AttributeError:
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=SettingValueNotImportable,
+                user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
                 additional_text=(
                     "No object could be found in {module_path} matching the "
@@ -387,8 +385,8 @@ class BaseAppSettingsHelper:
         except ValueError:
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=InvalidSettingValueFormat,
-                default_value_error_class=InvalidDefaultValueFormat,
+                user_value_error_class=OverrideValueFormatInvalid,
+                default_value_error_class=DefaultValueFormatInvalid,
                 additional_text=(
                     "Model strings should match the format 'app_label.Model', "
                     "which '{value}' does not adhere to."
@@ -398,7 +396,7 @@ class BaseAppSettingsHelper:
         except LookupError:
             self.raise_setting_error(
                 setting_name=setting_name,
-                user_value_error_class=SettingValueNotImportable,
+                user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
                 additional_text=(
                     "The model '{value}' does not appear to be installed."

@@ -33,22 +33,22 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
 
     @override_settings(COGWHEELS_TESTS_VALID_OBJECT=1)
     def test_raises_correct_error_type_when_value_is_not_a_string(self):
-        with self.assertRaises(exceptions.InvalidSettingValueType):
+        with self.assertRaises(exceptions.OverrideValueTypeInvalid):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
     @override_settings(COGWHEELS_TESTS_VALID_OBJECT='no_dots_here')
     def test_raises_correct_error_type_when_format_is_invalid(self):
-        with self.assertRaises(exceptions.InvalidSettingValueFormat):
+        with self.assertRaises(exceptions.OverrideValueFormatInvalid):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
     @override_settings(COGWHEELS_TESTS_VALID_OBJECT='project.app.module.Class')
     def test_raises_correct_error_type_when_module_not_found(self):
-        with self.assertRaises(exceptions.SettingValueNotImportable):
+        with self.assertRaises(exceptions.OverrideValueNotImportable):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
     @override_settings(COGWHEELS_TESTS_VALID_OBJECT='cogwheels.tests.classes.NonExistentClass')
     def test_raises_correct_error_type_when_object_not_found(self):
-        with self.assertRaises(exceptions.SettingValueNotImportable):
+        with self.assertRaises(exceptions.OverrideValueNotImportable):
             self.appsettingshelper.get_object('VALID_OBJECT')
 
 
@@ -60,7 +60,7 @@ class TestInvalidDefaultObjectSettings(AppSettingTestCase):
     """
 
     def test_raises_correct_error_type_when_format_is_invalid(self):
-        with self.assertRaises(exceptions.InvalidDefaultValueFormat):
+        with self.assertRaises(exceptions.DefaultValueFormatInvalid):
             self.appsettingshelper.get_object('INCORRECT_FORMAT_OBJECT')
 
     def test_raises_correct_error_type_when_module_not_found(self):

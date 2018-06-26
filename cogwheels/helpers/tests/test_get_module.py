@@ -32,12 +32,12 @@ class TestValidModuleSettingOverride(AppSettingTestCase):
 
     @override_settings(COGWHEELS_TESTS_VALID_MODULE=1)
     def test_raises_correct_error_type_when_value_is_not_a_string(self):
-        with self.assertRaises(exceptions.InvalidSettingValueType):
+        with self.assertRaises(exceptions.OverrideValueTypeInvalid):
             self.appsettingshelper.get_module('VALID_MODULE')
 
     @override_settings(COGWHEELS_TESTS_VALID_MODULE='project.app.module')
     def test_raises_correct_error_type_when_module_not_importable(self):
-        with self.assertRaises(exceptions.SettingValueNotImportable):
+        with self.assertRaises(exceptions.OverrideValueNotImportable):
             self.appsettingshelper.get_module('VALID_MODULE')
 
 

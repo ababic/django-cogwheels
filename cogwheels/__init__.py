@@ -4,8 +4,7 @@ from .__version__ import ( # noqa
     __copyright__, __license__
 )
 from .exceptions import ( # noqa
-    InvalidSettingValueType, InvalidSettingValueFormat,
-    InvalidDefaultValueType, InvalidDefaultValueFormat,
-    SettingValueNotImportable, DefaultValueNotImportable,
+    DefaultValueTypeInvalid, DefaultValueFormatInvalid, DefaultValueNotImportable,
+    OverrideValueTypeInvalid, OverrideValueFormatInvalid, OverrideValueNotImportable,
 )
 from .helpers import BaseAppSettingsHelper, DeprecatedAppSetting # noqa
