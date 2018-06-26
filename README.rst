@@ -30,8 +30,10 @@ Goodness for you and other maintainers
 ======================================
 
 - A stable, documented, standardised approach for implementing overridable app-specific settings.
-- A way to clearly define and communicate the deprecation status of app settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue to support them during the deprecation period.
-- Helpful, consistent error messages when default values provided for Model, Class, method or module settings are invalid.
+- Cached imports for speedy access to models, modules and other overridable objects.
+- Clearly define and communicate the deprecation status of app settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue to support them during the deprecation period.
+- Helpful, consistent error messages when default values provided for models, modules or other overridable object settings are invalid.
+- Plays nicely with Django's test framework (subscribes to Django's ``setting_changed`` signal, so that cached values are cleared when `override_settings` is used).
 
 Goodness for your users
 =======================
