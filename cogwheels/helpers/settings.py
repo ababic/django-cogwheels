@@ -66,7 +66,12 @@ class BaseAppSettingsHelper:
             return init_supplied_val
         if self.__class__.prefix is not None:
             return self.__class__.prefix
-        return '_'.join(self.module_path_split[:-2]).upper() + '_'
+        path_bits = self.module_path_split[:-1]
+        try:
+            path_bits.remove('conf')
+        except ValueError:
+            pass
+        return '_'.join(path_bits).upper() + '_'
 
     def get_defaults_module_path(self, init_supplied_val):
         """
