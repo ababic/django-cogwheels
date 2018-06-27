@@ -54,7 +54,7 @@ setup(
     license=about['__license__'],
     zip_safe=False,
     classifiers=(
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Natural Language :: English",
