@@ -205,7 +205,7 @@ Frequently asked questions
 Sure thing.
 
 ``wagtailmenus`` uses cogwheels to manage it's app settings. See:
-https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus/conf
+https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus
 
 You might also want to check out the ``tests`` app within cogwheels itself, which includes lots of examples:
 https://github.com/ababic/django-cogwheels/tree/master/cogwheels/tests
