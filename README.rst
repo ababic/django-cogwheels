@@ -52,7 +52,7 @@ Quick start guide
 
         pip install django-cogwheels
 
-2.  `cd` into your project's root app directory:
+2.  ``cd`` into your project's root app directory:
     
     .. code-block:: console
 
