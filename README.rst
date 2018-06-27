@@ -17,14 +17,14 @@
 What is django-cogwheels?
 =========================
 
-The aim of ``django-cogwheels`` is to create a standardised, well-tested approach for allowing users of an app to override default behaviour, by overriding things in their project's Django settings.
+``django-cogwheels`` aims to create a standardised, well-tested approach for allowing users of your reusable Django app to override default app behaviour, by overriding values in their project's Django settings.
 
-There are other apps out there that try to solve this problem, but it was important for me to create a solution that would cater well for deprecation of settings, as this is something I find myself having to do regularly in apps I maintain. It was also important for me to create something that:
+It aims to:
 
-- Is super easy to set up
-- Properly accounts for different audiences (the 'app developer' and 'app user')
-- Will work as well for 100 apps setting as it will for 5
-- Only makes things complicated when absolutely necessary
+- Be super easy to integrate, for both new and existing Django apps
+- Work as well for ``2`` settings as it will for ``200``
+- Cater properly for the needs of both app developers/maintainers, and the users of those apps
+- Only make things complicated when they absolutely need to be
 
 **Give your users the flexibility they deserve, and allow them to:**
 
