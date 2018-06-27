@@ -239,7 +239,7 @@ If this puts you off, keep in mind that it's not in anybody's interest for devel
 5. What's that last line in ``settings.py`` all about?
 ------------------------------------------------------
 
-Ahh, yes. The ``sys.modules[__name__] = MyAppSettingsHelper()`` bit. I understand that some developers might think this dirty/hacky/unpythonic/whaterver. I have to admit, I was unsure abotu it for a while too.
+Ahh, yes. The ``sys.modules[__name__] = MyAppSettingsHelper()`` bit. I understand that some developers might think this dirty/hacky/unpythonic/whaterver. I have to admit, I was unsure about it for a while, too.
 
 I'll agree that it is somewhat 'uncommon' to see this code in use. Perhaps because it's not particularly useful in a lot situations, or perhaps because you use things like this incorrectly, things can break in wierd ways. But, support for this hack is not going anywhere, and in `cogwheels` case, it's useful, as it removes the need to instantiate things in ``__init__.py`` (which I dislike for a number of reasons). 
 
