@@ -83,7 +83,7 @@ Quick start guide
         ORDER_FORM_CLASS = 'yourproject.forms.OrderForm'
 
         
-5.  To use setting values in your app, simply import the settings helper, and access them as attributes, like so:
+5.  To use setting values in your app, simply import the settings helper, and reference the relevant setting as an attribute, like this:
 
     .. code-block:: console
 
