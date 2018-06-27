@@ -193,6 +193,64 @@ Quick start guide
         >>> from yourproject.conf import settings
         >>> settings.get_prefix()
         'CUSTOM_'
+
+
+Frequently asked questions
+==========================
+
+
+1. Are there any example implmentations of ``django-cogwheels`` that I can look at?
+-----------------------------------------------------------------------------------
+
+Sure thing.
+
+``wagtailmenus`` uses cogwheels to manage it's app settings. See:
+https://github.com/rkhleics/wagtailmenus/tree/master/conf
+
+You might also want to check out the ``tests`` app within cogwheels itself, which includes lots of examples:
+https://github.com/ababic/django-cogwheels/tree/master/cogwheels/tests
+
+
+2. Do ``defaults.py`` and ``settings.py`` have to live in a ``conf`` app?
+-------------------------------------------------------------------------
+
+No. This is just a recommendation. Everyone has their own preferences for how they structure their projects, and that's all well and good. So long as you keep ``defaults.py`` and ``settings.py`` in the same directory, things should work just fine out of the box. 
+
+If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``cogwheels`` supports that too. But, you'll have to set the ``defaults_path`` attribute on your settings helper class, so that it knows where to find the default. For example:
+
+.. code-block:: python
+
+        # yourapp/some_directory/settings.py
+
+        ... 
+
+        class MyAppSettingsHelper(BaseAppSettingsHelper):
+            defaults_path = 'yourapp.some_other_place.defaults'
+        
+        ...
+        
+
+3. How do specify validation rules for certain settings?
+--------------------------------------------------------
+
+The only validation that ``cogwheels`` performs is on setting values that are supposed to reference Django models and other importables, and this validation is only triggered when you use ``settings.models.SETTING_NAME``, ``settings.modules.SETTING_NAME`` or ``settings.objects.SETTING_NAME`` in your code to import and access the object. 
+
+**There's currently no way to configure ``cogwheels`` to apply validation to other setting values.**
+
+I do intend to support such a thing future versions, but I can't make any promises as to when.
+
+If this puts you off, keep in mind that it's not in anybody's interest for developers to purposefully use inappropriate override values for settings. So long as your documentation explains the rules/boundaries for expected values well enough, issues should be very rare.
+
+
+4. What's that last line in ``settings.py`` all about?
+------------------------------------------------------
+
+Ahh, yes. The ``sys.modules[__name__] = MyAppSettingsHelper()`` bit. I understand that some developers might think this dirty/hacky/unpythonic/whaterver. I have to admit, I was unsure abotu it for a while too.
+
+I'll agree that it is somewhat 'uncommon' to see this code in use. Perhaps because it's not particularly useful in a lot situations, or perhaps because you use things like this incorrectly, things can break in wierd ways. But, support for this hack is not going anywhere, and in `cogwheels` case, it's useful, as it removes the need to instantiate things in ``__init__.py`` (which I dislike for a number of reasons). 
+
+If you're still not reassured, perhaps Guido van Rossum (Founder of Python) can put your mind at rest?
+https://mail.python.org/pipermail/python-ideas/2012-May/014969.html
         
 
 Compatibility
