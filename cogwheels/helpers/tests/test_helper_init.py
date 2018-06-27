@@ -12,11 +12,16 @@ class TestSettingsHelper(BaseAppSettingsHelper):
 class TestHelperInit(TestCase):
 
     def test_providing_prefix_overrides_the_class_attribute_value(self):
-        test_val = 'ABRACADABRA_'
+        test_val = 'ABRACADABRA'
         self.assertIs(
             TestSettingsHelper(prefix=test_val)._prefix,
             test_val
         )
+
+    def test_prefix_attribute_never_has_trailing_underscores(self):
+        self.assertEqual(TestSettingsHelper()._prefix, 'TEST')
+        self.assertEqual(TestSettingsHelper(prefix="ABRACADABRA_")._prefix, 'ABRACADABRA')
+        self.assertEqual(TestSettingsHelper(prefix="BEEP_BOOP___")._prefix, 'BEEP_BOOP')
 
     def test_providing_defaults_path_overrides_the_class_attribute_value(self):
         test_val = 'cogwheels'
