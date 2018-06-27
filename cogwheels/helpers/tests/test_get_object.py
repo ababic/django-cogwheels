@@ -17,7 +17,7 @@ class TestValidObjectSettingOverride(AppSettingTestCase):
             self.appsettingshelper.get_object('VALID_OBJECT'), DefaultClass,
         )
 
-    @patch.object(settings, 'import_module')
+    @patch.object(settings, '_do_import')
     def test_returns_from_cache_after_first_import(self, mocked_method):
         settings.clear_caches()
         settings.get_object('VALID_OBJECT')

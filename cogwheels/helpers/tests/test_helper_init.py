@@ -21,7 +21,7 @@ class TestHelperInit(TestCase):
     def test_providing_defaults_path_overrides_the_class_attribute_value(self):
         test_val = 'cogwheels'
         self.assertIs(
-            TestSettingsHelper(defaults_path=test_val)._defaults_path,
+            TestSettingsHelper(defaults_path=test_val)._defaults_module_path,
             test_val
         )
 

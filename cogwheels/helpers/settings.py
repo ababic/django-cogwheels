@@ -20,17 +20,19 @@ class BaseAppSettingsHelper:
     deprecations = ()
 
     def __init__(self, prefix=None, defaults_path=None, deprecations=None):
-        # The basics
-        self._prefix = self.get_prefix_value(prefix)
-        self._defaults_path = self.get_defaults_module_path(defaults_path)
-        self._defaults = self.load_defaults(self._defaults_path)
+        self.__module_path_split = self.__class__.__module__.split('.')
+        self._set_prefix(prefix)
 
-        # Deprecation data loading
+        # Load values from defaults module
+        self._set_defaults_module_path(defaults_path)
+        self._load_defaults()
+
+        # Load deprecation data
         if deprecations is not None:
             self._deprecations = deprecations
         else:
             self._deprecations = self.__class__.deprecations
-        self.perepare_deprecation_data()
+        self._perepare_deprecation_data()
 
         # Define 'models' reference shortcut and cache
         self.models = AttrRefererToMethodHelper(self, 'get_model')
@@ -46,69 +48,87 @@ class BaseAppSettingsHelper:
 
         setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
 
-    @property
-    def module_path_split(self):
-        return self.__class__.__module__.split('.')
-
-    def get_prefix_value(self, init_supplied_val):
+    def __getattr__(self, name):
         """
-        Return a value to use for this object's ``_prefix`` attribute. If no
-        value was provided to __init__(), and no value has been set on the
-        class using the ``prefix`` attribute, a default value is returned,
+        If the requested attribute wasn't found, it's assumed that the caller
+        wants the value of a setting matching 'name'. So, if 'name' looks like
+        a valid setting name, refer the request to 'self.get_raw()', otherwise
+        raise an ``AttributeError``, so that the caller knows the request is
+        invalid.
+        """
+        if not self.in_defaults(name):
+            raise AttributeError("{} object has no attribute '{}'".format(
+                self.__class__.__name__, name))
+        return self.get_raw(name)
+
+    def _set_prefix(self, init_supplied_val):
+        """
+        Set this object's ``_prefix`` attribute value. If no value was provided
+        to __init__(), and no value has been set on the class using the
+        ``prefix`` attribute, a default value is returned, based on where the
+        helper class is defined. For example:
+
+        If the class is defined in ``myapp/conf/settings.py`` or
+        ``myapp/settings.py``, the value ``"MYAPP_"`` would be used.
+
+        If the class is defined in ``myapp/subapp/conf/settings.py`` or
+        ``myapp/subapps/settings.py`` the value ``"MYAPP_SUBAPP_"`` would be
+        used.
+        """
+        if init_supplied_val is not None:
+            value = init_supplied_val
+        elif self.__class__.prefix is not None:
+            value = self.__class__.prefix
+        else:
+            module_path_parts = self.__module_path_split[:-1]
+            try:
+                module_path_parts.remove('conf')
+            except ValueError:
+                pass
+            value = '_'.join(module_path_parts).upper() + '_'
+        self._prefix = value
+
+    def _set_defaults_module_path(self, init_supplied_val):
+        """
+        Sets this object's ``_defaults_module_path`` attribute. If no value
+        was provided to __init__(), and no value has been set as on the class
+        using the ``defaults_path`` attribute, a default value is returned,
         based on where the helper class is defined. For example:
 
-        - If the class is defined in ``myapp.conf.settings``, the value would
-          be "MYAPP_".
-        - If the class is defined in ``myapp.subapp.conf.settings``, the value
-          would be "MYAPP_SUBAPP_".
+        - If the class is defined in ``myapp.conf.settings``, the value
+          "myapp.conf.defaults" would be used.
+        - If the class is defined in ``myapp.subapp.conf.settings``, the
+          value "myapp.conf.subapp.defaults" would be used.
         """
         if init_supplied_val is not None:
-            return init_supplied_val
-        if self.__class__.prefix is not None:
-            return self.__class__.prefix
-        path_bits = self.module_path_split[:-1]
-        try:
-            path_bits.remove('conf')
-        except ValueError:
-            pass
-        return '_'.join(path_bits).upper() + '_'
-
-    def get_defaults_module_path(self, init_supplied_val):
-        """
-        Return a value to use for this object's ``_defaults_path`` attribute.
-        If no value was provided to __init__(), and no value has been
-        set as on the class using the ``defaults_path`` attribute, a default
-        value is returned, based on where the helper class is defined.
-        For example:
-
-        - If the class is defined in ``myapp.conf.settings``, the return value
-          would be "myapp.conf.defaults".
-        - If the class is defined in ``myapp.subapp.conf.settings``, the return
-          value would be "myapp.conf.subapp.defaults".
-        """
-        if init_supplied_val is not None:
-            return init_supplied_val
-        if self.__class__.defaults_path is not None:
-            return self.__class__.defaults_path
-        return '.'.join(self.module_path_split[:-1]) + ".defaults"
-
-    @classmethod
-    def load_defaults(cls, module_path):
-        module = cls.import_module(module_path)
-        return {
-            k: v for k, v in module.__dict__.items() if k.isupper()
-        }
+            value = init_supplied_val
+        elif self.__class__.defaults_path is not None:
+            value = self.__class__.defaults_path
+        else:
+            value = '.'.join(self.__module_path_split[:-1]) + ".defaults"
+        self._defaults_module_path = value
 
     @staticmethod
-    def import_module(module_path):
-        """A simple wrapper for importlib.import_module(). Added to allow
-        unittest.mock.patch to be used in tests."""
+    def _do_import(module_path):
+        """A simple wrapper for importlib.import_module()."""
         return import_module(module_path)
 
-    def perepare_deprecation_data(self):
+    def _load_defaults(self):
+        """
+        Sets the object's ``_defaults`` attibute value to a dictionary for
+        optimal lookup performance. Items are loaded from the relevant
+        ``defaults.py`` module on initialisation.
+        """
+        module = self._do_import(self._defaults_module_path)
+        self._defaults = {
+            k: v for k, v in module.__dict__.items()
+            if k.isupper()  # ignore anything that doesn't look like a setting
+        }
+
+    def _perepare_deprecation_data(self):
         """
         Cycles through the list of AppSettingDeprecation instances set on
-        ``self._deprecations`` and creates two new dictionaries on it:
+        ``self._deprecations`` and propulates two new dictionary attributes:
 
         ``self._deprecated_settings``:
             Uses the deprecated setting names as keys, and will be
@@ -141,7 +161,7 @@ class BaseAppSettingsHelper:
                     "period."
                     .format(
                         setting_name=item.setting_name,
-                        defaults_module_path=self._defaults_path,
+                        defaults_module_path=self._defaults_module_path,
                     )
                 )
 
@@ -180,7 +200,7 @@ class BaseAppSettingsHelper:
                         .format(
                             replacement_name=item.replacement_name,
                             setting_name=item.setting_name,
-                            defaults_module_path=self._defaults_path,
+                            defaults_module_path=self._defaults_module_path,
                         )
                     )
 
@@ -204,15 +224,9 @@ class BaseAppSettingsHelper:
             "name '{setting_name}'."
             .format(
                 setting_name=setting_name,
-                default_module=self._defaults_path,
+                default_module=self._defaults_module_path,
             )
         )
-
-    def __getattr__(self, name):
-        if self.in_defaults(name):
-            return self.get_raw(name)
-        raise AttributeError("{} object has no attribute '{}'".format(
-            self.__class__.__name__, name))
 
     def get_user_defined_value(self, setting_name):
         attr_name = self._prefix + setting_name
@@ -238,7 +252,7 @@ class BaseAppSettingsHelper:
                 "{setting_name} in {defaults_module}."
             ).format(
                 setting_name=setting_name,
-                defaults_module=self._defaults_path,
+                defaults_module=self._defaults_module_path,
             )
         message += ' ' + additional_text.format(*args, **kwargs)
         raise error_class(message)
@@ -304,7 +318,7 @@ class BaseAppSettingsHelper:
         setting_value = self.get_and_enforce_type(setting_name, str)
 
         try:
-            result = self.import_module(setting_value)
+            result = self._do_import(setting_value)
             self._modules_cache[setting_name] = result
             return result
         except ImportError:
@@ -352,7 +366,7 @@ class BaseAppSettingsHelper:
                 value=setting_value
             )
         try:
-            result = getattr(self.import_module(module_path), object_name)
+            result = getattr(self._do_import(module_path), object_name)
             self._objects_cache[setting_name] = result
             return result
         except ImportError:
