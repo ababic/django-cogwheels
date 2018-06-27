@@ -89,16 +89,16 @@ Quick start guide
 
         >>> from yourproject.conf import settings
 
-        >>> max_items = settings.MAX_ITEMS_PER_ORDER
+        >>> settings.MAX_ITEMS_PER_ORDER
         5 
 
-        >>> order_item_model_string = settings.ORDER_ITEM_MODEL
+        >>> settings.ORDER_ITEM_MODEL
         'yourproject.SimpleOrderItem'
 
-        >>> discounts_backend_path = settings.DISCOUNTS_BACKEND
+        >>> settings.DISCOUNTS_BACKEND
         'yourproject.discount_backends.simple'
 
-        >>> form_class_path = settings.ORDER_FORM_CLASS
+        >>> settings.ORDER_FORM_CLASS
         'yourproject.forms.OrderForm'
 
 
@@ -108,13 +108,13 @@ Quick start guide
 
         >>> from yourproject.conf import settings
 
-        >>> item_model = settings.models.ORDER_ITEM_MODEL
+        >>> model = settings.models.ORDER_ITEM_MODEL
         yourproject.models.SimpleOrderItem
 
-        >>> obj = item_model(id=1, product='test product', quantity=15)
+        >>> obj = model(id=1, product='test product', quantity=15)
         >>> obj.save()
 
-        >>> print(item_model.objects.all())
+        >>> print(model.objects.all())
         <QuerySet [<SimpleOrderItem: SimpleOrderItem object (1)>]>
 
     Behind the scenes, Django's ``django.apps.apps.get_model()`` method is called, and the result is cached so that repeat requests for the same model are handled quickly and efficiently.
@@ -126,8 +126,8 @@ Quick start guide
 
         >>> from yourproject.conf import settings
 
-        >>> discounts_backend = settings.modules.DISCOUNTS_BACKEND
-        <module 'yourproject.discount_backends.simple' from '/Users/username/django/projects/your-django-project/yourproject/discount_backends/simple.py'>
+        >>> module = settings.modules.DISCOUNTS_BACKEND
+        <module 'yourproject.discount_backends.simple' from '/system/path/to/your-django-project/yourproject/discount_backends/simple.py'>
 
 
     Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same module are handled quickly and efficiently.
@@ -142,9 +142,9 @@ Quick start guide
         >>> form_class = settings.objects.ORDER_FORM_CLASS
         yourproject.formsOrderForm
 
-        >>> form = form_class(request.POST or None)
+        >>> form = form_class(data={})
         >>> form.is_valid()
-
+        False
 
     Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are handled quickly and efficiently.
 
