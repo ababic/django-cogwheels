@@ -63,29 +63,31 @@ class BaseAppSettingsHelper:
 
     def _set_prefix(self, init_supplied_val):
         """
-        Set this object's ``_prefix`` attribute value. If no value was provided
-        to __init__(), and no value has been set on the class using the
-        ``prefix`` attribute, a default value is returned, based on where the
-        helper class is defined. For example:
+        Sets this object's ``_prefix`` attribute to a sensible value. If no
+        value was provided to __init__(), and no value has been set using the 
+        ``prefix`` class attribute, a default value will be used, based on
+        where the helper class is defined.
+
+        For example:
 
         If the class is defined in ``myapp/conf/settings.py`` or
-        ``myapp/settings.py``, the value ``"MYAPP_"`` would be used.
+        ``myapp/settings.py``, the value ``"MYAPP"`` would be used.
 
         If the class is defined in ``myapp/subapp/conf/settings.py`` or
-        ``myapp/subapps/settings.py`` the value ``"MYAPP_SUBAPP_"`` would be
+        ``myapp/subapps/settings.py`` the value ``"MYAPP_SUBAPP"`` would be
         used.
         """
         if init_supplied_val is not None:
-            value = init_supplied_val
+            value = init_supplied_val.rstrip('_')
         elif self.__class__.prefix is not None:
-            value = self.__class__.prefix
+            value = self.__class__.prefix.rstrip('_')
         else:
             module_path_parts = self.__module_path_split[:-1]
             try:
                 module_path_parts.remove('conf')
             except ValueError:
                 pass
-            value = '_'.join(module_path_parts).upper() + '_'
+            value = '_'.join(module_path_parts).upper()
         self._prefix = value
 
     def _set_defaults_module_path(self, init_supplied_val):
@@ -229,14 +231,18 @@ class BaseAppSettingsHelper:
         )
 
     def get_prefix(self):
-        return self._prefix
+        return self._prefix + '_'
+
+    def get_prefixed_setting_name(self, setting_name):
+        return self.get_prefix() + setting_name
 
     def get_user_defined_value(self, setting_name):
-        attr_name = self._prefix + setting_name
+        attr_name = self.get_prefixed_setting_name(setting_name)
         return getattr(django_settings, attr_name)
 
     def is_overridden(self, setting_name):
-        return hasattr(django_settings, self._prefix + setting_name)
+        attr_name = self.get_prefixed_setting_name(setting_name)
+        return hasattr(django_settings, attr_name)
 
     def raise_setting_error(
         self, setting_name, user_value_error_class, default_value_error_class,
@@ -247,7 +253,7 @@ class BaseAppSettingsHelper:
             message = (
                 "There is an issue with the value specified for "
                 "{setting_name} in your project's Django settings."
-            ).format(setting_name=self._prefix + setting_name)
+            ).format(setting_name=self.get_prefixed_setting_name(setting_name))
         else:
             error_class = default_value_error_class
             message = (
