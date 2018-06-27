@@ -163,7 +163,7 @@ Quick start guide
 
         YOURAPP_ORDER_FORM_CLASS = 'userproject.orders.forms.CustomOrderForm'
 
-10. You might may noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name. 
+10. You may noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name. 
 
     This 'namespacing' of settings is important. Not only does it helps users of your app to remember which app their override settings are for, but it also helps to prevent setting name clashes between apps.
 
