@@ -5,6 +5,10 @@
     :alt: Build Status
     :target: https://travis-ci.com/ababic/django-cogwheels
 
+.. image:: https://img.shields.io/pypi/v/django-cogwheels.svg
+    :alt: PyPi Version
+    :target: https://pypi.python.org/pypi/django-cogwheels
+
 .. image:: https://codecov.io/gh/ababic/django-cogwheels/branch/master/graph/badge.svg
     :alt: Code coverage
     :target: https://codecov.io/gh/ababic/django-cogwheels
