@@ -228,6 +228,9 @@ class BaseAppSettingsHelper:
             )
         )
 
+    def get_prefix(self):
+        return self._prefix
+
     def get_user_defined_value(self, setting_name):
         attr_name = self._prefix + setting_name
         return getattr(django_settings, attr_name)
