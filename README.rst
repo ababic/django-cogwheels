@@ -24,7 +24,7 @@ Give your users the flexibility they deserve, and allow them to:
 - Override basic python type values such as: strings, integers, booleans, decimals and floats.
 - Override structured python type values such as: lists, tuples and dictionaries.
 - Use custom Django models in place of the ones you provide.
-- Use custom python classes, objects or entire modules in place of you provide.
+- Use custom python classes, objects or entire modules in place of the ones you provide.
 
 
 Goodness for you and other maintainers
