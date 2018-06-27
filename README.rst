@@ -216,6 +216,12 @@ If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``co
 
         class MyAppSettingsHelper(BaseAppSettingsHelper):
             defaults_path = 'yourapp.some_other_place.defaults'
+
+
+3. You mentioned support for setting deprecation. How does that work?
+---------------------------------------------------------------------
+
+More complete documentation will be added soon. In the meantime, if you're curious about what deprecation definitions look like, you migth want to check out the setting helper definition from the test app: https://github.com/ababic/django-cogwheels/blob/master/cogwheels/tests/conf/settings.py 
         
 
 3. How do specify validation rules for certain settings?
