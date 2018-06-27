@@ -13,22 +13,28 @@
     :alt: Code coverage
     :target: https://codecov.io/gh/ababic/django-cogwheels
 
-======================
-About Django Cogwheels
-======================
+=========================
+What is django-cogwheels?
+=========================
 
-A handy API to allow you to more easily offer and maintain 'user overridable settings' in your Django package, framework or reuseable app.
+The aim of ``django-cogwheels`` is to create a standardised, well-tested approach for allowing users of an app to override default behaviour, by overriding things in their project's Django settings.
 
-Give your users the flexibility they deserve, and allow them to:
+There are other apps out there that try to solve this problem, but it was important for me to create a solution that would cater well for deprecation of settings, as this is something I find myself having to do regularly in apps I maintain. It was also important for me to create something that:
+
+- Is super easy to set up
+- Properly accounts for different audiences (the 'app developer' and 'app user')
+- Will work as well for 100 of apps setting as it will for 5
+- Only makes things more complicated when absolutely necessary
+
+**Give your users the flexibility they deserve, and allow them to:**
 
 - Override basic python type values such as: strings, integers, booleans, decimals and floats.
 - Override structured python type values such as: lists, tuples and dictionaries.
 - Use custom Django models in place of the ones you provide.
 - Use custom python classes, objects or entire modules in place of the ones you provide.
 
-
-Goodness for you and other maintainers
-======================================
+Goodness for app developers!
+============================
 
 - A stable, documented, standardised approach for implementing overridable app-specific settings.
 - Clearly define and communicate the deprecation status of app settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue to support them during the deprecation period.
@@ -37,7 +43,7 @@ Goodness for you and other maintainers
 - Plays nicely with Django's test framework (subscribes to Django's ``setting_changed`` signal, so that cached values are cleared when ``override_settings`` is used).
 
 
-Goodness for your users
+Goodness for app users!
 =======================
 
 - Helpful, consistent error messages when their Model, Class, method or module override settings are incorrectly formatted, or cannot be imported.
