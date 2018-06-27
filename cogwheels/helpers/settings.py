@@ -92,15 +92,19 @@ class BaseAppSettingsHelper:
 
     def _set_defaults_module_path(self, init_supplied_val):
         """
-        Sets this object's ``_defaults_module_path`` attribute. If no value
-        was provided to __init__(), and no value has been set as on the class
-        using the ``defaults_path`` attribute, a default value is returned,
-        based on where the helper class is defined. For example:
+        Sets this object's ``_defaults_module_path`` attribute to a sensible
+        value. If no value was provided to __init__(), and no value has been
+        set using the ``defaults_path`` class attribute, a default value will
+        be used, based on where the helper class is defined.
 
-        - If the class is defined in ``myapp.conf.settings``, the value
-          "myapp.conf.defaults" would be used.
-        - If the class is defined in ``myapp.subapp.conf.settings``, the
-          value "myapp.conf.subapp.defaults" would be used.
+        It is assumed that the defaults module is defined in the same directory
+        as the settings helper. For example:
+
+        If the settings helper is defined in ``myapp/config/settings.py``, the
+        defaults module is assumed to be at ``myapp/config/defaults.py``.
+
+        If the settings helper is defined in ``myapp/some_other_directory/settings.py``,
+        the defaults module is assumed to be at ``myapp/some_other_directory/defaults.py``.
         """
         if init_supplied_val is not None:
             value = init_supplied_val
