@@ -179,14 +179,9 @@ Quick start guide
     .. code-block:: python
 
         # yourapp/conf/settings.py
-
-        ... 
-
+        
         class MyAppSettingsHelper(BaseAppSettingsHelper):
             prefix = 'CUSTOM'  # No need for a trailing underscore here
-        
-        ...
-
 
     .. code-block:: console
 
@@ -222,12 +217,8 @@ If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``co
 
         # yourapp/some_directory/settings.py
 
-        ... 
-
         class MyAppSettingsHelper(BaseAppSettingsHelper):
             defaults_path = 'yourapp.some_other_place.defaults'
-        
-        ...
         
 
 3. How do specify validation rules for certain settings?
