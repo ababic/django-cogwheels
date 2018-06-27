@@ -148,7 +148,7 @@ Quick start guide
     Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are handled quickly and efficiently.
 
 
-9.  Your users can now override any of the default values by adding alternative values to their project's Django settings module. For example: 
+9.  Users of your app can now override any of the default values by adding alternative values to their project's Django settings module. For example: 
 
     .. code-block:: python
 
