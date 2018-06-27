@@ -224,7 +224,7 @@ If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``co
 More complete documentation will be added soon. In the meantime, if you're curious about what deprecation definitions look like, you migth want to check out the setting helper definition from the test app: https://github.com/ababic/django-cogwheels/blob/master/cogwheels/tests/conf/settings.py 
         
 
-3. How do specify validation rules for certain settings?
+4. How do specify validation rules for certain settings?
 --------------------------------------------------------
 
 The only validation that ``cogwheels`` performs is on setting values that are supposed to reference Django models and other importables, and this validation is only triggered when you use ``settings.models.SETTING_NAME``, ``settings.modules.SETTING_NAME`` or ``settings.objects.SETTING_NAME`` in your code to import and access the object. 
@@ -236,7 +236,7 @@ I do intend to support such a thing future versions, but I can't make any promis
 If this puts you off, keep in mind that it's not in anybody's interest for developers to purposefully use inappropriate override values for settings. So long as your documentation explains the rules/boundaries for expected values well enough, issues should be very rare.
 
 
-4. What's that last line in ``settings.py`` all about?
+5. What's that last line in ``settings.py`` all about?
 ------------------------------------------------------
 
 Ahh, yes. The ``sys.modules[__name__] = MyAppSettingsHelper()`` bit. I understand that some developers might think this dirty/hacky/unpythonic/whaterver. I have to admit, I was unsure abotu it for a while too.
