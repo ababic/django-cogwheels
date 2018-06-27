@@ -86,7 +86,7 @@ Quick start guide
 
     .. code-block:: console
 
-        from yourproject.conf import settings
+        >>> from yourproject.conf import settings
 
         >>> max_items = settings.MAX_ITEMS_PER_ORDER
         5 
@@ -116,7 +116,7 @@ Quick start guide
         >>> print(item_model.objects.all())
         <QuerySet [<SimpleOrderItem: SimpleOrderItem object (1)>]>
 
-    Behind the scenes, Django's ``django.apps.apps.get_model()`` method is called, and the result is cached so that repeat requests for the same model are dealt with as efficiently as possible.
+    Behind the scenes, Django's ``django.apps.apps.get_model()`` method is called, and the result is cached so that repeat requests for the same model are handled quickly and efficiently.
 
 
 7.  For settings that refer to python modules, you can use the settings helper's special ``modules`` attribute to access the modules themselves, instead of an import path string: 
@@ -129,7 +129,7 @@ Quick start guide
         <module 'yourproject.discount_backends.simple' from '/Users/username/django/projects/your-django-project/yourproject/discount_backends/simple.py'>
 
 
-    Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same module are dealt with as efficiently as possible.
+    Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same module are handled quickly and efficiently.
 
 
 8.  For settings that refer to classes, functions, or other importable python objects, you can use the settings helper's special ``objects`` attribute to access those objects, instead of an import path string: 
@@ -145,12 +145,14 @@ Quick start guide
         >>> form.is_valid()
 
 
-    Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are dealt with as efficiently as possible.
+    Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are handled quickly and efficiently.
 
 
 9.  Your users can now override any of the default values by adding alternative values to their project's Django settings module. For example: 
 
     .. code-block:: python
+
+        # userproject/settings/base.py
 
         YOURAPP_MAX_ITEMS_PER_ORDER = 2
 
@@ -160,9 +162,9 @@ Quick start guide
 
         YOURAPP_ORDER_FORM_CLASS = 'userproject.orders.forms.CustomOrderForm'
 
-10. You might have noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name. 
+10. You might may noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name. 
 
-    This 'namespacing' of settings not only helps users to remember which apps their settings are intended for, but also helps to prevent setting name clashes between apps.
+    This 'namespacing' of settings is important. Not only does it helps users of your app to remember which app their override settings are for, but it also helps to prevent setting name clashes between apps.
 
     You can find out what the prefix is for your app by doing:
     
@@ -172,7 +174,7 @@ Quick start guide
         >>> settings.get_prefix()
         'YOURPROJECT_'
 
-    You can change this prefix to whatever you like, by setting a ``prefix`` attribute on your settings helper class, like so:
+    You can change this prefix to whatever you like by setting a ``prefix`` attribute on your settings helper class, like so:
 
     .. code-block:: python
 
@@ -181,7 +183,7 @@ Quick start guide
         ... 
 
         class MyAppSettingsHelper(BaseAppSettingsHelper):
-            prefix = 'CUSTOM'  # No need to add the trailing underscore
+            prefix = 'CUSTOM'  # No need for a trailing underscore here
         
         ...
 
