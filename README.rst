@@ -148,7 +148,7 @@ Quick start guide
     Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are dealt with as efficiently as possible.
 
 
-9.  Your users can now override any of the default values by adding alternative values to their project's Django settings. 
+9.  Your users can now override any of the default values by adding alternative values to their project's Django settings module. For example: 
 
     .. code-block:: python
 
@@ -160,6 +160,38 @@ Quick start guide
 
         YOURAPP_ORDER_FORM_CLASS = 'userproject.orders.forms.CustomOrderForm'
 
+10. You might have noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name. 
+
+    This 'namespacing' of settings not only helps users to remember which apps their settings are intended for, but also helps to prevent setting name clashes between apps.
+
+    You can find out what the prefix is for your app by doing:
+    
+    .. code-block:: console
+
+        >>> from yourproject.conf import settings
+        >>> settings.get_prefix()
+        'YOURPROJECT_'
+
+    You can change this prefix to whatever you like, by setting a ``prefix`` attribute on your settings helper class, like so:
+
+    .. code-block:: python
+
+        # yourapp/conf/settings.py
+
+        ... 
+
+        class MyAppSettingsHelper(BaseAppSettingsHelper):
+            prefix = 'CUSTOM'  # No need to add the trailing underscore
+        
+        ...
+
+
+    .. code-block:: console
+
+        >>> from yourproject.conf import settings
+        >>> settings.get_prefix()
+        'CUSTOM_'
+        
 
 Compatibility
 =============
