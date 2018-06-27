@@ -212,7 +212,7 @@ https://github.com/ababic/django-cogwheels/tree/master/cogwheels/tests
 
 No. This is just a recommendation. Everyone has their own preferences for how they structure their projects, and that's all well and good. So long as you keep ``defaults.py`` and ``settings.py`` in the same directory, things should work just fine out of the box. 
 
-If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``cogwheels`` supports that too. But, you'll have to set the ``defaults_path`` attribute on your settings helper class, so that it knows where to find the default. For example:
+If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``cogwheels`` supports that too. But, you'll have to set the ``defaults_path`` attribute on your settings helper class, so that it knows where to find the default values. For example:
 
 .. code-block:: python
 
