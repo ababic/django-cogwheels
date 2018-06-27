@@ -24,7 +24,7 @@ There are other apps out there that try to solve this problem, but it was import
 - Is super easy to set up
 - Properly accounts for different audiences (the 'app developer' and 'app user')
 - Will work as well for 100 apps setting as it will for 5
-- Only makes things more complicated when absolutely necessary
+- Only makes things complicated when absolutely necessary
 
 **Give your users the flexibility they deserve, and allow them to:**
 
