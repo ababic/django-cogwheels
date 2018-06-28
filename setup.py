@@ -30,6 +30,13 @@ development_extras = [
     "django-extensions",
 ]
 
+# Packaging dependencies
+packaging_extras = testing_extras + [
+    'setuptools',
+    'wheel',
+    'twine',
+]
+
 about = {}
 with open(os.path.join(here, 'cogwheels', '__version__.py'), 'r', 'utf-8') as f:
     exec(f.read(), about)
@@ -74,5 +81,6 @@ setup(
         'testing': testing_extras,
         'development': development_extras,
         'docs': documentation_extras,
+        'packaging': packaging_extras,
     },
 )
