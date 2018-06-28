@@ -24,7 +24,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
 
-from .filters import ContributorNamesFilter, MentionsFilter
+from filters import ContributorNamesFilter, MentionsFilter
 
 
 # -- General configuration ------------------------------------------------
