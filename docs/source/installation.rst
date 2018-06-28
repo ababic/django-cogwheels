@@ -3,73 +3,24 @@ Installation guide
 ==================
 
 
-A note to app authors
-=====================
-
-As a fellow author of reusable Django apps, I understand that adding new dependencies to your project is probably the last thing you want to do:
-
-- Dependencies can tie you to specific version of Python or Django, making it more difficult to support new versions yourself.
-- Dependencies may change over time, and it's another thing you have to keep track of.
-- Dependencies very often have dependencies of their own, leading to unnecessarily complicated dependency graphs.
-
-Let me try to offer you a few reassurances:
-
-- **Small and simple**: The current feature-set is stable, and unlikely to grow substantially. And, the app will only ever use officially supported Python and Django features under the hood. As such, compatibility updates should be trivial, and I plan to keep on top of that (I depend on it too)!
-- **Deprecation policy**: Unless it would add unreasonable amounts of complexity (or is simply not possible), I will always follow a standard deprecation cycle of two 'feature releases' before adding breaking changes to any documented/public APIs, and full details will always be made available in release notes.
-- **No additional dependencies**: Other than requiring a compatible versions of Python and Django, the app currently has no other dependencies, and likely never will.
-
 .. contents::
     :local:
     :depth: 2
 
 
-Perequisites
-============
+Prerequisites
+=============
 
-To use django-cogwheels in your app, all you need is compatible version of Python and Django, which you likely already have. The current version is tested for compatibility with:
+To use Cogwheels in your app, all you need are compatible versions of Python and Django, which you likely have already. The current version is tested for compatibility with:
 
 - Python 3.4 to 3.7
 - Django 1.11 to 2.1
 
 
-If your app has been added the Python Package Index (PyPi), it's likely that it has a ``setup.py`` file in the root folder. If you plan to use ``django-cogwheels``, you'll need to ensure ``django-cogwheels`` is added to the ``install_requires`` list that is passed to the ``setup()`` method in that file. For example:
-
-    .. code-block:: python
-
-    # your-django-app/setup.py
-
-    from setuptools import setup
-
-    ...
-    
-    setup(
-        name='your-django-project',
-        description="An app that does something super useful.",
-        classifiers=(
-            "Programming Language :: Python",
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.4",
-            "Programming Language :: Python :: 3.5",
-            "Programming Language :: Python :: 3.6",
-            "Programming Language :: Python :: 3.7",
-            "Framework :: Django",
-            "Framework :: Django :: 1.11",
-            "Framework :: Django :: 2.0",
-            ...
-        ),
-        install_requires=[
-            'some-requirement',
-            'some-other-requirement',
-            'django-cogwheels',  # ADD ME!
-        ],
-        ...
-    )
-
-
 Getting the code
 ================
 
-The recommended way to install django-cogwheels is via pip_::
+The recommended way to install Cogwheels is via pip_:
 
 .. code-block:: console
 
@@ -107,13 +58,13 @@ Defining settings for your app
     **DO:**
 
     - Use upper-case names for setting names
-    - Feel free to use any built-in basic python type as a value (e.g. string, int, boolean, float, list, tuple, dict)
+    - Feel free to use any basic Python type as a value (e.g. string, int, boolean, float, list, tuple, dict)
 
     **DON'T:**
 
-    - Prefix setting names with 'YOURAPP_' or similar (that isn't necessary here)
+    - Prefix setting names with ``"YOURAPP_"`` or similar (that is not necessary here)
     - Put all your configuration in one giant dictionary setting (that's just lazy!)
-    - Use value types that require imports statements in order to define (unless it's a well-known Python built-in like ``OrderedDict``)
+    - Use value types that require import statements to define, unless it's a well-known Python built-in like ``OrderedDict``
 
     Your setting definitions should look something like this:
 
@@ -152,30 +103,30 @@ To use setting values in your app, simply import the settings module wherever it
 Getting 'raw' setting value
 ---------------------------
 
-Reference a setting as a direct attribute of the module to access setting values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings. No tranformation or other magic is applied.
+Reference a setting as a direct attribute of the setting module will return values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings (no transformation is applied).
 
 .. code-block:: console
 
-    $ from yourproject.conf import settings
+    >>> from yourproject.conf import settings
 
-    $ settings.MAX_ITEMS_PER_ORDER
+    >>> settings.MAX_ITEMS_PER_ORDER
     5
-    $ type(settings.MAX_ITEMS_PER_ORDER)
+    >>> type(settings.MAX_ITEMS_PER_ORDER)
     int
 
-    $ settings.ORDER_ITEM_MODEL
+    >>> settings.ORDER_ITEM_MODEL
     'yourproject.SimpleOrderItem'
-    $ type(settings.ORDER_ITEM_MODEL)
+    >>> type(settings.ORDER_ITEM_MODEL)
     str
 
-    $ settings.DISCOUNTS_BACKEND
+    >>> settings.DISCOUNTS_BACKEND
     'yourproject.discount_backends.simple'
-    $ type(settings.DISCOUNTS_BACKEND)
+    >>> type(settings.DISCOUNTS_BACKEND)
     str
 
-    $ settings.ORDER_FORM_CLASS
+    >>> settings.ORDER_FORM_CLASS
     'yourproject.forms.OrderForm'
-    $ type(settings.ORDER_FORM_CLASS)
+    >>> type(settings.ORDER_FORM_CLASS)
     str
 
 
@@ -186,16 +137,14 @@ For settings that refer to Django models, you can use the settings module's ``mo
 
 .. code-block:: console
 
-    $ from yourproject.conf import settings
+    >>> from yourproject.conf import settings
 
-    $ model = settings.models.ORDER_ITEM_MODEL
+    >>> settings.models.ORDER_ITEM_MODEL
     yourproject.models.SimpleOrderItem
 
-    $ object = model(id=1, product='test product', quantity=15)
-    $ object.save()
-
-    $ print(model.objects.all())
-    <QuerySet [<SimpleOrderItem: SimpleOrderItem object (1)>]>
+    >>> from django.db.models import Model
+    >>> issubclass(settings.models.ORDER_ITEM_MODEL, Model)
+    True
     
 Behind the scenes, Django's ``django.apps.apps.get_model()`` method is called, and the result is cached so that repeat requests for the same model are handled quickly and efficiently.
 
@@ -207,10 +156,13 @@ For settings that refer to Python modules, you can use the settings module's ``m
     
 .. code-block:: console
 
-    $ from yourproject.conf import settings
+    >>> from yourproject.conf import settings
 
-    $ module = settings.modules.DISCOUNTS_BACKEND
+    >>> settings.modules.DISCOUNTS_BACKEND
     <module 'yourproject.discount_backends.simple' from '/system/path/to/your-django-project/yourproject/discount_backends/simple.py'>
+
+    >>> type(settings.modules.DISCOUNTS_BACKEND)
+    module
 
 Behind the scenes, Python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same module are handled quickly and efficiently.
 
@@ -222,44 +174,83 @@ For settings that refer to classes, functions, or other importable python object
 
 .. code-block:: console
 
-    $ from yourproject.conf import settings
+    >>> from yourproject.conf import settings
 
-    $ form_class = settings.objects.ORDER_FORM_CLASS
-    yourproject.formsOrderForm
+    >>> settings.objects.ORDER_FORM_CLASS
+    yourproject.forms.OrderForm
 
-    $ form = form_class(data={})
-    $ form.is_valid()
-    False
+    >>> from django.forms import Form
+    >>> issubclass(settings.objects.ORDER_FORM_CLASS, Form)
+    True
 
 Behind the scenes, Python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are handled quickly and efficiently.
 
 
-Frequently asked questions
-==========================
+Updating ``setup.py``
+=====================
 
-
-Do ``defaults.py`` and ``settings.py`` have to live in a ``conf`` app?
-----------------------------------------------------------------------
-
-No. This is just a recommendation. Everyone has their own preferences for how they structure their projects, and that's all well and good. As long as you keep ``defaults.py`` and ``settings.py`` in the same directory, things should work just fine out of the box. 
-
-If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``django-cogwheels`` supports that too. But, you'll have to set the ``defaults_path`` attribute on your settings helper class, so that it knows where to find the default values. For example:
+If your app is in the Python Package Index (PyPi), it's likely that it has a ``setup.py`` file somewhere. If you're plan to use ``django-cogwheels``, you'll need to ensure ``django-cogwheels`` is added to the ``install_requires`` list that is passed to the ``setup()`` method in that file. For example:
 
 .. code-block:: python
 
-    # yourapp/some_directory/settings.py
+    # your-django-app/setup.py
+
+    from setuptools import setup
+
+    ...
+    
+    setup(
+        name='your-django-project',
+        description="An app that does something super useful.",
+        classifiers=(
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Framework :: Django",
+            "Framework :: Django :: 1.11",
+            "Framework :: Django :: 2.0",
+            ...
+        ),
+        install_requires=[
+            'some-requirement',
+            'some-other-requirement',
+            'django-cogwheels',  # ADD THIS HERE!
+        ],
+        ...
+    )
+
+
+Additional implementation options
+=================================
+
+
+Getting rid of the ``conf`` app
+-------------------------------
+
+Everyone has their own preferences for how they structure their projects, and that's all well and good. 
+
+There's no requirement for ``defaults.py`` and ``settings.py`` to be kept inside a ``conf`` app - it is only a recommendation. As long as you keep the two files in the same directory, things should work fine 'out of the box'.
+
+
+Moving other configurational 'stuff' to the ``conf`` app
+--------------------------------------------------------
+
+If you're sticking with the ``conf`` app, it might make sense for you to move other 'configurational' things into there too. For example, in the ``conf`` app for wagtailmenus_, there's a ``constants.py`` file for defining some fixed values that are used app-wide, and the ``apps.py`` module that normally resides in an app's root directory has been moved to the ``conf`` app also.
+
+.. _wagtailmenus: https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus
+
+
+Having ``defaults.py`` and ``settings.py`` in separate directories
+------------------------------------------------------------------
+
+This is supported. However, you will need to set the ``defaults_path`` attribute on your ``SettingsHelper`` class, so that it knows where to find the default values. For example:
+
+.. code-block:: python
+
+    # yourapp/settings.py
 
     class MyAppSettingsHelper(BaseAppSettingsHelper):
         defaults_path = 'yourapp.some_other_place.defaults'
-
-
-Are there any example implmentations that I can look at?
---------------------------------------------------------
-
-Sure thing.
-
-You should check out the ``tests`` app within cogwheels itself, which includes lots of examples:
-https://github.com/ababic/django-cogwheels/tree/master/cogwheels/tests
-
-``wagtailmenus`` also uses cogwheels to manage it's app settings. See:
-https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus

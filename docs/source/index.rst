@@ -1,8 +1,8 @@
-==============================================
-Welcome to the django-cogwheels documentation!
-==============================================
+=======================================
+Welcome to the Cogwheels documentation!
+=======================================
 
-``django-cogwheels`` is a tool for developers of reusable Django apps, helping them to implement 'overridable app-specific settings' in a simple, standarised way. Once implemented, developers using the app in their projects will be able to override default behaviour by adding alternative values to their Django settings module.
+Cogwheels is a tool for developers of reusable Django apps, to help them implement 'overridable app-specific settings' in a simple, standardised way. 
 
 
 A note to fellow app developers
@@ -21,9 +21,27 @@ Allow me to offer you a few reassurances:
 - Other than requiring a compatible versions of Python and Django, the app currently has no other dependencies, and likely never will.
 
 
+Compatibility
+=============
+
+The current version of Cogwheels is tested for compatibility with:
+
+- Python 3.4 to 3.7
+- Django 1.11 to 2.1
+
+
 Documentation index
 ===================
 
 .. toctree::
     :maxdepth: 2
     :titlesonly:
+
+    installation
+    overriding-settings
+    error-handling
+    deprecation-handling
+    how-to
+    example-implementations
+    contributing/index
+    releases/index
