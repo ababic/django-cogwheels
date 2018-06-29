@@ -72,6 +72,8 @@ If your app is in the Python Package Index (PyPi), it's likely that it has a ``s
     )
 
 
+.. _defining_settings:
+
 Defining settings for your app
 ==============================
 
@@ -130,187 +132,83 @@ Defining settings for your app
 
         ORDER_FORM_CLASS = 'yourproject.forms.OrderForm'
 
+.. NOTE::
 
-Using setting values in your app
-================================
-
-To use setting values in your app, simply import the settings module wherever it is needed, and reference settings as attributes of the module.
+    Ready to start using setting values in your code? See: :doc:`using-setting-values` 
 
 
-.. _getting_raw_values:
-
-Getting a 'raw' setting value
------------------------------
-
-Reference a setting as a direct attribute of the setting module will return values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings (no transformation is applied).
-
-.. code-block:: console
-
-    >>> from yourproject.conf import settings
-
-    >>> settings.MAX_ITEMS_PER_ORDER
-    5
-    >>> type(settings.MAX_ITEMS_PER_ORDER)
-    int
-
-    >>> settings.ORDER_ITEM_MODEL
-    'yourproject.SimpleOrderItem'
-    >>> type(settings.ORDER_ITEM_MODEL)
-    str
-
-    >>> settings.DISCOUNTS_BACKEND
-    'yourproject.discount_backends.simple'
-    >>> type(settings.DISCOUNTS_BACKEND)
-    str
-
-    >>> settings.ORDER_FORM_CLASS
-    'yourproject.forms.OrderForm'
-    >>> type(settings.ORDER_FORM_CLASS)
-    str
+Optional configuration
+======================
 
 
-.. _raw_value_process:
+Changing the setting namespace prefix
+-------------------------------------
 
-Behind the scenes:
-~~~~~~~~~~~~~~~~~~
+Users wanting to override setting values in their project's Django settings will do so using prefixed setting names, rather than using the exact same names you used in ``defaults.py``.  For example:
 
-When any setting value is requested (be it directly from the ``settings`` module, or using the one of the ``models``, ``modules`` or ``objects`` helper attributes explained below), Cogwheels takes the following steps to identify the raw value:
+.. code-block:: python
 
-1.  If the requested setting has been marked for deprecation, a helpfully worded ``DeprecationWarning`` is raised to help inform developers of the change.
-2.  The Django settings module is then checked for a relevant 'override' setting value. If found, this value is returned.
-3.  If the requested setting is a 'replacement' for a deprecated setting, the Django settings module is checked again for a relevant 'override' setting value, this time using the **deprecated** setting name. If found, a helpfully worded ``DeprecationWarning`` is raised before the value is returned.
-4.  If no 'override' value was found, the default value from your ``defaults`` module will be returned.
-5.  The resulting value is cached, so that the above steps can be bypassed the next time a value for this setting is requested.
+    # myproject/settings/base.py
 
-.. NOTE :: To learn more about how setting deprecation works, see: :doc:`deprecation-handling` 
+    ...
 
+    # ---------------------------------
+    # Overrides for ``your-django-app``
+    # ---------------------------------
 
-.. _getting_model_values:
+    YOURAPP_MAX_ITEMS_PER_ORDER = 2
+    YOURAPP_ORDER_ITEM_MODEL = 'userproject_orders.CustomOrderItem'
+    YOURAPP_DISCOUNTS_BACKEND = 'userproject.discounts.custom_discount_backend'
+    YOURAPP_ORDER_FORM_CLASS = 'userproject.orders.forms.CustomOrderForm'
 
-Getting Django models from setting values
------------------------------------------
+This namespacing of settings is important, as not only does it help users of your app to remember which app their settings apply to, but it also helps to prevent setting name clashes between apps.
 
-For settings that refer to Django models, you can use the settings module's ``models`` attribute to access model classes themselves. For example: 
-
-.. code-block:: console
-
-    >>> from yourproject.conf import settings
-
-    >>> settings.models.ORDER_ITEM_MODEL
-    yourproject.models.SimpleOrderItem
-
-    >>> from django.db.models import Model
-    >>> issubclass(settings.models.ORDER_ITEM_MODEL, Model)
-    True
-
-
-.. _model_value_process:
-
-Behind the scenes:
-~~~~~~~~~~~~~~~~~~
-
-When you request an attribute from ``settings.models`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
-
-1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
-2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
-3. The string value is checked to ensure it it matches the expected format (e.g. 'app_label.Model'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
-4. Cogwheels attempts to import the model using Django's ``django.apps.apps.get_model()`` method. If the import fails, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
-5. The successfully imported model is cached, so that the above steps can be bypassed the next time it is requested.
-
-.. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
-
-
-.. _getting_module_values:
-
-Getting Python modules from setting values
-------------------------------------------
-
-For settings that refer to Python modules, you can use the settings module's ``modules`` attribute to access the modules themselves. For example:
+You can find out the correct prefix for any given settings module by calling it's ``get_prefix()`` method, like so:
     
 .. code-block:: console
 
     >>> from yourproject.conf import settings
+    >>> settings.get_prefix()
+    'YOURPROJECT_'
 
-    >>> settings.modules.DISCOUNTS_BACKEND
-    <module 'yourproject.discount_backends.simple' from '/system/path/to/your-django-project/yourproject/discount_backends/simple.py'>
+You can change this prefix to whatever you like by setting the ``prefix`` attribute on your settings helper class. For example, this:
 
-    >>> type(settings.modules.DISCOUNTS_BACKEND)
-    module
+.. code-block:: python
 
+    # yourapp/conf/settings.py
+    
+    class MyAppSettingsHelper(BaseAppSettingsHelper):
+        prefix = 'CUSTOM'  # No need for a trailing underscore here
 
-.. _module_value_process:
-
-Behind the scenes:
-~~~~~~~~~~~~~~~~~~
-
-When you request an attribute from ``settings.modules`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
-
-1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
-2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
-3. The string value is checked to ensure it it matches the expected format (e.g. 'project.app.module'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
-4. Cogwheels attempts to import the module using Python's ``importlib.import_module()``. If the import fails, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
-5. The successfully imported module is cached, so that the above steps can be bypassed the next time it is requested.
-
-.. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
-
-
-.. _getting_object_values:
-
-Getting classes, functions and other Python objects from setting values
------------------------------------------------------------------------
-
-For settings that refer to classes, functions, or other importable python objects, you can use the settings module's ``objects`` attribute to access those objects. For example:
+Would result in this:
 
 .. code-block:: console
 
     >>> from yourproject.conf import settings
-
-    >>> settings.objects.ORDER_FORM_CLASS
-    yourproject.forms.OrderForm
-
-    >>> from django.forms import Form
-    >>> issubclass(settings.objects.ORDER_FORM_CLASS, Form)
-    True
+    >>> settings.get_prefix()
+    'CUSTOM_'
 
 
-.. _object_value_process:
+Moving more 'configurational' stuff to the ``conf`` app
+-------------------------------------------------------
 
-Behind the scenes:
-~~~~~~~~~~~~~~~~~~
+Since you now have a ``conf`` app, it might make sense to move other 'configurational' things into there too.
 
-When you request an attribute from ``settings.objects`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
+For example, in the ``conf`` app for wagtailmenus_, there's a ``constants.py`` file for defining some fixed values that are used app-wide, and the ``apps.py`` module that normally resides in an app's root directory has also been moved to the ``conf``.
 
-1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
-2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
-3. The string value is checked to ensure it it matches the expected format (e.g. 'project.app.module.object'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
-4. Cogwheels attempts to import the module using Python's ``importlib.import_module()``, then uses ``getattr`` to attempt to retrieve the object from the module. If either of these steps fail, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
-5. The successfully imported object is cached, so that the above steps can be skipped next time the same object is requested.
-
-.. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
+.. _wagtailmenus: https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus
 
 
-Additional implementation options
-=================================
-
-
-Getting rid of the ``conf`` app
--------------------------------
+Ditching the ``conf`` app
+-------------------------
 
 Everyone has their own preferences for how they structure their projects, and that's all well and good. 
 
 There's no requirement for ``defaults.py`` and ``settings.py`` to be kept inside a ``conf`` app - it is only a recommendation. As long as you keep the two files in the same directory, things should work fine 'out of the box'.
 
 
-Moving other configurational 'stuff' to the ``conf`` app
---------------------------------------------------------
-
-If you're sticking with the ``conf`` app, it might make sense for you to move other 'configurational' things into there too. For example, in the ``conf`` app for wagtailmenus_, there's a ``constants.py`` file for defining some fixed values that are used app-wide, and the ``apps.py`` module that normally resides in an app's root directory has been moved to the ``conf`` app also.
-
-.. _wagtailmenus: https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus
-
-
-Having ``defaults.py`` and ``settings.py`` in separate directories
-------------------------------------------------------------------
+Using different locations for ``defaults.py`` and ``settings.py``
+-----------------------------------------------------------------
 
 This is supported. However, you will need to set the ``defaults_path`` attribute on your ``SettingsHelper`` class, so that it knows where to find the default values. For example:
 

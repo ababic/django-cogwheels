@@ -38,7 +38,9 @@ Documentation index
     :titlesonly:
 
     installation
-    overriding-settings
+    using-setting-values
+    overriding-setting-values
+    documenting-app-settings
     error-handling
     deprecation-handling
     how-to

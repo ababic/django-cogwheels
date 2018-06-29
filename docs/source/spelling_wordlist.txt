@@ -16,6 +16,7 @@ min
 mixin
 modal
 modals
+namespace
 namespacing
 overridable
 QuerySet
