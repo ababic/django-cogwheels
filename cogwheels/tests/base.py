@@ -8,3 +8,5 @@ class AppSettingTestCase(TestCase):
     def setUp(self):
         self.appsettingshelper = settings
         self.settings_prefix = settings._prefix
+        # Always clear caches between tests
+        self.appsettingshelper.clear_caches()
