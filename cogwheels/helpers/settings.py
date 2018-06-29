@@ -42,7 +42,7 @@ class BaseAppSettingsHelper:
         self.modules = AttrRefererToMethodHelper(self, 'get_module')
         self._modules_cache = {}
 
-        # Define 'object' reference shortcut and cache
+        # Define 'objects' reference shortcut and cache
         self.objects = AttrRefererToMethodHelper(self, 'get_object')
         self._objects_cache = {}
 
