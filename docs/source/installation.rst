@@ -35,6 +35,43 @@ To test an upcoming release, you can install the in-development version with the
 .. _pip: https://pip.pypa.io/
 
 
+Adding ``django-cogwheels`` as a dependency
+===========================================
+
+If your app is in the Python Package Index (PyPi), it's likely that it has a ``setup.py`` file in the root directory. To use ``django-cogwheels`` to manage your app settings, you'll need to ensure ``django-cogwheels`` is added to the ``install_requires`` list that is passed to the ``setup()`` method in that file. For example:
+
+.. code-block:: python
+
+    # your-django-app/setup.py
+
+    from setuptools import setup
+
+    ...
+    
+    setup(
+        name='your-django-project',
+        description="An app that does something super useful.",
+        classifiers=(
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Framework :: Django",
+            "Framework :: Django :: 1.11",
+            "Framework :: Django :: 2.0",
+            ...
+        ),
+        install_requires=[
+            'some-requirement',
+            'some-other-requirement',
+            'django-cogwheels',  # ADD THIS HERE!
+        ],
+        ...
+    )
+
+
 Defining settings for your app
 ==============================
 
@@ -100,8 +137,10 @@ Using setting values in your app
 To use setting values in your app, simply import the settings module wherever it is needed, and reference settings as attributes of the module.
 
 
-Getting 'raw' setting value
----------------------------
+.. _getting_raw_values:
+
+Getting a 'raw' setting value
+-----------------------------
 
 Reference a setting as a direct attribute of the setting module will return values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings (no transformation is applied).
 
@@ -130,6 +169,24 @@ Reference a setting as a direct attribute of the setting module will return valu
     str
 
 
+.. _raw_value_process:
+
+Behind the scenes:
+~~~~~~~~~~~~~~~~~~
+
+When any setting value is requested (be it directly from the ``settings`` module, or using the one of the ``models``, ``modules`` or ``objects`` helper attributes explained below), Cogwheels takes the following steps to identify the raw value:
+
+1.  If the requested setting has been marked for deprecation, a helpfully worded ``DeprecationWarning`` is raised to help inform developers of the change.
+2.  The Django settings module is then checked for a relevant 'override' setting value. If found, this value is returned.
+3.  If the requested setting is a 'replacement' for a deprecated setting, the Django settings module is checked again for a relevant 'override' setting value, this time using the **deprecated** setting name. If found, a helpfully worded ``DeprecationWarning`` is raised before the value is returned.
+4.  If no 'override' value was found, the default value from your ``defaults`` module will be returned.
+5.  The resulting value is cached, so that the above steps can be bypassed the next time a value for this setting is requested.
+
+.. NOTE :: To learn more about how setting deprecation works, see: :doc:`deprecation-handling` 
+
+
+.. _getting_model_values:
+
 Getting Django models from setting values
 -----------------------------------------
 
@@ -145,9 +202,25 @@ For settings that refer to Django models, you can use the settings module's ``mo
     >>> from django.db.models import Model
     >>> issubclass(settings.models.ORDER_ITEM_MODEL, Model)
     True
-    
-Behind the scenes, Django's ``django.apps.apps.get_model()`` method is called, and the result is cached so that repeat requests for the same model are handled quickly and efficiently.
 
+
+.. _model_value_process:
+
+Behind the scenes:
+~~~~~~~~~~~~~~~~~~
+
+When you request an attribute from ``settings.models`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
+
+1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
+2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
+3. The string value is checked to ensure it it matches the expected format (e.g. 'app_label.Model'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
+4. Cogwheels attempts to import the model using Django's ``django.apps.apps.get_model()`` method. If the import fails, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
+5. The successfully imported model is cached, so that the above steps can be bypassed the next time it is requested.
+
+.. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
+
+
+.. _getting_module_values:
 
 Getting Python modules from setting values
 ------------------------------------------
@@ -164,8 +237,24 @@ For settings that refer to Python modules, you can use the settings module's ``m
     >>> type(settings.modules.DISCOUNTS_BACKEND)
     module
 
-Behind the scenes, Python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same module are handled quickly and efficiently.
 
+.. _module_value_process:
+
+Behind the scenes:
+~~~~~~~~~~~~~~~~~~
+
+When you request an attribute from ``settings.modules`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
+
+1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
+2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
+3. The string value is checked to ensure it it matches the expected format (e.g. 'project.app.module'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
+4. Cogwheels attempts to import the module using Python's ``importlib.import_module()``. If the import fails, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
+5. The successfully imported module is cached, so that the above steps can be bypassed the next time it is requested.
+
+.. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
+
+
+.. _getting_object_values:
 
 Getting classes, functions and other Python objects from setting values
 -----------------------------------------------------------------------
@@ -183,44 +272,21 @@ For settings that refer to classes, functions, or other importable python object
     >>> issubclass(settings.objects.ORDER_FORM_CLASS, Form)
     True
 
-Behind the scenes, Python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are handled quickly and efficiently.
 
+.. _object_value_process:
 
-Updating ``setup.py``
-=====================
+Behind the scenes:
+~~~~~~~~~~~~~~~~~~
 
-If your app is in the Python Package Index (PyPi), it's likely that it has a ``setup.py`` file somewhere. If you're plan to use ``django-cogwheels``, you'll need to ensure ``django-cogwheels`` is added to the ``install_requires`` list that is passed to the ``setup()`` method in that file. For example:
+When you request an attribute from ``settings.objects`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
 
-.. code-block:: python
+1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
+2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
+3. The string value is checked to ensure it it matches the expected format (e.g. 'project.app.module.object'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
+4. Cogwheels attempts to import the module using Python's ``importlib.import_module()``, then uses ``getattr`` to attempt to retrieve the object from the module. If either of these steps fail, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
+5. The successfully imported object is cached, so that the above steps can be skipped next time the same object is requested.
 
-    # your-django-app/setup.py
-
-    from setuptools import setup
-
-    ...
-    
-    setup(
-        name='your-django-project',
-        description="An app that does something super useful.",
-        classifiers=(
-            "Programming Language :: Python",
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.4",
-            "Programming Language :: Python :: 3.5",
-            "Programming Language :: Python :: 3.6",
-            "Programming Language :: Python :: 3.7",
-            "Framework :: Django",
-            "Framework :: Django :: 1.11",
-            "Framework :: Django :: 2.0",
-            ...
-        ),
-        install_requires=[
-            'some-requirement',
-            'some-other-requirement',
-            'django-cogwheels',  # ADD THIS HERE!
-        ],
-        ...
-    )
+.. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
 
 
 Additional implementation options
