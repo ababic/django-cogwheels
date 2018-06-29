@@ -2,6 +2,8 @@
 Welcome to the Cogwheels documentation!
 =======================================
 
+.. image:: https://raw.githubusercontent.com/ababic/django-cogwheels/master/docs/source/_static/django-cogwheels-logo.png
+
 Cogwheels is a tool for developers of reusable Django apps, to help them implement 'overridable app-specific settings' in a simple, standardised way. 
 
 
