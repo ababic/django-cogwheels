@@ -34,6 +34,8 @@ class BaseAppSettingsHelper:
             self._deprecations = self.__class__.deprecations
         self._perepare_deprecation_data()
 
+        self._raw_cache = {}
+
         # Define 'models' reference shortcut and cache
         self.models = AttrRefererToMethodHelper(self, 'get_model')
         self._models_cache = {}
@@ -64,7 +66,7 @@ class BaseAppSettingsHelper:
     def _set_prefix(self, init_supplied_val):
         """
         Sets this object's ``_prefix`` attribute to a sensible value. If no
-        value was provided to __init__(), and no value has been set using the 
+        value was provided to __init__(), and no value has been set using the
         ``prefix`` class attribute, a default value will be used, based on
         where the helper class is defined.
 
@@ -213,6 +215,7 @@ class BaseAppSettingsHelper:
                 self._replacement_settings[item.replacement_name] = item
 
     def clear_caches(self, **kwargs):
+        self._raw_cache = {}
         self._models_cache = {}
         self._modules_cache = {}
         self._objects_cache = {}
@@ -270,19 +273,23 @@ class BaseAppSettingsHelper:
         message += ' ' + additional_text.format(*args, **kwargs)
         raise error_class(message)
 
-    def get_raw(self, setting_name):
+    def _get_raw_setting_value(self, setting_name):
         """
-        Returns the value of the app setting named by ``setting_name``.
-        If the setting is unavailable in the Django settings module, then the
-        default value from the ``defaults`` module is returned.
+        Returns the value of the app setting named by ``setting_name``,
+        exactly as it has been defined in the defaults modul or a user's
+        Django settings.
 
-        If the setting is deprecated, a suitable deprecation warning will be
-        raised to help inform developers of the change.
+        If the requested setting is deprecated, a suitable deprecation
+        warning is raised to help inform developers of the change.
 
-        If the named setting replaces a deprecated setting, and no user defined
-        setting name is defined using the new name, the method will look for a
-        user defined setting using the old name, and return that if found. A
-        deprecation warning will also be raised.
+        If the requested setting replaces a deprecated setting, and no user
+        defined setting name is defined using the new name, the method will
+        look for a user defined setting value using the deprecated setting
+        name, and return that if found. A deprecation warning will also be
+        raised.
+
+        If no override value was found in the Django setting, then the
+        relevant value from the defaults module is returned.
         """
         if setting_name in self._deprecated_settings:
             depr = self._deprecated_settings[setting_name]
@@ -299,21 +306,39 @@ class BaseAppSettingsHelper:
 
         return self.get_default_value(setting_name)
 
-    def get_and_enforce_type(self, setting_name, required_type):
-        setting_value = getattr(self, setting_name)
-        if not isinstance(setting_value, required_type):
+    def get_raw(self, setting_name, *enforce_types):
+        """
+        A wrapper for self.get_raw_value(), that caches the raw setting value
+        for faster future access, and, optionally checks that the
+        raw value type matches one of the supplied ``enforce_types``.
+        """
+        if setting_name in self._raw_cache:
+            return self._raw_cache[setting_name]
+
+        result = self._get_raw_setting_value(setting_name)
+        if enforce_types and not isinstance(result, enforce_types):
+            if len(enforce_types) == 1:
+                msg = (
+                    "The value is expected to be a '{required_type}', but a "
+                    "value of type '{current_type}' was found."
+                )
+            else:
+                msg = (
+                    "The value is expected to be one of the following types, "
+                    "but a value of type '{current_type}' was found: "
+                    "{required_types}."
+                )
             self.raise_setting_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueTypeInvalid,
                 default_value_error_class=DefaultValueTypeInvalid,
-                additional_text=(
-                    "The value is expected to be a '{required_type}', but a "
-                    "value of type '{current_type}' was found."
-                ),
-                required_type=required_type.__name__,
-                current_type=type(setting_value).__name__,
+                additional_text=msg,
+                required_types=enforce_types,
+                required_type=enforce_types[0].__name__,
+                current_type=type(result).__name__,
             )
-        return setting_value
+        self._raw_cache[setting_name] = result
+        return result
 
     def get_module(self, setting_name):
         """
@@ -328,10 +353,10 @@ class BaseAppSettingsHelper:
         if setting_name in self._modules_cache:
             return self._modules_cache[setting_name]
 
-        setting_value = self.get_and_enforce_type(setting_name, str)
+        raw_value = self.get_raw(setting_name, str)
 
         try:
-            result = self._do_import(setting_value)
+            result = self._do_import(raw_value)
             self._modules_cache[setting_name] = result
             return result
         except ImportError:
@@ -344,7 +369,7 @@ class BaseAppSettingsHelper:
                     "Please use a full (not relative) import path in the "
                     "format: 'project.app.module'."
                 ),
-                value=setting_value
+                value=raw_value
             )
 
     def get_object(self, setting_name):
@@ -362,10 +387,10 @@ class BaseAppSettingsHelper:
         if setting_name in self._objects_cache:
             return self._objects_cache[setting_name]
 
-        setting_value = self.get_and_enforce_type(setting_name, str)
+        raw_value = self.get_raw(setting_name, str)
 
         try:
-            module_path, object_name = setting_value.rsplit(".", 1)
+            module_path, object_name = raw_value.rsplit(".", 1)
         except ValueError:
             self.raise_setting_error(
                 setting_name=setting_name,
@@ -376,7 +401,7 @@ class BaseAppSettingsHelper:
                     "a full (not relative) import path with the object name "
                     "at the end, for example: 'project.app.module.object'."
                 ),
-                value=setting_value
+                value=raw_value
             )
         try:
             result = getattr(self._do_import(module_path), object_name)
@@ -419,11 +444,11 @@ class BaseAppSettingsHelper:
         if setting_name in self._models_cache:
             return self._models_cache[setting_name]
 
-        setting_value = self.get_and_enforce_type(setting_name, str)
+        raw_value = self.get_raw(setting_name, str)
 
         try:
             from django.apps import apps  # delay import until needed
-            result = apps.get_model(setting_value)
+            result = apps.get_model(raw_value)
             self._models_cache[setting_name] = result
             return result
         except ValueError:
@@ -435,7 +460,7 @@ class BaseAppSettingsHelper:
                     "Model strings should match the format 'app_label.Model', "
                     "which '{value}' does not adhere to."
                 ),
-                value=setting_value,
+                value=raw_value,
             )
         except LookupError:
             self.raise_setting_error(
@@ -445,5 +470,5 @@ class BaseAppSettingsHelper:
                 additional_text=(
                     "The model '{value}' does not appear to be installed."
                 ),
-                value=setting_value
+                value=raw_value
             )
