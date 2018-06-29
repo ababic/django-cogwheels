@@ -1,6 +1,7 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
+from cogwheels import DefaultValueTypeInvalid
 from cogwheels.tests.base import AppSettingTestCase
 from cogwheels.tests.conf import defaults
 
@@ -22,6 +23,17 @@ class TestGetValueMethod(AppSettingTestCase):
         result = self.appsettingshelper.get_raw('INTEGER_SETTING')
         self.assertNotEqual(result, defaults.INTEGER_SETTING)
         self.assertEqual(result, 1234)
+
+    def test_str_type_enforcement_raises_error(self):
+        with self.assertRaises(DefaultValueTypeInvalid):
+            self.appsettingshelper.get_raw('INTEGER_SETTING', str)
+
+    def test_multiple_type_enforcement_raises_error(self):
+        with self.assertRaises(DefaultValueTypeInvalid):
+            self.appsettingshelper.get_raw('INTEGER_SETTING', str, list, float)
+
+    def test_multiple_type_enforcement_does_not_raise_error_if_one_type_matches(self):
+        self.appsettingshelper.get_raw('INTEGER_SETTING', str, list, int)
 
     def test_boolean_setting_returns_default_value_by_default(self):
         self.assertIs(
