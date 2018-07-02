@@ -53,7 +53,7 @@ When any setting value is requested (be it directly from the ``settings`` module
 4.  If no 'override' value was found, the default value from your ``defaults`` module will be returned.
 5.  The resulting value is cached, so that the above steps can be bypassed the next time a value for this setting is requested.
 
-.. NOTE :: To learn more about how setting deprecation works, see: :doc:`deprecation-handling` 
+.. NOTE :: To learn more about how setting deprecation works, see: :doc:`deprecating-app-settings` 
 
 
 .. _getting_model_values:
@@ -118,9 +118,8 @@ When you request an attribute from ``settings.modules`` instead of the ``setting
 
 1. First, an appropriate 'raw' setting value is identified, following the standard process (see: :ref:`raw_value_process`).
 2. The raw value is checked to ensure that it is a string. If it is not, a helpfully worded ``OverrideValueTypeInvalid`` or ``DefaultValueTypeInvalid`` error is raised.
-3. The string value is checked to ensure it it matches the expected format (e.g. 'project.app.module'). If it does not, a helpfully worded ``OverrideValueFormatInvalid`` or ``DefaultValueFormatInvalid`` error is raised.
-4. Cogwheels attempts to import the module using Python's ``importlib.import_module()``. If the import fails, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
-5. The successfully imported module is cached, so that the above steps can be bypassed the next time it is requested.
+3. Cogwheels attempts to import the module using Python's ``importlib.import_module()``. If the import fails, a helpfully worded ``OverrideValueNotImportable`` or ``DefaultValueNotImportable`` error is raised.
+4. The successfully imported module is cached, so that the above steps can be bypassed the next time it is requested.
 
 .. NOTE :: To learn more about the errors raised by Cogwheels, and to see some examples, see: :doc:`error-handling` 
 

@@ -13,18 +13,17 @@
     :alt: Code coverage
     :target: https://codecov.io/gh/ababic/django-cogwheels
 
-=========================
-What is django-cogwheels?
-=========================
+===============
+About Cogwheels
+===============
 
-``django-cogwheels`` aims to create a standardised, well-tested approach for allowing users of your reusable Django app to override default app behaviour, by overriding values in their project's Django settings.
+Cogwheels is a tool for developers of reusable Django apps, to help them implement 'overridable app-specific settings' in a simple, standardised way.
 
 It aims to:
 
-- Be super easy to integrate, for both new and existing Django apps
-- Work as well for ``2`` settings as it will for ``200``
-- Cater properly for the needs of both app developers/maintainers, and the users of those apps
-- Only make things complicated when they absolutely need to be
+- Be super easy to integrate, for new or existing Django apps
+- Work as well for ``2`` settings as it does for ``200``
+- Only make things complicated when absolutely necessary
 
 **Give your users the flexibility they deserve, and allow them to:**
 
@@ -33,10 +32,11 @@ It aims to:
 - Use custom Django models in place of the ones you provide.
 - Use custom python classes, objects or entire modules in place of the ones you provide.
 
+
 Goodness for app developers!
 ============================
 
-- A stable, documented, standardised approach for implementing overridable app-specific settings.
+- A stable, standardised, well-documented approach for implementing overridable app-specific settings.
 - Clearly define and communicate the deprecation status of app settings, giving you the flexibility to rename, replace or flag settings for removal over your project's lifecycle. User overrides defined using old setting names remain available to you, allowing you to continue to support them during the deprecation period.
 - Helpful, consistent error messages when default values provided for models, modules or other overridable object settings are invalid.
 - Cached imports for speedy access to models, modules and other importable python objects.
@@ -246,15 +246,7 @@ I do intend to support such a thing future versions, but I can't make any promis
 If this puts you off, keep in mind that it's not in anybody's interest for developers to purposefully use inappropriate override values for settings. So long as your documentation explains the rules/boundaries for expected values well enough, issues should be very rare.
 
 
-5. What's that last line in ``settings.py`` all about?
-------------------------------------------------------
 
-Ahh, yes. The ``sys.modules[__name__] = MyAppSettingsHelper()`` bit. I understand that some developers might think this dirty/hacky/unpythonic/whatever. I have to admit, I was unsure about it for a while, too.
-
-I'll agree that it is somewhat 'uncommon' to see this code in use. Perhaps because it's not particularly useful in a lot situations, or perhaps because using such features incorrectly can break things in strange, hard-to-debug ways. But, support for this hack is not going anywhere, and in `cogwheels` case, it's useful, as it removes the need to instantiate things in ``__init__.py`` (which I dislike for a number of reasons). 
-
-If you're still not reassured, perhaps Guido van Rossum (Founder of Python) can put your mind at rest?
-https://mail.python.org/pipermail/python-ideas/2012-May/014969.html
         
 
 Compatibility

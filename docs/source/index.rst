@@ -41,11 +41,10 @@ Documentation index
 
     installation
     using-setting-values
+    deprecating-app-settings/index
     overriding-setting-values
     documenting-app-settings
     error-handling
-    deprecation-handling
-    how-to
     example-implementations
     contributing/index
     releases/index

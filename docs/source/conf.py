@@ -86,7 +86,7 @@ todo_include_todos = False
 # splhinxcontrib.spelling settings
 
 spelling_lang = 'en_GB'
-spelling_word_list_filename = 'spelling_wordlist.txt'
+spelling_word_list_filename = '_spelling_wordlist.txt'
 spelling_show_suggestions = True
 spelling_filters = [ContributorNamesFilter, MentionsFilter]
 

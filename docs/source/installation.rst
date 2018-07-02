@@ -2,7 +2,6 @@
 Installation guide
 ==================
 
-
 .. contents::
     :local:
     :depth: 2
