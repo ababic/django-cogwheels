@@ -2,8 +2,10 @@ from importlib import import_module
 from django.conf import settings as django_settings
 from django.core.signals import setting_changed
 from cogwheels import (
-    OverrideValueTypeInvalid, OverrideValueFormatInvalid, OverrideValueNotImportable,
-    DefaultValueTypeInvalid, DefaultValueFormatInvalid, DefaultValueNotImportable,
+    OverrideValueError, OverrideValueTypeInvalid,
+    OverrideValueFormatInvalid, OverrideValueNotImportable,
+    DefaultValueError, DefaultValueTypeInvalid,
+    DefaultValueFormatInvalid, DefaultValueNotImportable,
 )
 from cogwheels.exceptions.deprecations import (
     ImproperlyConfigured,
@@ -252,17 +254,18 @@ class BaseAppSettingsHelper:
         return hasattr(django_settings, attr_name)
 
     def raise_setting_error(
-        self, setting_name, user_value_error_class, default_value_error_class,
-        additional_text, *args, **kwargs
+        self, setting_name, additional_text,
+        user_value_error_class=None, default_value_error_class=None,
+        **text_format_kwargs
     ):
         if self.is_overridden(setting_name):
-            error_class = user_value_error_class
+            error_class = user_value_error_class or OverrideValueError
             message = (
                 "There is an issue with the value specified for "
                 "{setting_name} in your project's Django settings."
             ).format(setting_name=self.get_prefixed_setting_name(setting_name))
         else:
-            error_class = default_value_error_class
+            error_class = default_value_error_class or DefaultValueError
             message = (
                 "There is an issue with the default value specified for "
                 "{setting_name} in {defaults_module}."
@@ -270,7 +273,8 @@ class BaseAppSettingsHelper:
                 setting_name=setting_name,
                 defaults_module=self._defaults_module_path,
             )
-        message += ' ' + additional_text.format(*args, **kwargs)
+
+        message += ' ' + additional_text.format(**text_format_kwargs)
         raise error_class(message)
 
     def _get_raw_setting_value(self, setting_name):
