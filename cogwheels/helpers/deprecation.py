@@ -34,9 +34,10 @@ class DeprecatedAppSetting:
                 msg = (
                     "The {setting_name} app setting is deprecated in favour "
                     "of using {replacement_name}. You should update your code "
-                    "to reference this new setting instead. However, we would "
-                    "recommend looking at the release notes for more "
-                    "information beforehand."
+                    "to reference this new setting instead. However, we "
+                    "recommend that you review the release notes first, as "
+                    "there are some changes in behaviour that you should be "
+                    "aware of."
                 )
         else:
             msg = (
@@ -52,12 +53,23 @@ class DeprecatedAppSetting:
         )
 
     def warn_if_deprecated_value_used_by_replacement(self):
+        if self.is_renamed:
+            msg = (
+                "The {setting_name} setting has been renamed to "
+                "{replacement_name}. Please update your project's "
+                "Django settings to use this new name instead, or your "
+                "override will fail to work in future versions."
+            )
+        else:
+            msg = (
+                "The {setting_name} setting is deprecated in favour of using "
+                "{replacement_name}. You should update your project's Django "
+                "settings to use this new setting instead. However, we "
+                "recommend that you review the release notes first, as there "
+                "are some changes in behaviour that you should be aware of."
+            )
         warnings.warn(
-            "The {setting_name} setting has been renamed to "
-            "{replacement_name}. Please update your project's "
-            "Django settings to use this new name instead, or your "
-            "override will fail to work in future versions."
-            .format(
+            msg.format(
                 setting_name=self.prefix + self.setting_name,
                 replacement_name=self.prefix + self.replacement_name,
             ),
