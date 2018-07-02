@@ -1,8 +1,6 @@
 from django.core.exceptions import ImproperlyConfigured
 
-"""
-Errors relating to a specific setting value
-"""
+"""Errors relating to a specific setting value"""
 
 
 # -----------------------------------------------------------------------------
@@ -31,28 +29,29 @@ class SettingValueNotImportable(ImportError, SettingValueError):
     """
     pass
 
+
 # -----------------------------------------------------------------------------
 # Errors relating to 'default' values (intended for app developers)
 # -----------------------------------------------------------------------------
 
-
-class DefaultValueError:
-    """Used as a mixin for exception classes that concern a 'default' setting
-    value specifically (i.e. one provided by the app maintainer)."""
+class DefaultValueError(SettingValueError):
+    """A base class for all error classes concerning a 'default' value. Can
+    also be used in cases where one of the more specific cases does not quite
+    fit, such as a value not passing a custom validation rule."""
     pass
 
 
-class DefaultValueTypeInvalid(DefaultValueError, SettingValueTypeInvalid):
+class DefaultValueTypeInvalid(SettingValueTypeInvalid, DefaultValueError):
     """As SettingValueTypeInvalid, but specifically for a 'default' value."""
     pass
 
 
-class DefaultValueFormatInvalid(DefaultValueError, SettingValueFormatInvalid):
+class DefaultValueFormatInvalid(SettingValueFormatInvalid, DefaultValueError):
     """As SettingValueFormatInvalid, but specifically for a default value."""
     pass
 
 
-class DefaultValueNotImportable(DefaultValueError, SettingValueNotImportable):
+class DefaultValueNotImportable(SettingValueNotImportable, DefaultValueError):
     """As SettingValueNotImportable, but specifically for a default value."""
     pass
 
@@ -61,24 +60,23 @@ class DefaultValueNotImportable(DefaultValueError, SettingValueNotImportable):
 # Errors relating to 'override' values (intended for app users)
 # -----------------------------------------------------------------------------
 
-
-class OverrideValueError:
-    """Used as a mixin for exception classes that concern a 'user-provided'
-    setting value specifically (i.e. added to a project's Django's settings to
-    override a 'default' value)."""
+class OverrideValueError(SettingValueError):
+    """A base class for all error classes concerning a 'user-provided' value.
+    Can also be used in cases where one of the more specific cases does not
+    quite fit, such as a value not passing a custom validation rule."""
     pass
 
 
-class OverrideValueTypeInvalid(OverrideValueError, SettingValueTypeInvalid):
+class OverrideValueTypeInvalid(SettingValueTypeInvalid, OverrideValueError):
     """As SettingValueTypeInvalid, but specifically for a 'user-provided' value."""
     pass
 
 
-class OverrideValueFormatInvalid(OverrideValueError, SettingValueFormatInvalid):
+class OverrideValueFormatInvalid(SettingValueFormatInvalid, OverrideValueError):
     """As SettingValueFormatInvalid, but specifically for a 'user-provided' value."""
     pass
 
 
-class OverrideValueNotImportable(OverrideValueError, SettingValueNotImportable):
+class OverrideValueNotImportable(SettingValueNotImportable, OverrideValueError):
     """As SettingValueNotImportable, but specifically for a 'user-provided' value."""
     pass
