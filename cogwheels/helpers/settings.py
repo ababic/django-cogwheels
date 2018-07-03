@@ -310,39 +310,86 @@ class BaseAppSettingsHelper:
 
         return self.get_default_value(setting_name)
 
-    def get_raw(self, setting_name, *enforce_types):
+    def get_raw(self, setting_name, enforce_type=None):
         """
         A wrapper for self.get_raw_value(), that caches the raw setting value
         for faster future access, and, optionally checks that the
-        raw value type matches one of the supplied ``enforce_types``.
+        raw value type matches the supplied ``enforce_type`` value type (or
+        tuple of value types).
         """
         if setting_name in self._raw_cache:
             return self._raw_cache[setting_name]
 
         result = self._get_raw_setting_value(setting_name)
-        if enforce_types and not isinstance(result, enforce_types):
-            if len(enforce_types) == 1:
-                msg = (
-                    "The value is expected to be a '{required_type}', but a "
-                    "value of type '{current_type}' was found."
-                )
-            else:
+        if enforce_type and not isinstance(result, enforce_type):
+            if isinstance(enforce_type, tuple):
                 msg = (
                     "The value is expected to be one of the following types, "
                     "but a value of type '{current_type}' was found: "
                     "{required_types}."
+                )
+                text_format_kwargs = dict(
+                    current_type=type(result).__name__,
+                    required_types=enforce_type,
+                )
+            else:
+                msg = (
+                    "The value is expected to be a '{required_type}', but a "
+                    "value of type '{current_type}' was found."
+                )
+                text_format_kwargs = dict(
+                    current_type=type(result).__name__,
+                    required_type=enforce_type.__name__,
                 )
             self.raise_setting_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueTypeInvalid,
                 default_value_error_class=DefaultValueTypeInvalid,
                 additional_text=msg,
-                required_types=enforce_types,
-                required_type=enforce_types[0].__name__,
-                current_type=type(result).__name__,
+                **text_format_kwargs
             )
         self._raw_cache[setting_name] = result
         return result
+
+    def get_model(self, setting_name):
+        """
+        Returns a Django model referenced by an app setting who's value should
+        be a 'model string' in the format 'app_label.model_name'.
+
+        Raises an ``ImproperlyConfigured`` error if the setting value is not
+        in the correct format, or refers to a model that is not available.
+        """
+        if setting_name in self._models_cache:
+            return self._models_cache[setting_name]
+
+        raw_value = self.get_raw(setting_name, enforce_type=str)
+
+        try:
+            from django.apps import apps  # delay import until needed
+            result = apps.get_model(raw_value)
+            self._models_cache[setting_name] = result
+            return result
+        except ValueError:
+            self.raise_setting_error(
+                setting_name=setting_name,
+                user_value_error_class=OverrideValueFormatInvalid,
+                default_value_error_class=DefaultValueFormatInvalid,
+                additional_text=(
+                    "Model strings should match the format 'app_label.Model', "
+                    "which '{value}' does not adhere to."
+                ),
+                value=raw_value,
+            )
+        except LookupError:
+            self.raise_setting_error(
+                setting_name=setting_name,
+                user_value_error_class=OverrideValueNotImportable,
+                default_value_error_class=DefaultValueNotImportable,
+                additional_text=(
+                    "The model '{value}' does not appear to be installed."
+                ),
+                value=raw_value
+            )
 
     def get_module(self, setting_name):
         """
@@ -357,7 +404,7 @@ class BaseAppSettingsHelper:
         if setting_name in self._modules_cache:
             return self._modules_cache[setting_name]
 
-        raw_value = self.get_raw(setting_name, str)
+        raw_value = self.get_raw(setting_name, enforce_type=str)
 
         try:
             result = self._do_import(raw_value)
@@ -391,7 +438,7 @@ class BaseAppSettingsHelper:
         if setting_name in self._objects_cache:
             return self._objects_cache[setting_name]
 
-        raw_value = self.get_raw(setting_name, str)
+        raw_value = self.get_raw(setting_name, enforce_type=str)
 
         try:
             module_path, object_name = raw_value.rsplit(".", 1)
@@ -435,44 +482,4 @@ class BaseAppSettingsHelper:
                 ),
                 module_path=module_path,
                 object_name=object_name,
-            )
-
-    def get_model(self, setting_name):
-        """
-        Returns a Django model referenced by an app setting who's value should
-        be a 'model string' in the format 'app_label.model_name'.
-
-        Raises an ``ImproperlyConfigured`` error if the setting value is not
-        in the correct format, or refers to a model that is not available.
-        """
-        if setting_name in self._models_cache:
-            return self._models_cache[setting_name]
-
-        raw_value = self.get_raw(setting_name, str)
-
-        try:
-            from django.apps import apps  # delay import until needed
-            result = apps.get_model(raw_value)
-            self._models_cache[setting_name] = result
-            return result
-        except ValueError:
-            self.raise_setting_error(
-                setting_name=setting_name,
-                user_value_error_class=OverrideValueFormatInvalid,
-                default_value_error_class=DefaultValueFormatInvalid,
-                additional_text=(
-                    "Model strings should match the format 'app_label.Model', "
-                    "which '{value}' does not adhere to."
-                ),
-                value=raw_value,
-            )
-        except LookupError:
-            self.raise_setting_error(
-                setting_name=setting_name,
-                user_value_error_class=OverrideValueNotImportable,
-                default_value_error_class=DefaultValueNotImportable,
-                additional_text=(
-                    "The model '{value}' does not appear to be installed."
-                ),
-                value=raw_value
             )

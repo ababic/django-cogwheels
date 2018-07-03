@@ -26,14 +26,14 @@ class TestGetValueMethod(AppSettingTestCase):
 
     def test_str_type_enforcement_raises_error(self):
         with self.assertRaises(DefaultValueTypeInvalid):
-            self.appsettingshelper.get_raw('INTEGER_SETTING', str)
+            self.appsettingshelper.get_raw('INTEGER_SETTING', enforce_type=str)
 
     def test_multiple_type_enforcement_raises_error(self):
         with self.assertRaises(DefaultValueTypeInvalid):
-            self.appsettingshelper.get_raw('INTEGER_SETTING', str, list, float)
+            self.appsettingshelper.get_raw('INTEGER_SETTING', enforce_type=(str, list, float))
 
     def test_multiple_type_enforcement_does_not_raise_error_if_one_type_matches(self):
-        self.appsettingshelper.get_raw('INTEGER_SETTING', str, list, int)
+        self.appsettingshelper.get_raw('INTEGER_SETTING', enforce_type=(str, list, int))
 
     def test_boolean_setting_returns_default_value_by_default(self):
         self.assertIs(
