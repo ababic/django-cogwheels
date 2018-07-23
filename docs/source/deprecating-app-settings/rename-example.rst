@@ -67,7 +67,7 @@ In version ``1.6``
 1. Adding the new setting
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, let's add a setting using the new name to ``defaults.py``. We also want to mark the existing setting in some way that will help us remember the state of things. Our updated ``defaults.py`` module should look something like this:
+First, let's add a setting using the new name to ``defaults.py``. We also want to mark the existing setting in some way that will help us remember that it's deprecated. Our updated ``defaults.py`` module should look something like this:
 
 
 .. code-block:: python

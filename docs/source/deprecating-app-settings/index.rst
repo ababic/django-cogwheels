@@ -4,7 +4,7 @@ Deprecating app settings
 
 Deprecation is an inevitable part of managing any reusable app over time, and this applies especially to overridable app settings, which your users likely depend on to make your app function in a way that is most useful to them. 
 
-Cogwheels was designed with this in mind, and has features built-in to help you manage app setting deprecation in an standardised, effective way. 
+Cogwheels was designed with this in mind, and has features built-in to help you manage app setting deprecation in an standardised, effective way.
 
 There are currently three deprecation scenarios that are Cogwheels helps to cater for:
 
@@ -35,7 +35,6 @@ A setting removal
 
 Example deprecation scenarios
 =============================
-
 
 .. toctree::
     :maxdepth: 2
