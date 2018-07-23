@@ -17,7 +17,7 @@
 About Cogwheels
 ===============
 
-Cogwheels is a tool for developers of reusable Django apps, to help them implement 'overridable app-specific settings' in a simple, standardised way.
+Cogwheels is a tool for developers of reusable Django apps, to help them implement overridable app-specific settings in a simple, robust, standardised way.
 
 It aims to:
 
@@ -29,8 +29,8 @@ It aims to:
 
 - Override basic python type values such as: strings, integers, booleans, decimals and floats.
 - Override structured python type values such as: lists, tuples and dictionaries.
-- Use custom Django models in place of the ones you provide.
-- Use custom python classes, objects or entire modules in place of the ones you provide.
+- Use custom Django models in place your app's defaults.
+- Use custom python classes, objects or entire modules in place your app's defaults.
 
 
 Goodness for app developers!
