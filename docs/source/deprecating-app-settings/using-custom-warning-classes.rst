@@ -21,7 +21,7 @@ The main arguments for defining and using custom deprecation warnings within you
     - Support for the deprecated functionality will be removed in ``2.1``.
 - As a maintainer, cycling deprecation warnings (ensuring that warnings raised using ``PendingDeprecationWarning`` in the previous version are raised with ``DeprecationWarning`` in the new one) is easier, because:
     - You do not have to update quite as much code each time.
-    - Anywhere using the warning class being removed will raise an ``ImportError``, which (If you have a half-decent test suite in place) should help you identify all of the places in your code where support for deprecated behaviour should be removed.
+    - Anywhere using the warning class being removed will raise an ``ImportError``, which (If you have a half-decent test suite in place) should help you identify all of the places in your code deprecated behaviour is due to be removed.
 - Developers only interested in specific classes of warning can more easily identify warnings from your app if they need to.
 
 
