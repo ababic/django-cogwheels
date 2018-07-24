@@ -43,5 +43,6 @@ Example deprecation scenarios
     rename-example
     replacement-example
     removal-example
+    using-custom-warning-classes
 
 
