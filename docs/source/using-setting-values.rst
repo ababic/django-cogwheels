@@ -53,7 +53,7 @@ When any setting value is requested (be it directly from the ``settings`` module
 4.  If no 'override' value was found, the default value from your ``defaults`` module will be returned.
 5.  The resulting value is cached, so that the above steps can be bypassed the next time a value for this setting is requested.
 
-.. NOTE :: To learn more about how setting deprecation works, see: :doc:`deprecating-app-settings` 
+.. NOTE :: To learn more about how setting deprecation works, see: :doc:`deprecating-app-settings/index` 
 
 
 .. _getting_model_values:

@@ -106,7 +106,7 @@ Next, we'll update the settings helper definition for our app, so that it knows 
 3. Updating the app code
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The above steps take care of the deprecation definintion, but we still have to update our code to use the new setting. Let's imagine that our code currently looks something like this:
+The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine that our code currently looks something like this:
 
 
 .. code-block:: python
@@ -214,8 +214,9 @@ Raising a deprecating in your code is one thing, but you'll also want to update 
 1.  Mentioning the deprecation in the ``1.6`` release notes
 2.  Adding an entry for the new setting to the "Settings reference", and updating any references to the old setting entry to the new one
 3.  Updating the entry for the existing setting in the "Settings reference", using Sphinx's `deprecated directive <http://www.sphinx-doc.org/en/stable/markup/para.html#directive-deprecated>`_ to mark the old setting as deprecated, for example::
-    .. deprecated:: 1.6
-        Use :ref:`YOURAPP_FLAT_MENUS_MENU_ICON` instead.
+
+        .. deprecated:: 1.6
+            Use :ref:`YOURAPP_FLAT_MENUS_MENU_ICON` instead.
 
 
 In version ``1.7``
@@ -233,22 +234,22 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
     
     .. code-block:: python
 
-    # yourapp/conf/defaults.py
+        # yourapp/conf/defaults.py
 
-    # -------------------
-    # Admin / UI settings
-    # -------------------
+        # -------------------
+        # Admin / UI settings
+        # -------------------
 
-    FLAT_MENUS_MENU_ICON = 'list-ol'
+        FLAT_MENUS_MENU_ICON = 'list-ol'
 
-    FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
+        FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
 
-    # -------------------
-    # Deprecated settings
-    # -------------------
-    # These need to stick around until support is dropped completely
+        # -------------------
+        # Deprecated settings
+        # -------------------
+        # These need to stick around until support is dropped completely
 
-    FLATMENU_MENU_ICON = 'list-ol'  # DELETE ME!
+        FLATMENU_MENU_ICON = 'list-ol'  # DELETE ME!
 
 
 2. Remove the deprecation definition from your app's setting helper in ``settings.py``
@@ -256,18 +257,18 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 
     .. code-block:: python
 
-    # yourapp/conf/settings.py
+        # yourapp/conf/settings.py
 
-    from cogwheels import BaseAppSettingsHelper
+        from cogwheels import BaseAppSettingsHelper
 
-    
-    class MyAppSettingsHelper(BaseAppSettingsHelper):
+        
+        class MyAppSettingsHelper(BaseAppSettingsHelper):
 
-        # NOTE: 'deprecations' should always be defined as a tuple, even if you're only 
-        # deprecating a single setting 
-        deprecations = ()  # I'm so empty! 
+            # NOTE: 'deprecations' should always be defined as a tuple, even if you're only 
+            # deprecating a single setting 
+            deprecations = ()  # I'm so empty! 
 
-    ...
+        ...
     
 
 3. Announce the breaking change in the version ``1.8`` release notes.

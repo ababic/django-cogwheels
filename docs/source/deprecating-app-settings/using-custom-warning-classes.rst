@@ -19,9 +19,9 @@ The main arguments for defining and using custom deprecation warnings within you
 - Developers typically see the name of the warning class when a warning is raised, so it’s a convenient way to provide them with more information. For example, from the warning class ``RemovedInWagtail21Warning``, you can easily ascertain that:   
     - ``Wagtail`` is the app that raised the warning.
     - Support for the deprecated functionality will be removed in ``2.1``.
-- As a maintainer, cycling deprecation warnings (i.e. ensuring that warnings raised using ``PendingDeprecationWarning`` in the previous version are raised with ``DeprecationWarning`` in the next one) is easier with this approach, because:
-    - You don't have to update code in as many places each time.
-    - Anywhere using the warning class being removed will raise an ``ImportError``, which (if your test suite is even half-decent) should help you identify all of the places in your code where support for deprecated behaviour should be removed.
+- As a maintainer, cycling deprecation warnings (ensuring that warnings raised using ``PendingDeprecationWarning`` in the previous version are raised with ``DeprecationWarning`` in the new one) is easier, because:
+    - You do not have to update quite as much code each time.
+    - Anywhere using the warning class being removed will raise an ``ImportError``, which (If your test suite is even half-decent) should help you identify all of the places in your code where support for deprecated behaviour should be removed.
 - Developers only interested in specific classes of warning can more easily identify warnings from your app if they need to.
 
 
