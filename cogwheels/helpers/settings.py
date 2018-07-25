@@ -50,14 +50,14 @@ class BaseAppSettingsHelper:
         """
         If the requested attribute wasn't found, it's assumed that the caller
         wants the value of a setting matching 'name'. So, if 'name' looks like
-        a valid setting name, refer the request to 'self.get_raw()', otherwise
+        a valid setting name, refer the request to 'self.get()', otherwise
         raise an ``AttributeError``, so that the caller knows the request is
         invalid.
         """
         if not self.in_defaults(name):
             raise AttributeError("{} object has no attribute '{}'".format(
                 self.__class__.__name__, name))
-        return self.get_raw(name)
+        return self.get(name)
 
     def _set_prefix(self, init_supplied_val):
         """
@@ -312,7 +312,7 @@ class BaseAppSettingsHelper:
 
         -   The setting named by ``setting_name`` is a replacement for a
             deprecated setting.
-        -   The value returned by self.get_raw() for the setting comes from a
+        -   The value returned by self.get() for the setting comes from a
             user-defined Django setting that uses the deprecated setting name
         """
         if not self.in_defaults(setting_name):
@@ -325,9 +325,9 @@ class BaseAppSettingsHelper:
             return self.is_overridden(depr.setting_name)
         return False
 
-    def get_raw(self, setting_name, enforce_type=None):
+    def get(self, setting_name, enforce_type=None):
         """
-        A wrapper for self.get_raw_value(), that caches the raw setting value
+        A wrapper for self.get_value(), that caches the raw setting value
         for faster future access, and, optionally checks that the
         raw value type matches the supplied ``enforce_type`` value type (or
         tuple of value types).
@@ -377,7 +377,7 @@ class BaseAppSettingsHelper:
         if setting_name in self._models_cache:
             return self._models_cache[setting_name]
 
-        raw_value = self.get_raw(setting_name, enforce_type=str)
+        raw_value = self.get(setting_name, enforce_type=str)
 
         try:
             from django.apps import apps  # delay import until needed
@@ -419,7 +419,7 @@ class BaseAppSettingsHelper:
         if setting_name in self._modules_cache:
             return self._modules_cache[setting_name]
 
-        raw_value = self.get_raw(setting_name, enforce_type=str)
+        raw_value = self.get(setting_name, enforce_type=str)
 
         try:
             result = self._do_import(raw_value)
@@ -453,7 +453,7 @@ class BaseAppSettingsHelper:
         if setting_name in self._objects_cache:
             return self._objects_cache[setting_name]
 
-        raw_value = self.get_raw(setting_name, enforce_type=str)
+        raw_value = self.get(setting_name, enforce_type=str)
 
         try:
             module_path, object_name = raw_value.rsplit(".", 1)
