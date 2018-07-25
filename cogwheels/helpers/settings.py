@@ -36,21 +36,15 @@ class BaseAppSettingsHelper:
             self._deprecations = self.__class__.deprecations
         self._perepare_deprecation_data()
 
-        self._raw_cache = {}
+        # This will create the dictionaries if they don't already exist
+        self.reset_caches()
 
-        # Define 'models' reference shortcut and cache
+        # Define 'attribute reference' shortcuts
         self.models = AttrRefererToMethodHelper(self, 'get_model')
-        self._models_cache = {}
-
-        # Define 'modules' reference shortcut and cache
         self.modules = AttrRefererToMethodHelper(self, 'get_module')
-        self._modules_cache = {}
-
-        # Define 'object' reference shortcut and cache
         self.objects = AttrRefererToMethodHelper(self, 'get_object')
-        self._objects_cache = {}
 
-        setting_changed.connect(self.clear_caches, dispatch_uid=id(self))
+        setting_changed.connect(self.reset_caches, dispatch_uid=id(self))
 
     def __getattr__(self, name):
         """
@@ -216,7 +210,7 @@ class BaseAppSettingsHelper:
 
                 self._replacement_settings[item.replacement_name] = item
 
-    def clear_caches(self, **kwargs):
+    def reset_caches(self, **kwargs):
         self._raw_cache = {}
         self._models_cache = {}
         self._modules_cache = {}

@@ -9,4 +9,4 @@ class AppSettingTestCase(TestCase):
         self.appsettingshelper = settings
         self.settings_prefix = settings._prefix
         # Always clear caches between tests
-        self.appsettingshelper.clear_caches()
+        self.appsettingshelper.reset_caches()

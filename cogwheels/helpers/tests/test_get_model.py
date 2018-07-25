@@ -18,7 +18,7 @@ class TestValidModelSettingOverride(AppSettingTestCase):
 
     @patch('django.apps.apps.get_model')
     def test_returns_from_cache_after_first_import(self, mocked_method):
-        settings.clear_caches()
+        settings.reset_caches()
         settings.get_model('VALID_MODEL')
         settings.get_model('VALID_MODEL')
         settings.get_model('VALID_MODEL')
