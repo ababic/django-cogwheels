@@ -77,7 +77,6 @@ For settings that refer to Django models, you can use the settings module's ``mo
     >>> issubclass(settings.models.ORDER_ITEM_MODEL, Model)
     True
 
-
 .. NOTE ::
     ``settings.models.SETTING_NAME`` is equivalent to doing ``settings.get_model('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise Django's ``ImproperlyConfigured`` exception.
 
@@ -152,7 +151,6 @@ For settings that refer to classes, functions, or other importable python object
     >>> from django.forms import Form
     >>> issubclass(settings.objects.ORDER_FORM_CLASS, Form)
     True
-
 
 .. NOTE ::
     ``settings.objects.SETTING_NAME`` is equivalent to doing ``settings.get_object('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise an ``ImproperlyConfigured`` exception.
