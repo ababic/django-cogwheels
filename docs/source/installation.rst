@@ -91,18 +91,12 @@ Defining settings for your app
         $ django-admin.py startapp conf --template=https://github.com/ababic/cogwheels-conf-app/zipball/master
 
 
-3.  Any overridable settings you want to support in your app must to be added to the ``defaults.py`` module in the newly ``conf`` directory.
+3.  Any overridable settings you want to support in your app simply need adding as standard variables to the newly created ``conf/defaults.py`` module. Here is some friendly advice:
 
-    **DO:**
-
-    - Use upper-case names for setting names
-    - Feel free to use any basic Python type as a value (e.g. string, int, boolean, float, list, tuple, dict)
-
-    **DON'T:**
-
-    - Prefix setting names with ``"YOURAPP_"`` or similar (that is not necessary here)
-    - Put all your configuration in one giant dictionary setting (that's just lazy!)
-    - Use value types that require import statements to define, unless it's a well-known Python built-in like ``OrderedDict``
+    - The variable names for your settings should be in upper case (e.g. ``SOME_SETTING``).
+    - There's no need to prefix setting names with ``"YOURAPP_"`` or similar here. Cogwheels will take care of adding this prefix automatically when it is useful. 
+    - You can use any native Python type as a value (e.g. string, int, boolean, float, list, tuple, dict, date, time), but try to stick to well-known types that are easy for your app's users to define when they want to override something.
+    - It's absolutely fine to use dictionaries to allow overriding of more complicated features, but try not to group together unrelated bits of configuration into large dictionaries, when they would make more sense as separare settings. 
 
     Your setting definitions should look something like this:
 
