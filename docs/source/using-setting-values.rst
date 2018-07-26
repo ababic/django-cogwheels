@@ -13,7 +13,7 @@ To use setting values in your app, simply import the settings module wherever it
 Getting a 'raw' setting value
 =============================
 
-Reference a setting as a direct attribute of the setting module will return values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings (no transformation is applied).
+Referencing a setting as a direct attribute of the setting module will return values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings (no transformation is applied).
 
 .. code-block:: console
 
@@ -38,6 +38,9 @@ Reference a setting as a direct attribute of the setting module will return valu
     'yourproject.forms.OrderForm'
     >>> type(settings.ORDER_FORM_CLASS)
     str
+
+.. NOTE ::
+    ``settings.SETTING_NAME`` is equivalent to doing ``settings.get('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise an ``ImproperlyConfigured`` exception.
 
 
 .. _raw_value_process:
@@ -75,6 +78,11 @@ For settings that refer to Django models, you can use the settings module's ``mo
     True
 
 
+.. NOTE ::
+    ``settings.models.SETTING_NAME`` is equivalent to doing ``settings.get_model('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise Django's ``ImproperlyConfigured`` exception.
+
+
+
 .. _model_value_process:
 
 Behind the scenes:
@@ -107,6 +115,9 @@ For settings that refer to Python modules, you can use the settings module's ``m
 
     >>> type(settings.modules.DISCOUNTS_BACKEND)
     module
+
+.. NOTE ::
+    ``settings.modules.SETTING_NAME`` is equivalent to doing ``settings.get_module('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise an  ``ImproperlyConfigured`` exception.
 
 
 .. _module_value_process:
@@ -141,6 +152,10 @@ For settings that refer to classes, functions, or other importable python object
     >>> from django.forms import Form
     >>> issubclass(settings.objects.ORDER_FORM_CLASS, Form)
     True
+
+
+.. NOTE ::
+    ``settings.objects.SETTING_NAME`` is equivalent to doing ``settings.get_object('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise an ``ImproperlyConfigured`` exception.
 
 
 .. _object_value_process:
