@@ -12,8 +12,8 @@ Below are a some links to help you get started:
 - :doc:`using-setting-values`
 
 
-Python and Django Compatibility
-===============================
+Compatibility
+=============
 
 The current version of Cogwheels is tested for compatibility with:
 
