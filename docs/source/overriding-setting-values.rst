@@ -1,6 +1,6 @@
-======================================
-Overriding default app settings values
-======================================
+=====================================
+Overriding default app setting values
+=====================================
 
 Once you have configured Cogwheels for your app and packaged the changes into a new release, users of your app should be able override any of the default values by adding alternative values to their project's Django settings module. For example: 
 

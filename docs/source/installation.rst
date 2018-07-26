@@ -96,7 +96,7 @@ Defining settings for your app
     - The variable names for your settings should be in upper case (e.g. ``SOME_SETTING``).
     - There's no need to prefix setting names with ``"YOURAPP_"`` or similar here. Cogwheels will take care of adding this prefix automatically when it is useful. 
     - You can use any native Python type as a value (e.g. string, int, boolean, float, list, tuple, dict, date, time), but try to stick to well-known types that are easy for your app's users to define when they want to override something.
-    - It's absolutely fine to use dictionaries to allow overriding of more complicated features, but try not to group together unrelated bits of configuration into large dictionaries, when they would make more sense as separare settings. 
+    - It's absolutely fine to use dictionaries to allow overriding of more complicated features, but try not to group together unrelated bits of configuration into large dictionaries, when they would make more sense as separate settings. 
 
     Your setting definitions should look something like this:
 
