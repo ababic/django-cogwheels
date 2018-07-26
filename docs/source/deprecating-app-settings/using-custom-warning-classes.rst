@@ -6,7 +6,7 @@ All of the deprecation examples in the Cogwheels documentation assume that you'r
 
 For developers unfamiliar with this approach, this guide outlines the benefits of this approach, and provides examples of how to adopt it yourself. 
 
-.. contents::
+.. contents:: Contents
     :local:
     :depth: 1
 

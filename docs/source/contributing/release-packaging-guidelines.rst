@@ -2,7 +2,7 @@
 Release packaging guidelines
 ============================
 
-.. contents::
+.. contents:: Contents
     :local:
     :depth: 2
 

@@ -4,14 +4,14 @@ Using setting values in your app
 
 To use setting values in your app, simply import the settings module wherever it is needed, and reference settings as attributes of the module.
 
-.. contents::
+.. contents:: Contents:
     :local:
-    :depth: 2
+    :depth: 1
 
 .. _getting_raw_values:
 
-Getting a 'raw' setting value
-=============================
+Getting 'raw' setting values
+============================
 
 Referencing a setting as a direct attribute of the setting module will return values **exactly** as they are defined in ``defaults.py``, or by the user in their Django settings (no transformation is applied).
 
@@ -45,8 +45,8 @@ Referencing a setting as a direct attribute of the setting module will return va
 
 .. _raw_value_process:
 
-Behind the scenes:
-------------------
+Behind the scenes
+-----------------
 
 When any setting value is requested (be it directly from the ``settings`` module, or using the one of the ``models``, ``modules`` or ``objects`` helper attributes explained below), Cogwheels takes the following steps to identify the raw value:
 
@@ -84,8 +84,8 @@ For settings that refer to Django models, you can use the settings module's ``mo
 
 .. _model_value_process:
 
-Behind the scenes:
-------------------
+Behind the scenes
+-----------------
 
 When you request an attribute from ``settings.models`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
 
@@ -121,8 +121,8 @@ For settings that refer to Python modules, you can use the settings module's ``m
 
 .. _module_value_process:
 
-Behind the scenes:
-------------------
+Behind the scenes
+-----------------
 
 When you request an attribute from ``settings.modules`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
 
@@ -158,8 +158,8 @@ For settings that refer to classes, functions, or other importable python object
 
 .. _object_value_process:
 
-Behind the scenes:
-------------------
+Behind the scenes
+-----------------
 
 When you request an attribute from ``settings.objects`` instead of the ``settings`` module directly, Cogwheels takes the following steps to get the value you require:
 

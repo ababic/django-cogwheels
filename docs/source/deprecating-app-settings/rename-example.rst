@@ -4,7 +4,7 @@ A 'setting rename' example
 
 This guide demonstrates the steps required to rename a setting, following a standard 'two release' deprecation process. 
 
-.. contents::
+.. contents:: Contents
     :local:
     :depth: 2
 

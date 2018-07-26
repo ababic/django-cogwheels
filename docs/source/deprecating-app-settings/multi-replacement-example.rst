@@ -6,7 +6,7 @@ This guide demonstrates the steps required to introduce a new setting that 'logi
 
 If you're looking to add a setting that only replaces a single existing setting, you may find the :doc:`single-replacement-example` more useful.
 
-.. contents::
+.. contents:: Contents
     :local:
     :depth: 2
 
