@@ -10,6 +10,7 @@ Below are a some links to help you get started:
 
 - :doc:`installation`
 - :doc:`using-setting-values`
+- :doc:`overriding-setting-values`
 
 
 Compatibility
@@ -30,10 +31,10 @@ Documentation index
 
     installation
     using-setting-values
-    deprecating-app-settings/index
     overriding-setting-values
     documenting-app-settings
     error-handling
+    deprecating-app-settings/index
     example-implementations
     contributing/index
     releases/index
