@@ -36,10 +36,3 @@ class TestHelperInitErrors(TestCase):
                 DeprecatedAppSetting('DEPRECATED_SETTING'),
                 DeprecatedAppSetting('DEPRECATED_SETTING'),
             ))
-
-    def test_raises_correct_error_type_if_same_replacement_setting_name_repeated_in_deprecation_definitions(self):
-        with self.assertRaises(exceptions.DuplicateDeprecationReplacementError):
-            TestSettingsHelper(deprecations=(
-                DeprecatedAppSetting('RENAMED_SETTING_OLD', renamed_to='RENAMED_SETTING_NEW'),
-                DeprecatedAppSetting('REPLACED_SETTING_OLD', replaced_by='RENAMED_SETTING_NEW'),
-            ))

@@ -22,6 +22,18 @@ class TestAppSettingsHelper(BaseAppSettingsHelper):
                 "https://your-django-project.readthedocs.io/en/latest/releases/X.X.html"
             )
         ),
+        DeprecatedAppSetting(
+            'REPLACED_SETTING_ONE',
+            replaced_by='REPLACES_MULTIPLE',
+        ),
+        DeprecatedAppSetting(
+            'REPLACED_SETTING_TWO',
+            replaced_by='REPLACES_MULTIPLE',
+        ),
+        DeprecatedAppSetting(
+            'REPLACED_SETTING_THREE',
+            replaced_by='REPLACES_MULTIPLE',
+        ),
     )
 
 

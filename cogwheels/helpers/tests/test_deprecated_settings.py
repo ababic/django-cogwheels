@@ -136,3 +136,81 @@ class TestReplacedSetting(AppSettingTestCase):
             True,
             self.appsettingshelper.is_value_from_deprecated_setting('REPLACED_SETTING_NEW')
         )
+
+
+@override_settings(
+    COGWHEELS_TESTS_REPLACED_SETTING_ONE='overridden-one',
+    COGWHEELS_TESTS_REPLACED_SETTING_TWO='overridden-two',
+)
+class TestMultipleReplacementSetting(AppSettingTestCase):
+
+    def test_referencing_each_old_setting_on_settings_module_raises_warning(self):
+        for deprecated_setting_name in (
+            'REPLACED_SETTING_ONE', 'REPLACED_SETTING_TWO', 'REPLACED_SETTING_THREE'
+        ):
+            with self.assertWarns(DeprecationWarning):
+                getattr(self.appsettingshelper, deprecated_setting_name)
+
+    def test_user_defined_setting_with_old_name_is_only_used_if_its_name_matches_accept_deprecated(self):
+        # REPLACES_MULTIPLE should return the value from defaults, because a user could be overriding
+        # any one of the deprecated settings being replaced, and because we have no idea which to
+        # prioritize over the other, picking one could yield unpredictable results.
+        self.assertIs(
+            self.appsettingshelper.get('REPLACES_MULTIPLE'), defaults.REPLACES_MULTIPLE
+        )
+        # Instead, developers can specify which deprecated setting in particular they are willing to
+        # use a value from, and override values for those settings will be returned.
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(
+                self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_ONE'),
+                'overridden-one'
+            )
+
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(
+                self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_TWO'),
+                'overridden-two'
+            )
+        # But the the default value will still be returned if the specified deprecated setting has
+        # not been overridden
+        self.assertIs(
+            self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_THREE'),
+            defaults.REPLACES_MULTIPLE
+        )
+
+    def test_is_value_from_deprecated_setting_returns_false_if_accept_deprecated_not_used(self):
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE'),
+            False
+        )
+
+    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING_OLD='somevalue')
+    def test_is_value_from_deprecated_setting_returns_true_if_the_setting_named_by_accept_deprecated_is_overridden(self):
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_ONE'),
+            True
+        )
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_TWO'),
+            True
+        )
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_THREE'),
+            False
+        )
+
+    @override_settings(COGWHEELS_TESTS_REPLACES_MULTIPLE='somevalue')
+    def test_is_value_from_deprecated_setting_returns_false_if_the_new_setting_is_overridden(self):
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE'),
+            False
+        )
+        # And even if 'accept_deprecated' is used, the provided value for the new setting if preferred
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_ONE'),
+            False
+        )
+        self.assertIs(
+            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_TWO'),
+            False
+        )

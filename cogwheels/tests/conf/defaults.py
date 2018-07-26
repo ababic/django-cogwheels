@@ -52,3 +52,11 @@ RENAMED_SETTING_NEW = 'renamed_new'
 REPLACED_SETTING_OLD = 'replaced_old'
 
 REPLACED_SETTING_NEW = 'replaced_new'
+
+REPLACED_SETTING_ONE = 'replaced_one'
+
+REPLACED_SETTING_TWO = 'replaced_two'
+
+REPLACED_SETTING_THREE = 'replaced_three'
+
+REPLACES_MULTIPLE = 'replaces_multiple'

@@ -25,10 +25,3 @@ class DuplicateDeprecationError(InvalidDeprecationDefinition):
     AppSettingDeprecation definitions in a setting helper's 'deprecations' "
     "list."""
     pass
-
-
-class DuplicateDeprecationReplacementError(InvalidDeprecationDefinition):
-    """The same replacement setting name has been used for more than one
-    AppSettingDeprecation definition in a setting helper's 'deprecations' "
-    "list."""
-    pass
