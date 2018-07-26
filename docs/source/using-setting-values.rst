@@ -49,7 +49,7 @@ When any setting value is requested (be it directly from the ``settings`` module
 
 1.  If the requested setting has been marked for deprecation, a helpfully worded ``DeprecationWarning`` is raised to help inform developers of the change.
 2.  The Django settings module is then checked for a relevant 'override' setting value. If found, this value is returned.
-3.  If the requested setting is a 'replacement' for a deprecated setting, the Django settings module is checked again for a relevant 'override' setting value, this time using the **deprecated** setting name. If found, a helpfully worded ``DeprecationWarning`` is raised before the value is returned.
+3.  If the requested setting is a 'replacement' for a single deprecated setting, the Django settings module is checked again for a relevant 'override' setting value, this time using the **deprecated** setting name. If found, a helpfully worded ``DeprecationWarning`` is raised before the value is returned. (Deprecated setting values can also be accessed in this way when the setting replaces multiple settings, but it's a touch more complicated. See :doc:`deprecating-app-settings/multi-replacement-example` to find out more).
 4.  If no 'override' value was found, the default value from your ``defaults`` module will be returned.
 5.  The resulting value is cached, so that the above steps can be bypassed the next time a value for this setting is requested.
 

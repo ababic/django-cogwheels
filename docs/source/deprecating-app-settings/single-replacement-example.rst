@@ -1,8 +1,10 @@
-===============================
-A 'setting replacement' example
-===============================
+======================================
+A 'single setting replacement' example
+======================================
 
-TBC
+This guide demonstrates the steps required to introduce a new setting that 'logically replaces' a single existing setting, following a standard 'two release' deprecation process.
+
+If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`multi-replacement-example` more useful.
 
 .. contents::
     :local:

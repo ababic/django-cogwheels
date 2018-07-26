@@ -8,6 +8,14 @@ Cogwheels was designed with this in mind, and has features built-in to help you 
 
 There are currently three deprecation scenarios that are Cogwheels helps to cater for:
 
+A setting removal
+    
+    You're simply planning to remove support for a setting.
+
+    You're willing to support the setting for couple more feature releases, but would like to prompt any users using it, to make them aware that support will be removed soon, and that they should review their implementation.
+
+    For more information, see: :doc:`removal-example`
+
 A setting rename
 
     You're changing the name of a setting. There aren't any changes to the type or range of supported override values, or to the way override values affect your app's behaviour.
@@ -16,21 +24,19 @@ A setting rename
 
     For more information, see: :doc:`rename-example`
 
-A setting replacement
+A single setting replacement
 
-    You're adding a new setting that allows users to override behaviour in a way that makes an existing setting redundant. Although it is a clear logical successor for the existing setting, there are some differences in how override values affect your app's behaviour, and possibly changes to the type or range of override values that are supported.
+    You're adding a new setting that allows users to override behaviour in a way that makes a single existing setting redundant. Although it is a clear logical successor for the existing setting, there may be differences in how override values affect your app's behaviour, and possibly changes to the type or range of override values that are supported.
 
     You're willing to support override values defined using the previous setting for a couple more feature releases, but would like to prompt those users to find out more about how the new setting works, and start using it instead of the existing one.
 
-    For more information, see: :doc:`replacement-example`
+    For more information, see: :doc:`single-replacement-example`
 
-A setting removal
-    
-    You're simply planning to remove support for a setting.
+A multiple setting replacement
 
-    You're willing to support the setting for couple more feature releases, but would like to prompt any users using it, to make them aware that support will be removed soon, and that they should review their implementation.
+    As above, but the new setting is replacing several existing settings, instead of just one.
 
-    For more information, see: :doc:`removal-example`
+    For more information, see: :doc:`multi-replacement-example`
 
 
 Example deprecation scenarios
@@ -40,9 +46,10 @@ Example deprecation scenarios
     :maxdepth: 2
     :titlesonly:
 
-    rename-example
-    replacement-example
     removal-example
+    rename-example
+    single-replacement-example
+    multi-replacement-example
     using-custom-warning-classes
 
 
