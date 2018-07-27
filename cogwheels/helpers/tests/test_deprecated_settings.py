@@ -53,27 +53,6 @@ class TestRenamedSetting(AppSettingTestCase):
             str(cm.warning)
         )
 
-    def test_is_value_from_deprecated_setting_returns_false_when_neither_setting_is_overridden(self):
-        self.assertIs(
-            False,
-            self.appsettingshelper.is_value_from_deprecated_setting('RENAMED_SETTING_NEW')
-        )
-
-    @override_settings(COGWHEELS_TESTS_RENAMED_SETTING_NEW='somevalue')
-    def test_is_value_from_deprecated_setting_returns_false_if_the_new_setting_is_overridden(self):
-        self.assertIs(
-            False,
-            self.appsettingshelper.is_value_from_deprecated_setting('RENAMED_SETTING_NEW')
-        )
-
-    @override_settings(COGWHEELS_TESTS_RENAMED_SETTING_OLD='somevalue')
-    def test_is_value_from_deprecated_setting_returns_true_if_the_old_setting_is_overridden(self):
-        self.assertIs(
-            True,
-            self.appsettingshelper.is_value_from_deprecated_setting('RENAMED_SETTING_NEW')
-        )
-
-
 class TestReplacedSetting(AppSettingTestCase):
 
     def test_referencing_old_setting_on_settings_module_raises_warning(self):
@@ -117,26 +96,6 @@ class TestReplacedSetting(AppSettingTestCase):
             message
         )
 
-    def test_is_value_from_deprecated_setting_returns_false_when_neither_setting_is_overridden(self):
-        self.assertIs(
-            False,
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACED_SETTING_NEW')
-        )
-
-    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING_NEW='somevalue')
-    def test_is_value_from_deprecated_setting_returns_false_if_the_new_setting_is_overridden(self):
-        self.assertIs(
-            False,
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACED_SETTING_NEW')
-        )
-
-    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING_OLD='somevalue')
-    def test_is_value_from_deprecated_setting_returns_true_if_the_old_setting_is_overridden(self):
-        self.assertIs(
-            True,
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACED_SETTING_NEW')
-        )
-
 
 @override_settings(
     COGWHEELS_TESTS_REPLACED_SETTING_ONE='overridden-one',
@@ -176,41 +135,4 @@ class TestMultipleReplacementSetting(AppSettingTestCase):
         self.assertIs(
             self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_THREE'),
             defaults.REPLACES_MULTIPLE
-        )
-
-    def test_is_value_from_deprecated_setting_returns_false_if_accept_deprecated_not_used(self):
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE'),
-            False
-        )
-
-    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING_OLD='somevalue')
-    def test_is_value_from_deprecated_setting_returns_true_if_the_setting_named_by_accept_deprecated_is_overridden(self):
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_ONE'),
-            True
-        )
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_TWO'),
-            True
-        )
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_THREE'),
-            False
-        )
-
-    @override_settings(COGWHEELS_TESTS_REPLACES_MULTIPLE='somevalue')
-    def test_is_value_from_deprecated_setting_returns_false_if_the_new_setting_is_overridden(self):
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE'),
-            False
-        )
-        # And even if 'accept_deprecated' is used, the provided value for the new setting if preferred
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_ONE'),
-            False
-        )
-        self.assertIs(
-            self.appsettingshelper.is_value_from_deprecated_setting('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_TWO'),
-            False
         )

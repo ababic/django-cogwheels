@@ -308,26 +308,27 @@ class BaseAppSettingsHelper:
                     return self.get_user_defined_value(item.setting_name)
         return self.get_default_value(setting_name)
 
-    def is_value_from_deprecated_setting(self, setting_name, accept_deprecated=''):
+    def is_value_from_deprecated_setting(self, setting_name, deprecated_setting_name):
         """
-        Returns a boolean to help developers determine where a setting value
-        came from when dealing settings that replace deprecated settings.
-        Returns ``True`` when:
+        Help developers determine where the settings helper got it's value from
+        when dealing settings that replace deprecated settings.
 
-        The setting named by ``setting_name`` is a replacement for a single
-        deprecated setting AND the user is using the deprecated setting
-        in their Django settings to override behaviour.
-
-        OR
-
-        The setting named by ``setting_name`` is a replacement for multiple
-        deprecated settings AND ``accept_deprecated`` has been used to specify
-        the name of one of those deprecated settings AND the user is using that
-        specific deprecated setting in their Django settings to override
-        behaviour.
+        Returns ``True`` when the new setting (with the name ``setting_name``)
+        is a replacement for a deprecated setting (with the name
+        ``deprecated_setting_name``) and the user is still using the deprecated
+        setting in their Django settings to override behaviour.
         """
         if not self.in_defaults(setting_name):
-            raise ValueError('%s is not a valid setting name' % setting_name)
+            raise ValueError("'%s' is not a valid setting name" % setting_name)
+        if not self.in_defaults(deprecated_setting_name):
+            raise ValueError("'%s' is not a valid setting name" % deprecated_setting_name)
+        if deprecated_setting_name not in self._deprecated_settings:
+            raise ValueError(
+                "The '%s' setting is not deprecated. When using "
+                "settings.is_value_from_deprecated_setting(), the deprecated "
+                "setting name should be supplied as the second argument." %
+                deprecated_setting_name
+            )
         if(
             not self.is_overridden(setting_name) and
             setting_name in self._replacement_settings
@@ -335,7 +336,7 @@ class BaseAppSettingsHelper:
             deprecations = self._replacement_settings[setting_name]
             for item in deprecations:
                 if(
-                    (len(deprecations) == 1 or item.setting_name == accept_deprecated) and
+                    item.setting_name == deprecated_setting_name and
                     self.is_overridden(item.setting_name)
                 ):
                     return True
@@ -434,10 +435,9 @@ class BaseAppSettingsHelper:
 
     def get_module(self, setting_name, accept_deprecated=''):
         """
-        Returns a python module referenced by an app setting where the value is
-        expected to be a valid python import path, defined as a string.
-
-        Will not work for relative paths.
+        Returns a Python module referenced by an app setting where the value is
+        expected to be a valid, absolute Python import path, defined as a
+        string (e.g. "myproject.app.custom_module").
 
         Raises an ``ImproperlyConfigured`` error if the setting value is not
         a valid import path.
@@ -468,10 +468,8 @@ class BaseAppSettingsHelper:
     def get_object(self, setting_name, accept_deprecated=''):
         """
         Returns a python class, method, or other object referenced by an app
-        setting where the value is expected to be a valid python import path,
-        defined as a string.
-
-        Will not work for relative paths.
+        setting where the value is expected to be a valid, absolute Python
+        import path, defined as a string (e.g. "myproject.app.module.MyClass").
 
         Raises an ``ImproperlyConfigured`` error if the setting value is not
         a valid import path, or the object cannot be found in the specified
