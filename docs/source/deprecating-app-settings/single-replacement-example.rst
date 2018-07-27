@@ -125,15 +125,15 @@ The above steps take care of the deprecation definition, but we still have to up
     class TransactionSummaryList(ListView):
         
         def get_context_data(self, **kwargs):
+            show_full_names = not settings.HIDE_FULL_NAMES_IN_SUMMARY
             data = {
-                'hide_full_names': settings.HIDE_FULL_NAMES_IN_SUMMARY,
-                ...
+                'show_full_names': show_full_names,
             }
             data.update(**kwargs)
             return super().get_context_data(**data)
     ...
 
-First, we want to update the view to use the new setting instead:
+First, we want to update the view to use the new setting instead, because the above will now raise a deprecation warning, and that's not what we want:
 
 .. code-block:: python
 
@@ -142,11 +142,37 @@ First, we want to update the view to use the new setting instead:
     class TransactionSummaryList(ListView):
         
         def get_context_data(self, **kwargs):
-            hide_full_names = not settings.SHOW_FULL_NAMES_IN_SUMMARY
+            show_full_names = settings.SHOW_FULL_NAMES_IN_SUMMARY
             data = {
                 'hide_full_names': hide_full_names,
-                ...
             }
             data.update(**kwargs)
             return super().get_context_data(**data)
     ...
+
+
+But wait! The new setting means the opposite of what it did before, and we still need to support the old setting for a while until it is removed completely. 
+
+In the example above, ``settings.SHOW_FULL_NAMES_IN_SUMMARY`` automatically returns the value of the deprecated setting if the user hasn't yet updated their code to use the new one. In some scenarios, this would be all we need, but not in this example. We need a way to know WHERE the settings module got it's value from, so that we can change our app's behaviour, depending on which setting the user has used. The ``is_value_from_deprecated_setting()`` method can help us here:
+
+.. code-block:: python
+
+    # yourapp/views.py
+
+    class TransactionSummaryList(ListView):
+        
+        def get_context_data(self, **kwargs):
+            show_full_names = settings.SHOW_FULL_NAMES_IN_SUMMARY
+            
+            # To be removed in 1.8
+            if settings.is_value_from_deprecated_setting('SHOW_FULL_NAMES_IN_SUMMARY', 'HIDE_FULL_NAMES_IN_SUMMARY'):
+                # The old setting meant the opposite, so...
+                show_full_names = not show_full_names
+            
+            data = {
+                'hide_full_names': hide_full_names,
+            }
+            data.update(**kwargs)
+            return super().get_context_data(**data)
+    ...
+
