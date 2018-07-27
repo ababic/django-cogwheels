@@ -78,7 +78,6 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
 2. Declaring the deprecation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 Next, we'll update the settings helper definition for our app, so that it knows how to handle requests for setting values:
 
 
@@ -105,28 +104,10 @@ Next, we'll update the settings helper definition for our app, so that it knows 
     ...
 
 
-3. Updating the app code
-~~~~~~~~~~~~~~~~~~~~~~~~
+3. Updating your app code
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine that our code currently looks something like this:
-
-
-.. code-block:: python
-
-    # yourapp/modeladmin.py
-
-    from wagtail.contrib.modeladmin.options import ModelAdmin
-
-    from yourapp.conf import settings
-
-
-    class FlatMenuAdmin(ModelAdmin):
-        menu_icon = settings.FLATMENU_MENU_ICON  # << old setting name
-    ...
-
-
-For a 'setting rename', all you have to do is change any references to the old name to the new one, like so:
-
+The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine our code currently looks something like this:
 
 .. code-block:: python
 
@@ -138,16 +119,37 @@ For a 'setting rename', all you have to do is change any references to the old n
 
 
     class FlatMenuAdmin(ModelAdmin):
-        menu_icon = settings.FLAT_MENUS_MENU_ICON  # << that's better!
+        menu_icon = settings.FLATMENU_MENU_ICON
     ...
 
+This code will now raise the following deprecation warning:
 
-4. Warning your users
-~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: console
+    
+    RemovedInYourApp18Warning(
+        The FLATMENU_MENU_ICON app setting has been renamed to FLAT_MENUS_MENU_ICON. Please update your code to use 'settings.FLAT_MENUS_MENU_ICON' instead, as continuing to reference 'settings.FLATMENU_MENU_ICON' will raise an AttributeError when support is removed in two versions time.",
+    )
 
-Because your settings helper knows about the rename, ``settings.FLAT_MENUS_MENU_ICON`` will behave a little differently:
+.. NOTE:: Users of your app will see this same deprecation warning too, if they are referencing ``FLATMENU_MENU_ICON`` on your settings helper for any reason.
 
-1.  Cogwheels first looks for an override setting using the new name, which is the 'ideal' scenario, and where we want all our users to be eventually. For example:
+To resolve this for a 'setting rename', all you have to do is change any references to the old name to the new one, like so:
+
+.. code-block:: python
+
+    # yourapp/modeladmin.py
+
+    from wagtail.contrib.modeladmin.options import ModelAdmin
+
+    from yourapp.conf import settings
+
+
+    class FlatMenuAdmin(ModelAdmin):
+        menu_icon = settings.FLAT_MENUS_MENU_ICON  # <<  better!
+    ...
+
+Because your settings helper knows all it needs to about the rename, ``settings.FLAT_MENUS_MENU_ICON`` will do some extra work to support users still using the old setting name:
+
+1.  It first looks for an override setting using the new name, which is the 'ideal' scenario, and where we want all our users to be eventually. For example:
 
     .. code-block:: python
         
@@ -159,8 +161,7 @@ Because your settings helper knows about the rename, ``settings.FLAT_MENUS_MENU_
         # Overrides for ``your-django-app``
         # ---------------------------------
 
-        FLAT_MENUS_MENU_ICON = 'icon-new'
-
+        FLAT_MENUS_MENU_ICON = 'icon-new'  # I'm cutting edge!
 
 2.  Next, Cogwheels will look for an override setting defined using the old name. For example:
 
@@ -176,7 +177,7 @@ Because your settings helper knows about the rename, ``settings.FLAT_MENUS_MENU_
 
         FLATMENU_MENU_ICON = 'icon-old'  # I'm old-skool!
 
-    Now, although we’re still happy to support this value for a while longer, we want users to know that this setting has been renamed, and that they should use the new setting name if they wish for their override value to continue working in future versions. So, Cogwheels raises the following warning:
+    Although we’re still happy to support this setting for a while longer, we want users to know that the setting has been renamed, and that they should use the new setting name if they wish for their override value to continue working in future versions. So, Cogwheels will raise the following warning:
 
     .. code-block:: console
         
@@ -185,31 +186,6 @@ Because your settings helper knows about the rename, ``settings.FLAT_MENUS_MENU_
         )
 
 3. If no override setting was found, Cogwheels resorts to using the default value for the new setting, as you'd expect.
-
-
-Even though the app settings module might not be intended for public use, there may well be cases where user of your app are importing it in order to make use of setting values, for example:
-
-.. code-block:: python
-
-    # userproject/modeladmin.py
-
-    from wagtail.contrib.modeladmin.options import ModelAdmin
-
-    from yourapp.conf import settings
-
-
-    class MyCustomFlatMenuAdmin(ModelAdmin):
-        menu_icon = settings.FLATMENU_MENU_ICON  # << old setting name
-
-
-These users also need to be warned about the rename, so that they can make the appropriate changes to their code. So, Cogwheels automatically raises the following warning:
-
-.. code-block:: console
-    
-    RemovedInYourApp18Warning(
-        The FLATMENU_MENU_ICON app setting has been renamed to FLAT_MENUS_MENU_ICON. Please update your code to use 'settings.FLAT_MENUS_MENU_ICON' instead, as continuing to reference 'settings.FLATMENU_MENU_ICON' will raise an AttributeError when support is removed in two versions time.",
-    )
-
 
 Raising a deprecating in your code is one thing, but you'll also want to update your documentation to reflect the new changes, by:
 
@@ -266,11 +242,7 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
         
         class MyAppSettingsHelper(BaseAppSettingsHelper):
 
-            # NOTE: 'deprecations' should always be defined as a tuple, even if you're only 
-            # deprecating a single setting 
-            deprecations = ()  # I'm so empty! 
-
-        ...
+            deprecations = ()
     
 
 3. Announce the breaking change in the version ``1.8`` release notes.
