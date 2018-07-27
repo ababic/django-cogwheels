@@ -32,3 +32,15 @@ script:
 
 after_success: 
 - codecov --token=d1c52f52-bbc0-4eeb-b7dd-e4ac89504b93
+
+deploy:
+  provider: pypi
+  user: ababic
+  distributions: sdist bdist_wheel
+  password:
+    secure: 0iJVUuHukB1/uvZHw2dftPYIggGmjN11mwid7oHacIowLLJ9EUC9TFXtIe+dN0Er5MFvnqiUjYLPa3BrHAA8/vm/WNwikQIt5QV75fwO8tDj3iDEQUCX0vT1NHMZsHGeCFN7+e+ZavbTDlrutVEBBEdX9QCDOCHNuODfFNSCpCKoxdALHd4cBMMwzuXzgwFPwnmUY3onnX7c6pLjZHhbp9n9Wfv9fRKMITS2LfoGyp5Avm9kpdX7wHQwmmTWNb7WpLohtxhWH2j6qqzcHTck7gokc7WWRfJ7o+5H3gpwJ0QOacFmioNusk28KpNKyg4XqaSBVe2efqaFlsNdaYjLxT5eftnsLy7X3ghOj+YYXUFLOW+1bJdZeQ2BA0iQIjmj1HO/AS2Q+oPN23zE/W7k+AIKUW1LExTzSEhnO09smpETHXp6SUrzX3xhYQ0anJvF7W22r1hbs3LQN31sceK30H/tHdlvHoV1tcadUFuZ7zo0OslsS+jkPS+Yr+q4/7GUJXkPnci27ihws9//KFdB3RR4k9kdt3Nlmz63f4W8aOdu5GX8qp7FplarDHSeqwnpd22OCQNou8LZCpnqqSOYypbf980jAX2Nu4FXnnsl/Lmp08jUsYpUR9pHj98wVxxnqWaAxAWbfUfWcBslR/AdzELMAQkO6oEKc73Q8NYeWr4=
+  on:
+    tags: true
+    branch: master
+    repo: ababic/django-cogwheels
+    condition: "$TOXENV = py37-dj21"
