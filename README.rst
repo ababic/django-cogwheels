@@ -263,4 +263,4 @@ Compatibility
 The current version is tested for compatiblily with the following: 
 
 - Django versions 1.11 to 2.1
-- Python versions 3.4 to 3.6
+- Python versions 3.4 to 3.7
