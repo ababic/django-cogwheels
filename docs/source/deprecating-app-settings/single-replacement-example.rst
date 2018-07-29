@@ -17,8 +17,7 @@ What we're looking to achieve
 Let's pretend your app has a few app setting that allows users to toggle something on or off using a boolean
 
 .. code-block:: python
-
-    # yourapp/conf/defaults.py
+    :caption: yourapp/conf/defaults.py
 
     # -------------------
     # Admin / UI settings
@@ -28,17 +27,11 @@ Let's pretend your app has a few app setting that allows users to toggle somethi
     SHOW_FAILED_PAYMENTS_IN_SUMMARY = True
     SHOW_GRAPHS_ON_DASHBOARD = True
 
-    # --------------
-    # Other settings
-    # --------------
-
-    ...
-
 For the sake of consistency, you'd like to rename HIDE_FULL_NAMES_IN_SUMMARY to SHOW_FULL_NAMES_IN_SUMMARY, and give it a value of ``True`` by default.
 
 
-Some assumptions
-================
+A few assumptions
+=================
 
 In the following example, we're going to assume that:
 
@@ -62,8 +55,8 @@ In version ``1.6``
 First, we'll add a setting using the new name to ``defaults.py``. We also want to mark the existing settings in ``defaults.py`` in some way, to help us remember that they are deprecated. Our updated ``defaults.py`` module should look something like this:
 
 .. code-block:: python
-
-    # yourapp/conf/defaults.py
+    :caption: yourapp/conf/defaults.py
+    :emphasize-lines: 5,20
 
     # -------------------
     # Admin / UI settings
@@ -93,8 +86,7 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
 Next, we'll update the settings helper definition for our app, so that it knows how to handle requests for setting values:
 
 .. code-block:: python
-
-    # yourapp/conf/settings.py
+    :caption: yourapp/conf/settings.py
 
     from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
     from yourapp.utils.deprecation import RemovedInYourApp18Warning
@@ -109,7 +101,7 @@ Next, we'll update the settings helper definition for our app, so that it knows 
                 warning_category=RemovedInYourApp18Warning,
                 additional_guidance=(
                     "As the name suggests, the new setting has the opposite affect, "
-                    "and the default value is ``True`` rather than ``False``."
+                    "and the default value is now True instead of False."
                 )
             ),
         )
@@ -118,7 +110,7 @@ There are a few things worth noting here:
 
 -   If you need to define ``deprecations`` on your settings helper class, it must be a ``tuple``, even if you only need a single ``DeprecatedAppSetting`` definition.
 -   In the ``DeprecatedAppSetting`` definition, setting names are supplied as strings, and we're still using internal/non-prefixed setting names (e.g. ``"FLATMENU_MENU_ICON"`` rather than ``"YOURAPP_FLATMENU_MENU_ICON"``).
--   The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ```warnings.warn()`` <https://docs.python.org/3.7/library/warnings.html#warnings.warn>`_ method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning``.
+-   The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ```warnings.warn()`` method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning``.
 -   The ``additional_guidance`` argument is optional. But, if supplied, this string will be appended to any of the deprecation warnings raised in relation to this setting. The automatically generated warnings text is quite thorough, so you only really need to explain about nuances between the two settings (if there are any), which is something  Cogwheels cannot realistically infer.
     
     .. NOTE::
@@ -131,11 +123,10 @@ There are a few things worth noting here:
 The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine that our code currently looks something like this:
 
 .. code-block:: python
-
-    # yourapp/views.py
+    :caption: yourapp/views.py
+    :emphasize-lines: 8
 
     from django.views.generic import ListView
-
     from yourapp.conf import settings
 
 
@@ -148,23 +139,28 @@ The above steps take care of the deprecation definition, but we still have to up
             }
             data.update(**kwargs)
             return super().get_context_data(**data)
-    ...
 
-This code will now raise the following deprecation warning:
+        ...
+
+
+This line highlighted above will now cause the following deprecation warning to be raised:
 
 .. code-block:: console
     
-    RemovedInYourApp18Warning(
-        The HIDE_FULL_NAMES_IN_SUMMARY app setting is deprecated in favour of using SHOW_FULL_NAMES_IN_SUMMARY. Please update your code to use 'settings.SHOW_FULL_NAMES_IN_SUMMARY' instead, as continuing to reference 'settings.HIDE_FULL_NAMES_IN_SUMMARY' will raise an AttributeError when support is removed in two versions time. As the name suggests, the new setting has the opposite affect, and the default value is ``True`` rather than ``False``.",
-    )
+    RemovedInYourApp18Warning: The HIDE_FULL_NAMES_IN_SUMMARY app setting is
+    deprecated in favour of using SHOW_FULL_NAMES_IN_SUMMARY. Please update your code
+    to use 'settings.SHOW_FULL_NAMES_IN_SUMMARY' instead, as continuing to reference 
+    'settings.HIDE_FULL_NAMES_IN_SUMMARY' will raise an AttributeError when support
+    is removed in two versions time. As the name suggests, the new setting has the 
+    opposite affect, and the default value is now True instead of False.
 
-.. NOTE:: If users of your app are referencing ``HIDE_FULL_NAMES_IN_SUMMARY`` on your settings helper for any reason, they will see this same deprecation warning.
+.. NOTE:: If users of your app are referencing ``settings.HIDE_FULL_NAMES_IN_SUMMARY`` or calling ``settings.get('HIDE_FULL_NAMES_IN_SUMMARY')`` for any reason, this warning will be raised by their code also.
 
 First, we want to update the view to use the new setting instead, because the above will now raise a deprecation warning, and that's not what we want:
 
 .. code-block:: python
-
-    # yourapp/views.py
+    :caption: yourapp/views.py
+    :emphasize-lines: 4
 
     class TransactionSummaryList(ListView):
         
@@ -175,16 +171,52 @@ First, we want to update the view to use the new setting instead, because the ab
             }
             data.update(**kwargs)
             return super().get_context_data(**data)
-    ...
 
+        ...
 
-``settings.SHOW_FULL_NAMES_IN_SUMMARY`` will automatically return the value of the deprecated setting if the user hasn't yet updated their code to use the new one. In some scenarios, this is all that is required, but obviously more must be done in our case, as the old and new settings have completely opposite meanings. We to know where the settings module got it's value from, so that we can change our app's behaviour accordingly.
+Because your settings helper knows all it needs to about the replacement, ``settings.SHOW_FULL_NAMES_IN_SUMMARY`` will do some extra work to support users still using the old setting name:
 
-The ``is_value_from_deprecated_setting()`` method can help us here:
+1.  It first looks for an override setting using the new name (which is the 'ideal' scenario) and where we want all our users to be eventually. For example:
+
+    .. code-block:: python
+        :caption: userproject/settings/base.py
+
+        # ---------------------------------
+        # Overrides for ``your-django-app``
+        # ---------------------------------
+
+        YOURAPP_SHOW_FULL_NAMES_IN_SUMMARY = False  # I'm cutting edge!
+
+2.  Next, Cogwheels will look for an override setting defined using the old name. For example:
+
+    .. code-block:: python
+        :caption: userproject/settings/base.py
+
+        # ---------------------------------
+        # Overrides for ``your-django-app``
+        # ---------------------------------
+
+        YOURAPP_HIDE_FULL_NAMES_IN_SUMMARY = True  # I'm old-skool!
+
+3.  If no override setting was found, Cogwheels resorts to using the default value for the new setting, as you'd expect.
+
+Although we’re still happy to the deprecated setting for a couple more versions, we want to make users awere that the setting has been replaced. So, Cogwheels will raise the following warning:
+
+    .. code-block:: console
+        
+        RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
+        renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings
+        to use the new setting, otherwise the app will revert to its default behavior 
+        in two versions time (when support for YOURAPP_FLATMENU_MENU_ICON will be
+        removed entirely).
+
+In some scenarios, would be all that is required, but obviously more must be done in our case, because the old and new settings have completely different meanings. We need to know where the settings module got it's value from, so that we can modify our app's behaviour accordingly.
+
+The settings helper's ``is_value_from_deprecated_setting()`` method can help us here:
 
 .. code-block:: python
-
-    # yourapp/views.py
+    :caption: yourapp/views.py
+    :emphasize-lines: 6-12
 
     class TransactionSummaryList(ListView):
         
@@ -192,7 +224,9 @@ The ``is_value_from_deprecated_setting()`` method can help us here:
             show_full_names = settings.SHOW_FULL_NAMES_IN_SUMMARY
             
             # TODO: Remove in v1.8
-            if settings.is_value_from_deprecated_setting('SHOW_FULL_NAMES_IN_SUMMARY', 'HIDE_FULL_NAMES_IN_SUMMARY'):
+            if settings.is_value_from_deprecated_setting(
+                'SHOW_FULL_NAMES_IN_SUMMARY', 'HIDE_FULL_NAMES_IN_SUMMARY'
+            ):
                 # The old setting meant the opposite, so...
                 show_full_names = not show_full_names
             
@@ -201,6 +235,10 @@ The ``is_value_from_deprecated_setting()`` method can help us here:
             }
             data.update(**kwargs)
             return super().get_context_data(**data)
+
+        ...
+
+Now our code is catering for all users, whether they are overriding the deprecated setting, the replacement, both or neither.
 
 
 4. Updating your documentation
@@ -230,8 +268,8 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 1.  Remove the default value for the old setting from ``defaults.py`` 
     
     .. code-block:: python
-
-        # yourapp/conf/defaults.py
+        :caption: yourapp/conf/defaults.py
+        :emphasize-lines: 20
 
         # -------------------
         # Admin / UI settings
@@ -254,19 +292,20 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 
         HIDE_FULL_NAMES_IN_SUMMARY = False  # REMOVE THIS LINE!
 
-2. Remove the deprecation definition from your setting helper class in ``settings.py``
+2.  Remove the deprecation definition from your setting helper class in ``settings.py``
 
     .. code-block:: python
-
-        # yourapp/conf/settings.py
-
-        from cogwheels import BaseAppSettingsHelper
-
+        :caption: yourapp/conf/settings.py
+        :emphasize-lines: 5
         
+        from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
+        from yourapp.utils.deprecation import RemovedInYourApp18Warning
+
         class MyAppSettingsHelper(BaseAppSettingsHelper):
-
             deprecations = ()
-    
-3. Announce the breaking change in the version ``1.8`` release notes.
 
-4. Remove the entry for the old setting from the "Settings reference" page of the documentation.
+3. Remove any special-case code that was added in ``1.6`` to support the old setting during it's deprecation period.
+    
+4. Announce the breaking change in the version ``1.8`` release notes.
+
+5. Remove the entry for the old setting from the "Settings reference" page of the documentation.

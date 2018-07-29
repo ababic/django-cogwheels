@@ -15,8 +15,7 @@ What we're looking to achieve
 Let's pretend that the latest release of your app has two overridable app settings, which appear in the ``defaults.py`` module like so:
 
 .. code-block:: python
-
-    # yourapp/conf/defaults.py
+    :caption: yourapp/conf/defaults.py
 
     # -------------------
     # Admin / UI settings
@@ -26,17 +25,11 @@ Let's pretend that the latest release of your app has two overridable app settin
 
     FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
 
-    # --------------
-    # Other settings
-    # --------------
-
-    ...
-
 The naming convention here is a little inconsistent, so you would like to rename the ``FLATMENU_MENU_ICON`` setting to ``FLAT_MENUS_MENU_ICON``.
 
 
-Some assumptions
-================
+A few assumptions
+=================
 
 In the following example, we're going to assume that:
 
@@ -60,8 +53,8 @@ In version ``1.6``
 First, we'll add a setting using the new name to ``defaults.py``. We also want to mark the existing setting in ``defaults.py`` in some way, to help us remember that it’s deprecated. Our updated ``defaults.py`` module should look something like this:
 
 .. code-block:: python
-
-    # yourapp/conf/defaults.py
+    :caption: yourapp/conf/defaults.py
+    :emphasize-lines: 5,20
 
     # -------------------
     # Admin / UI settings
@@ -91,8 +84,7 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
 Next, we'll update the settings helper definition for our app, so that it knows how to handle requests for setting values:
 
 .. code-block:: python
-
-    # yourapp/conf/settings.py
+    :caption: yourapp/conf/settings.py
 
     from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
     from yourapp.utils.deprecation import RemovedInYourApp18Warning
@@ -112,7 +104,7 @@ There are a few things worth noting here:
 
 - If you need to define ``deprecations`` on your ``SettingsHelper`` class, it needs to be a tuple, even if you only need a single ``DeprecatedAppSetting`` definition.
 - In the ``DeprecatedAppSetting`` definition, setting names are supplied as strings, and we're still using internal/non-prefixed setting names (e.g. ``"FLATMENU_MENU_ICON"`` rather than ``"YOURAPP_FLATMENU_MENU_ICON"``).
-- The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ```warnings.warn()`` <https://docs.python.org/3.7/library/warnings.html#warnings.warn>`_ method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning``.
+- The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning``.
 
 
 3. Updating your app code
@@ -121,8 +113,8 @@ There are a few things worth noting here:
 The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine our code currently looks something like this:
 
 .. code-block:: python
-
-    # yourapp/modeladmin.py
+    :caption: yourapp/modeladmin.py
+    :emphasize-lines: 7
 
     from wagtail.contrib.modeladmin.options import ModelAdmin
 
@@ -131,23 +123,24 @@ The above steps take care of the deprecation definition, but we still have to up
 
     class FlatMenuAdmin(ModelAdmin):
         menu_icon = settings.FLATMENU_MENU_ICON
-    ...
 
 This code will now raise the following deprecation warning:
 
 .. code-block:: console
     
-    RemovedInYourApp18Warning(
-        The FLATMENU_MENU_ICON app setting has been renamed to FLAT_MENUS_MENU_ICON. Please update your code to use 'settings.FLAT_MENUS_MENU_ICON' instead, as continuing to reference 'settings.FLATMENU_MENU_ICON' will raise an AttributeError when support is removed in two versions time.",
-    )
+    RemovedInYourApp18Warning: The FLATMENU_MENU_ICON app setting has been
+    renamed to FLAT_MENUS_MENU_ICON. Please update your code to use 
+    'settings.FLAT_MENUS_MENU_ICON' instead, as continuing to reference 
+    'settings.FLATMENU_MENU_ICON' will raise an AttributeError when support is
+    removed in two versions time.
 
-.. NOTE:: If users of your app are referencing ``FLATMENU_MENU_ICON`` on your settings helper for any reason, they will see this same deprecation warning.
+.. NOTE:: If users of your app are referencing ``settings.FLATMENU_MENU_ICON`` or calling ``settings.get('FLATMENU_MENU_ICON')`` for any reason, this warning will be raised by their code also.
 
 To resolve this for a 'setting rename', all you have to do is change any references to the old name to the new one, like so:
 
 .. code-block:: python
-
-    # yourapp/modeladmin.py
+    :caption: yourapp/modeladmin.py
+    :emphasize-lines: 7
 
     from wagtail.contrib.modeladmin.options import ModelAdmin
 
@@ -155,48 +148,43 @@ To resolve this for a 'setting rename', all you have to do is change any referen
 
 
     class FlatMenuAdmin(ModelAdmin):
-        menu_icon = settings.FLAT_MENUS_MENU_ICON  # <<  better!
-    ...
+        menu_icon = settings.FLAT_MENUS_MENU_ICON
 
 Because your settings helper knows all it needs to about the rename, ``settings.FLAT_MENUS_MENU_ICON`` will do some extra work to support users still using the old setting name:
 
-1.  It first looks for an override setting using the new name, which is the 'ideal' scenario, and where we want all our users to be eventually. For example:
+1.  It first looks for an override setting using the new name (which is the 'ideal' scenario), and where we want all our users to be eventually. For example:
 
     .. code-block:: python
-        
-        # userproject/settings/base.py
-
-        ...
+        :caption: userproject/settings/base.py
 
         # ---------------------------------
         # Overrides for ``your-django-app``
         # ---------------------------------
 
-        FLAT_MENUS_MENU_ICON = 'icon-new'  # I'm cutting edge!
+        YOURAPP_FLAT_MENUS_MENU_ICON = 'icon-new'  # I'm cutting edge!
 
 2.  Next, Cogwheels will look for an override setting defined using the old name. For example:
 
     .. code-block:: python
-        
-        # userproject/settings/base.py
-
-        ...
+        :caption: userproject/settings/base.py
 
         # ---------------------------------
         # Overrides for ``your-django-app``
         # ---------------------------------
 
-        FLATMENU_MENU_ICON = 'icon-old'  # I'm old-skool!
+        YOURAPP_FLATMENU_MENU_ICON = 'icon-old'  # I'm old-skool!
 
-3. If no override setting was found, Cogwheels resorts to using the default value for the new setting, as you'd expect.
+3.  If no override setting was found, Cogwheels resorts to using the default value for the new setting, as you'd expect.
 
-Although we’re still happy to support this setting for a while longer, we want users to know that the setting has been renamed, and that they should use the new setting name if they wish for their override value to continue working in future versions. So, Cogwheels will raise the following warning:
+Although we’re still happy to the deprecated setting for a couple more versions, we want to make users awere that the setting has been replaced. So, Cogwheels will raise the following warning:
 
     .. code-block:: console
         
-        RemovedInYourApp18Warning(
-            The YOURAPP_FLATMENU_MENU_ICON setting has been renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings to use the new setting, otherwise the app will revert to its default behavior in two versions time (when support for YOURAPP_FLATMENU_MENU_ICON will be removed entirely). 
-        )
+        RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
+        renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings to 
+        use the new setting, otherwise the app will revert to its default behavior in 
+        two versions time (when support for YOURAPP_FLATMENU_MENU_ICON will be removed 
+        entirely).
 
 
 4. Updating your documentation
@@ -226,8 +214,8 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 1.  Remove the default value for the old setting from ``defaults.py`` 
     
     .. code-block:: python
-
-        # yourapp/conf/defaults.py
+        :caption: yourapp/conf/defaults.py
+        :emphasize-lines: 14
 
         # -------------------
         # Admin / UI settings
@@ -242,19 +230,18 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
         # -------------------
         # These need to stick around until support is dropped completely
 
-        FLATMENU_MENU_ICON = 'list-ol'  # DELETE ME!
+        FLATMENU_MENU_ICON = 'list-ol'  # REMOVE THIS LINE!
 
-2. Remove the deprecation definition from your app's setting helper in ``settings.py``
+2.  Remove the deprecation definition from your app's setting helper in ``settings.py``
 
     .. code-block:: python
-
-        # yourapp/conf/settings.py
-
-        from cogwheels import BaseAppSettingsHelper
-
+        :caption: yourapp/conf/settings.py
+        :emphasize-lines: 5
         
-        class MyAppSettingsHelper(BaseAppSettingsHelper):
+        from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
+        from yourapp.utils.deprecation import RemovedInYourApp18Warning
 
+        class MyAppSettingsHelper(BaseAppSettingsHelper):
             deprecations = ()
     
 3. Announce the breaking change in the version ``1.8`` release notes.
