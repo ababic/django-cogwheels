@@ -1,5 +1,9 @@
+import warnings
+from unittest.mock import patch
+
 from django.test import override_settings
 
+from cogwheels.helpers import BaseAppSettingsHelper
 from cogwheels.tests.base import AppSettingTestCase
 from cogwheels.tests.conf import defaults
 
@@ -52,6 +56,7 @@ class TestRenamedSetting(AppSettingTestCase):
             "entirely).",
             str(cm.warning)
         )
+
 
 class TestReplacedSetting(AppSettingTestCase):
 
@@ -136,3 +141,42 @@ class TestMultipleReplacementSetting(AppSettingTestCase):
             self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_THREE'),
             defaults.REPLACES_MULTIPLE
         )
+
+
+@override_settings(COGWHEELS_TESTS_REPLACED_SETTING_OLD='somevalue')
+class TestSuppressWarnings(AppSettingTestCase):
+
+    def test_warning_raised_by_default(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper._get_raw_value('REPLACED_SETTING_OLD')
+            self.assertEqual(len(w), 1)
+            self.appsettingshelper._get_raw_value('REPLACED_SETTING_NEW')
+            self.assertEqual(len(w), 2)
+
+    def test_no_warnings_raised_by_get_raw_value_when_suppress_warnings_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper._get_raw_value('REPLACED_SETTING_OLD', suppress_warnings=True)
+            self.appsettingshelper._get_raw_value('REPLACED_SETTING_NEW', suppress_warnings=True)
+            self.assertEqual(len(w), 0)
+
+    @patch.object(BaseAppSettingsHelper, '_get_raw_value', return_value="")
+    def test_suppress_warnings_is_passed_on_to_get_raw_value_by_get(self, mocked_method):
+        self.appsettingshelper.get('DEPRECATED_SETTING', suppress_warnings=True)
+        self.assertIs(mocked_method.call_args[1]['suppress_warnings'], True)
+
+    @patch.object(BaseAppSettingsHelper, '_get_raw_value', return_value=defaults.VALID_MODEL)
+    def test_suppress_warnings_is_passed_on_to_get_raw_value_by_get_model(self, mocked_method):
+        self.appsettingshelper.get_model('DEPRECATED_SETTING', suppress_warnings=True)
+        self.assertIs(mocked_method.call_args[1]['suppress_warnings'], True)
+
+    @patch.object(BaseAppSettingsHelper, '_get_raw_value', return_value=defaults.VALID_MODULE)
+    def test_suppress_warnings_is_passed_on_to_get_raw_value_by_get_module(self, mocked_method):
+        self.appsettingshelper.get_module('DEPRECATED_SETTING', suppress_warnings=True)
+        self.assertIs(mocked_method.call_args[1]['suppress_warnings'], True)
+
+    @patch.object(BaseAppSettingsHelper, '_get_raw_value', return_value=defaults.VALID_OBJECT)
+    def test_suppress_warnings_is_passed_on_to_get_raw_value_by_get_object(self, mocked_method):
+        self.appsettingshelper.get_object('DEPRECATED_SETTING', suppress_warnings=True)
+        self.assertIs(mocked_method.call_args[1]['suppress_warnings'], True)

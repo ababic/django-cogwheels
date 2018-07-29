@@ -71,30 +71,34 @@ class DeprecatedAppSetting:
             return 'the next version'
         return 'two versions time'
 
-    def _raise_warning(self, message, **replacement_kwargs):
+    def _make_warning_message(self, message_format):
         if self.additional_guidance:
-            message += ' ' + self.additional_guidance
-        warnings.warn(
-            message.format(
-                prefix=self.prefix,
-                setting_name=self.setting_name,
-                replacement_name=self.replacement_name,
-                removed_in_version=self.get_removed_in_version_text()
-            ),
-            category=self.warning_category
+            message_format += ' ' + self.additional_guidance
+        return message_format.format(
+            prefix=self.prefix,
+            setting_name=self.setting_name,
+            replacement_name=self.replacement_name,
+            removed_in_version=self.get_removed_in_version_text(),
         )
 
-    def warn_if_setting_attribute_referenced(self):
+    def warn_if_setting_attribute_referenced(self, stacklevel=2):
+        message_format = SIMPLE_DEPRECATION_WARNING_FORMAT
         if self.replacement_name is not None:
+            message_format = REPLACED_ATTRIBUTE_WARNING_FORMAT
             if self.is_renamed:
-                self._raise_warning(RENAMED_ATTRIBUTE_WARNING_FORMAT)
-                return
-            self._raise_warning(REPLACED_ATTRIBUTE_WARNING_FORMAT)
-            return
-        self._raise_warning(SIMPLE_DEPRECATION_WARNING_FORMAT)
+                message_format = RENAMED_ATTRIBUTE_WARNING_FORMAT
+        warnings.warn(
+            self._make_warning_message(message_format),
+            category=self.warning_category,
+            stacklevel=stacklevel,
+        )
 
-    def warn_if_user_using_old_setting_name(self):
-        if self.is_renamed:
-            self._raise_warning(RENAMED_OLD_SETTING_USED_WARNING_FORMAT)
-            return
-        self._raise_warning(REPLACED_OLD_SETTING_USER_WARNING_FORMAT)
+    def warn_if_user_using_old_setting_name(self, stacklevel=2):
+        warnings.warn(
+            self._make_warning_message(
+                RENAMED_OLD_SETTING_USED_WARNING_FORMAT if self.is_renamed
+                else REPLACED_OLD_SETTING_USER_WARNING_FORMAT
+            ),
+            category=self.warning_category,
+            stacklevel=stacklevel,
+        )
