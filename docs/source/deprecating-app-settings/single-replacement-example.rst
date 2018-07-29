@@ -31,7 +31,7 @@ For the sake of consistency, you'd like to rename HIDE_FULL_NAMES_IN_SUMMARY to 
 
 
 A few assumptions
-=================
+-----------------
 
 In the following example, we're going to assume that:
 

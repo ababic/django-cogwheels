@@ -29,7 +29,7 @@ The naming convention here is a little inconsistent, so you would like to rename
 
 
 A few assumptions
-=================
+-----------------
 
 In the following example, we're going to assume that:
 
