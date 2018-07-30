@@ -14,6 +14,7 @@ class TestDeprecationWarningStackLevelSetting(AppSettingTestCase):
 
     def test_raise_all_deprecated_setting_reference_warnings(self):
         with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             self.appsettingshelper.get('DEPRECATED_SETTING')
             self.assert_this_file_appears_as_cause_of_warning(w.pop())
 
@@ -43,6 +44,7 @@ class TestDeprecationWarningStackLevelSetting(AppSettingTestCase):
     )
     def test_raise_all_deprecated_setting_value_used_by_replacement_warnings(self):
         with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             self.appsettingshelper.get('RENAMED_SETTING_NEW')
             self.assert_this_file_appears_as_cause_of_warning(w.pop())
 
@@ -63,6 +65,7 @@ class TestDeprecationWarningStackLevelSetting(AppSettingTestCase):
     )
     def test_raise_all_deprecated_setting_value_used_by_replacement_warnings_via_attribute_shortcuts(self):
         with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             self.appsettingshelper.RENAMED_SETTING_NEW
             self.assert_this_file_appears_as_cause_of_warning(w.pop())
 
