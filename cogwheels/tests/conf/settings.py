@@ -27,17 +27,17 @@ class TestAppSettingsHelper(BaseAppSettingsHelper):
         DeprecatedAppSetting(
             'REPLACED_MODEL_SETTING',
             replaced_by='REPLACEMENT_MODEL_SETTING',
-            warning_category=DeprecationWarning
+            warning_category=PendingDeprecationWarning
         ),
         DeprecatedAppSetting(
             'REPLACED_MODULE_SETTING',
             replaced_by='REPLACEMENT_MODULE_SETTING',
-            warning_category=DeprecationWarning
+            warning_category=PendingDeprecationWarning
         ),
         DeprecatedAppSetting(
             'REPLACED_OBJECT_SETTING',
             replaced_by='REPLACEMENT_OBJECT_SETTING',
-            warning_category=DeprecationWarning
+            warning_category=PendingDeprecationWarning
         ),
         DeprecatedAppSetting(
             'REPLACED_SETTING_ONE',

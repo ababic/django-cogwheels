@@ -69,7 +69,7 @@ class TestReplacedModuleSetting(AppSettingTestCase):
                 "The REPLACED_MODULE_SETTING app setting is deprecated in favour of using "
                 "REPLACEMENT_MODULE_SETTING. Please update your code to reference the new setting, "
                 "as continuing to reference REPLACED_MODULE_SETTING will cause an exception to be "
-                "raised once support is removed in the next version.",
+                "raised once support is removed in two versions time.",
                 str(w[0])
             )
 
@@ -104,7 +104,7 @@ class TestReplacedModuleSetting(AppSettingTestCase):
                 "using COGWHEELS_TESTS_REPLACEMENT_MODULE_SETTING. Please update your Django "
                 "settings to use the new setting, otherwise the app will revert to it's default "
                 "behaviour once support for COGWHEELS_TESTS_REPLACED_MODULE_SETTING is removed in "
-                "the next version.",
+                "two versions time.",
                 str(w[0])
             )
 
