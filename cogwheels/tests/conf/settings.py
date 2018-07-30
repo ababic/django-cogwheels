@@ -19,8 +19,8 @@ class TestAppSettingsHelper(BaseAppSettingsHelper):
             warning_category=DeprecationWarning,
         ),
         DeprecatedAppSetting(
-            'REPLACED_SETTING_OLD',
-            replaced_by='REPLACED_SETTING_NEW',
+            'REPLACED_SETTING',
+            replaced_by='REPLACEMENT_SETTING',
             warning_category=PendingDeprecationWarning,
             additional_guidance=COMPLEX_REPLACEMENT_GUIDANCE
         ),

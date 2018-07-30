@@ -11,7 +11,7 @@ class TestIsValueFromDeprecatedSetting(AppSettingTestCase):
     def test_returns_false_when_neither_setting_is_overridden(self):
         for new_name, deprecated_name in (
             ('RENAMED_SETTING_NEW', 'RENAMED_SETTING_OLD'),
-            ('REPLACED_SETTING_NEW', 'REPLACED_SETTING_OLD'),
+            ('REPLACEMENT_SETTING', 'REPLACED_SETTING'),
             ('REPLACES_MULTIPLE', 'REPLACED_SETTING_THREE'),
         ):
             self.assertIs(
@@ -21,13 +21,13 @@ class TestIsValueFromDeprecatedSetting(AppSettingTestCase):
 
     @override_settings(
         COGWHEELS_TESTS_RENAMED_SETTING_NEW='new',
-        COGWHEELS_TESTS_REPLACED_SETTING_NEW='new',
+        COGWHEELS_TESTS_REPLACEMENT_SETTING='new',
         COGWHEELS_TESTS_REPLACES_MULTIPLE='new'
     )
     def test_returns_false_if_just_the_new_setting_is_overridden(self):
         for new_name, deprecated_name in (
             ('RENAMED_SETTING_NEW', 'RENAMED_SETTING_OLD'),
-            ('REPLACED_SETTING_NEW', 'REPLACED_SETTING_OLD'),
+            ('REPLACEMENT_SETTING', 'REPLACED_SETTING'),
             ('REPLACES_MULTIPLE', 'REPLACED_SETTING_THREE'),
         ):
             self.assertIs(
@@ -38,15 +38,15 @@ class TestIsValueFromDeprecatedSetting(AppSettingTestCase):
     @override_settings(
         COGWHEELS_TESTS_RENAMED_SETTING_NEW='new',
         COGWHEELS_TESTS_RENAMED_SETTING_OLD='old',
-        COGWHEELS_TESTS_REPLACED_SETTING_NEW='new',
-        COGWHEELS_TESTS_REPLACED_SETTING_OLD='old',
+        COGWHEELS_TESTS_REPLACEMENT_SETTING='new',
+        COGWHEELS_TESTS_REPLACED_SETTING='old',
         COGWHEELS_TESTS_REPLACES_MULTIPLE='new',
         COGWHEELS_TESTS_REPLACED_SETTING_THREE='old',
     )
     def test_returns_false_if_both_new_and_old_settings_are_overridden(self):
         for new_name, deprecated_name in (
             ('RENAMED_SETTING_NEW', 'RENAMED_SETTING_OLD'),
-            ('REPLACED_SETTING_NEW', 'REPLACED_SETTING_OLD'),
+            ('REPLACEMENT_SETTING', 'REPLACED_SETTING'),
             ('REPLACES_MULTIPLE', 'REPLACED_SETTING_THREE'),
         ):
             self.assertIs(
@@ -56,13 +56,13 @@ class TestIsValueFromDeprecatedSetting(AppSettingTestCase):
 
     @override_settings(
         COGWHEELS_TESTS_RENAMED_SETTING_OLD='somevalue',
-        COGWHEELS_TESTS_REPLACED_SETTING_OLD='someothervalue',
+        COGWHEELS_TESTS_REPLACED_SETTING='someothervalue',
         COGWHEELS_TESTS_REPLACED_SETTING_THREE='anothervalue',
     )
     def test_returns_true_if_just_the_old_setting_is_overridden(self):
         for new_name, deprecated_name in (
             ('RENAMED_SETTING_NEW', 'RENAMED_SETTING_OLD'),
-            ('REPLACED_SETTING_NEW', 'REPLACED_SETTING_OLD'),
+            ('REPLACEMENT_SETTING', 'REPLACED_SETTING'),
             ('REPLACES_MULTIPLE', 'REPLACED_SETTING_THREE'),
         ):
             self.assertIs(

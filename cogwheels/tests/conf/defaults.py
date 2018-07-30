@@ -61,9 +61,9 @@ RENAMED_SETTING_OLD = 'renamed_old'
 
 RENAMED_SETTING_NEW = 'renamed_new'
 
-REPLACED_SETTING_OLD = 'replaced_old'
+REPLACED_SETTING = 'replaced_old'
 
-REPLACED_SETTING_NEW = 'replaced_new'
+REPLACEMENT_SETTING = 'replaced_new'
 
 REPLACED_SETTING_ONE = 'replaced_one'
 
