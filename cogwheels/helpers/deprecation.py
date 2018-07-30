@@ -1,32 +1,31 @@
 import warnings
 
 
-COMMON_ATTRIBUTE_WARNING_FORMAT = (
-    "Please update your code to reference 'settings.{replacement_name}' "
-    "instead, as continuing to reference 'settings.{setting_name}' will raise "
-    "an AttributeError after support is removed in {removed_in_version}."
+COMMON_REQUESTED_WARNING_FORMAT = (
+    "Please update your code to reference the new setting, as continuing to "
+    "reference {setting_name} will cause an exception to be raised once support "
+    "is removed in {removed_in_version}."
 )
-RENAMED_ATTRIBUTE_WARNING_FORMAT = (
-    "The {setting_name} settings helper attribute has been renamed to "
-    "{replacement_name}. "
-) + COMMON_ATTRIBUTE_WARNING_FORMAT
+RENAMED_SETTING_REQUESTED_WARNING_FORMAT = (
+    "The {setting_name} app setting has been renamed to {replacement_name}. "
+) + COMMON_REQUESTED_WARNING_FORMAT
 
-REPLACED_ATTRIBUTE_WARNING_FORMAT = (
-    "The {setting_name} settings helper attribute is deprecated in favour "
+REPLACED_SETTING_REQUESTED_WARNING_FORMAT = (
+    "The {setting_name} app setting is deprecated in favour "
     "of using {replacement_name}. "
-) + COMMON_ATTRIBUTE_WARNING_FORMAT
+) + COMMON_REQUESTED_WARNING_FORMAT
 
 SIMPLE_DEPRECATION_WARNING_FORMAT = (
-    "The {setting_name} settings helper attribute is deprecated. Please "
-    "remove any references to 'settings.{setting_name}' from your project, as "
-    "this will raise an AttributeError after support is removed in "
+    "The {setting_name} app setting is deprecated. Please remove any "
+    "references to it from your project, as continuing to reference it will "
+    "cause an exception to be raised once support is removed in "
     "{removed_in_version}."
 )
 
 COMMON_OLD_SETTING_USED_WARNING_FORMAT = (
     "Please update your Django settings to use the new setting, otherwise the "
-    "app will revert to its default behaviour in {removed_in_version} ("
-    "when support for {prefix}_{setting_name} will be removed entirely)."
+    "app will revert to it's default behaviour once support for "
+    "{prefix}_{setting_name} is removed in {removed_in_version}."
 )
 
 RENAMED_OLD_SETTING_USED_WARNING_FORMAT = (
@@ -81,12 +80,12 @@ class DeprecatedAppSetting:
             removed_in_version=self.get_removed_in_version_text(),
         )
 
-    def warn_if_setting_attribute_referenced(self, stacklevel=2):
+    def warn_if_deprecated_setting_value_requested(self, stacklevel=2):
         message_format = SIMPLE_DEPRECATION_WARNING_FORMAT
         if self.replacement_name is not None:
-            message_format = REPLACED_ATTRIBUTE_WARNING_FORMAT
+            message_format = REPLACED_SETTING_REQUESTED_WARNING_FORMAT
             if self.is_renamed:
-                message_format = RENAMED_ATTRIBUTE_WARNING_FORMAT
+                message_format = RENAMED_SETTING_REQUESTED_WARNING_FORMAT
         warnings.warn(
             self._make_warning_message(message_format),
             category=self.warning_category,

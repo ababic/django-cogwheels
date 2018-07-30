@@ -1,3 +1,4 @@
+import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
@@ -6,7 +7,7 @@ from cogwheels.tests.base import AppSettingTestCase
 from cogwheels.tests.conf import defaults
 
 
-class TestGetValueMethod(AppSettingTestCase):
+class TestGetMethod(AppSettingTestCase):
 
     def test_raises_error_if_no_default_defined(self):
         with self.assertRaises(ImproperlyConfigured):
@@ -70,3 +71,111 @@ class TestGetValueMethod(AppSettingTestCase):
         result = self.appsettingshelper.get('TUPLES_SETTING')
         self.assertNotEqual(result, defaults.TUPLES_SETTING)
         self.assertIs(result, ())
+
+
+class TestDeprecatedSetting(AppSettingTestCase):
+
+    def test_referencing_deprecated_setting_returns_a_value_but_raises_a_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.assertEqual(
+                self.appsettingshelper.get('DEPRECATED_SETTING'),
+                defaults.DEPRECATED_SETTING,
+            )
+            self.assertEqual(len(w), 1)
+            self.assertIn(
+                "The DEPRECATED_SETTING app setting is deprecated. Please remove any references to "
+                "it from your project, as continuing to reference it will cause an exception to be "
+                "raised once support is removed in the next version.",
+                str(w[0])
+            )
+
+    def test_multiple_references_to_deprecated_setting_raises_a_warning_each_time(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('DEPRECATED_SETTING')
+            self.appsettingshelper.get('DEPRECATED_SETTING')
+            self.appsettingshelper.get('DEPRECATED_SETTING')
+            self.assertEqual(len(w), 3)
+
+
+class TestRenamedSetting(AppSettingTestCase):
+
+    def test_referencing_deprecated_setting_returns_a_value_but_raises_a_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            self.assertEqual(
+                self.appsettingshelper.get('RENAMED_SETTING_OLD'),
+                defaults.RENAMED_SETTING_OLD,
+            )
+            self.assertEqual(len(w), 1)
+            self.assertIn(
+                "The RENAMED_SETTING_OLD app setting has been renamed to RENAMED_SETTING_NEW. "
+                "Please update your code to reference the new setting, as continuing to reference "
+                "RENAMED_SETTING_OLD will cause an exception to be raised once support is removed "
+                "in the next version.",
+                str(w[0])
+            )
+
+    def test_multiple_references_to_deprecated_setting_raises_a_warning_each_time(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('RENAMED_SETTING_OLD')
+            self.appsettingshelper.get('RENAMED_SETTING_OLD')
+            self.appsettingshelper.get('RENAMED_SETTING_OLD')
+            self.assertEqual(len(w), 3)
+
+    @override_settings(COGWHEELS_TESTS_RENAMED_SETTING_OLD='ooolaalaa')
+    def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
+        with self.assertWarns(DeprecationWarning) as cm:
+            self.assertEqual(
+                self.appsettingshelper.get('RENAMED_SETTING_NEW'),
+                'ooolaalaa'
+            )
+        self.assertIn(
+            "The COGWHEELS_TESTS_RENAMED_SETTING_OLD setting has been renamed to "
+            "COGWHEELS_TESTS_RENAMED_SETTING_NEW. Please update your Django settings to use the "
+            "new setting, otherwise the app will revert to it's default behaviour once support for "
+            "COGWHEELS_TESTS_RENAMED_SETTING_OLD is removed in the next version.",
+            str(cm.warning)
+        )
+
+
+@override_settings(
+    COGWHEELS_TESTS_REPLACED_SETTING_ONE='overridden-one',
+    COGWHEELS_TESTS_REPLACED_SETTING_TWO='overridden-two',
+)
+class TestMultipleReplacementSetting(AppSettingTestCase):
+
+    def test_referencing_each_old_setting_on_settings_module_raises_warning(self):
+        for deprecated_setting_name in (
+            'REPLACED_SETTING_ONE', 'REPLACED_SETTING_TWO', 'REPLACED_SETTING_THREE'
+        ):
+            with self.assertWarns(DeprecationWarning):
+                self.appsettingshelper.get(deprecated_setting_name)
+
+    def test_user_defined_setting_with_old_name_is_only_used_if_its_name_matches_accept_deprecated(self):
+        # REPLACES_MULTIPLE should return the value from defaults, because a user could be
+        # overriding any one of the deprecated settings being replaced, and because we have no idea
+        # which to prioritize over the other, picking one could yield unpredictable results.
+        self.assertIs(
+            self.appsettingshelper.get('REPLACES_MULTIPLE'), defaults.REPLACES_MULTIPLE
+        )
+        # Instead, developers can specify which deprecated setting in particular they are willing to
+        # use a value from, and override values for those settings will be returned.
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(
+                self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_ONE'),
+                'overridden-one'
+            )
+
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(
+                self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_TWO'),
+                'overridden-two'
+            )
+        # But the the default value will still be returned if the specified deprecated setting has
+        # not been overridden
+        self.assertIs(
+            self.appsettingshelper.get('REPLACES_MULTIPLE', accept_deprecated='REPLACED_SETTING_THREE'),
+            defaults.REPLACES_MULTIPLE
+        )

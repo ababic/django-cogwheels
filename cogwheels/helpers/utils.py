@@ -38,4 +38,4 @@ class AttrReferToMethodHelper:
 
     def get_value_via_helper_method(self, setting_name):
         method = getattr(self.settings_helper, self.getter_method_name)
-        return method(setting_name, warning_stacklevel=6)
+        return method(setting_name, warning_stacklevel=5)

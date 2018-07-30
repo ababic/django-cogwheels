@@ -26,19 +26,19 @@ class TestModelsShortcut(AppSettingTestCase):
     @patch.object(BaseAppSettingsHelper, 'get_model')
     def test_with_valid_object_setting(self, mocked_method):
         self.appsettingshelper.models.VALID_MODEL
-        mocked_method.assert_called_with('VALID_MODEL', warning_stacklevel=6)
+        mocked_method.assert_called_with('VALID_MODEL', warning_stacklevel=5)
 
     @patch.object(BaseAppSettingsHelper, 'get_model')
     def test_with_invalid_object_setting(self, mocked_method):
         self.appsettingshelper.models.MODULE_UNAVAILABLE_OBJECT
-        mocked_method.assert_called_with('MODULE_UNAVAILABLE_OBJECT', warning_stacklevel=6)
+        mocked_method.assert_called_with('MODULE_UNAVAILABLE_OBJECT', warning_stacklevel=5)
 
     @patch.object(BaseAppSettingsHelper, 'get_model')
     def test_with_completely_different_types_of_setting(self, mocked_method):
         self.appsettingshelper.models.INTEGER_SETTING
-        mocked_method.assert_called_with('INTEGER_SETTING', warning_stacklevel=6)
+        mocked_method.assert_called_with('INTEGER_SETTING', warning_stacklevel=5)
         self.appsettingshelper.models.TUPLES_SETTING
-        mocked_method.assert_called_with('TUPLES_SETTING', warning_stacklevel=6)
+        mocked_method.assert_called_with('TUPLES_SETTING', warning_stacklevel=5)
 
 
 class TestModulesShortcut(AppSettingTestCase):
@@ -64,19 +64,19 @@ class TestModulesShortcut(AppSettingTestCase):
     @patch.object(BaseAppSettingsHelper, 'get_module')
     def test_with_valid_object_setting(self, mocked_method):
         self.appsettingshelper.modules.VALID_MODULE
-        mocked_method.assert_called_with('VALID_MODULE', warning_stacklevel=6)
+        mocked_method.assert_called_with('VALID_MODULE', warning_stacklevel=5)
 
     @patch.object(BaseAppSettingsHelper, 'get_module')
     def test_with_invalid_object_setting(self, mocked_method):
         self.appsettingshelper.modules.MODULE_UNAVAILABLE_OBJECT
-        mocked_method.assert_called_with('MODULE_UNAVAILABLE_OBJECT', warning_stacklevel=6)
+        mocked_method.assert_called_with('MODULE_UNAVAILABLE_OBJECT', warning_stacklevel=5)
 
     @patch.object(BaseAppSettingsHelper, 'get_module')
     def test_with_completely_different_types_of_setting(self, mocked_method):
         self.appsettingshelper.modules.INTEGER_SETTING
-        mocked_method.assert_called_with('INTEGER_SETTING', warning_stacklevel=6)
+        mocked_method.assert_called_with('INTEGER_SETTING', warning_stacklevel=5)
         self.appsettingshelper.modules.TUPLES_SETTING
-        mocked_method.assert_called_with('TUPLES_SETTING', warning_stacklevel=6)
+        mocked_method.assert_called_with('TUPLES_SETTING', warning_stacklevel=5)
 
 
 class TestObjectsShortcut(AppSettingTestCase):
@@ -101,16 +101,16 @@ class TestObjectsShortcut(AppSettingTestCase):
     @patch.object(BaseAppSettingsHelper, 'get_object')
     def test_with_valid_object_setting(self, mocked_method):
         self.appsettingshelper.objects.VALID_OBJECT
-        mocked_method.assert_called_with('VALID_OBJECT', warning_stacklevel=6)
+        mocked_method.assert_called_with('VALID_OBJECT', warning_stacklevel=5)
 
     @patch.object(BaseAppSettingsHelper, 'get_object')
     def test_with_invalid_object_setting(self, mocked_method):
         self.appsettingshelper.objects.MODULE_UNAVAILABLE_OBJECT
-        mocked_method.assert_called_with('MODULE_UNAVAILABLE_OBJECT', warning_stacklevel=6)
+        mocked_method.assert_called_with('MODULE_UNAVAILABLE_OBJECT', warning_stacklevel=5)
 
     @patch.object(BaseAppSettingsHelper, 'get_object')
     def test_with_completely_different_types_of_setting(self, mocked_method):
         self.appsettingshelper.objects.INTEGER_SETTING
-        mocked_method.assert_called_with('INTEGER_SETTING', warning_stacklevel=6)
+        mocked_method.assert_called_with('INTEGER_SETTING', warning_stacklevel=5)
         self.appsettingshelper.objects.TUPLES_SETTING
-        mocked_method.assert_called_with('TUPLES_SETTING', warning_stacklevel=6)
+        mocked_method.assert_called_with('TUPLES_SETTING', warning_stacklevel=5)
