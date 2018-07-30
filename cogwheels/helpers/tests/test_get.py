@@ -103,6 +103,7 @@ class TestRenamedSetting(AppSettingTestCase):
 
     def test_referencing_deprecated_setting_returns_a_value_but_raises_a_warning(self):
         with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             self.assertEqual(
                 self.appsettingshelper.get('RENAMED_SETTING_OLD'),
                 defaults.RENAMED_SETTING_OLD,
@@ -138,6 +139,65 @@ class TestRenamedSetting(AppSettingTestCase):
             "COGWHEELS_TESTS_RENAMED_SETTING_OLD is removed in the next version.",
             str(cm.warning)
         )
+
+
+class TestReplacedSetting(AppSettingTestCase):
+
+    def test_referencing_deprecated_setting_returns_a_value_but_raises_a_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.assertEqual(
+                self.appsettingshelper.get('REPLACED_SETTING'),
+                defaults.REPLACED_SETTING,
+            )
+            self.assertEqual(len(w), 1)
+            self.assertIn(
+                "The REPLACED_SETTING app setting is deprecated in favour of using "
+                "REPLACEMENT_SETTING. Please update your code to reference the new setting, as "
+                "continuing to reference REPLACED_SETTING will cause an exception to be raised "
+                "once support is removed in two versions time.",
+                str(w[0])
+            )
+            # The additional guidance should be present also
+            self.assertIn(
+                self.appsettingshelper.COMPLEX_REPLACEMENT_GUIDANCE,
+                str(w[0])
+            )
+
+    def test_multiple_references_to_deprecated_setting_raises_a_warning_each_time(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('REPLACED_SETTING')
+            self.appsettingshelper.get('REPLACED_SETTING')
+            self.appsettingshelper.get('REPLACED_SETTING')
+            self.assertEqual(len(w), 3)
+
+    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING='boom!')
+    def test_user_defined_setting_with_old_name_still_used_when_new_setting_referenced(self):
+        with self.assertWarns(PendingDeprecationWarning) as cm:
+            self.assertEqual(
+                self.appsettingshelper.get('REPLACEMENT_SETTING'), 'boom!'
+            )
+        self.assertIn(
+            "The COGWHEELS_TESTS_REPLACED_SETTING setting is deprecated in favour of using "
+            "COGWHEELS_TESTS_REPLACEMENT_SETTING. Please update your Django settings to use the "
+            "new setting, otherwise the app will revert to it's default behaviour once support for "
+            "COGWHEELS_TESTS_REPLACED_SETTING is removed in two versions time.",
+            str(cm.warning)
+        )
+        # The additional guidance should be present also
+        self.assertIn(
+            self.appsettingshelper.COMPLEX_REPLACEMENT_GUIDANCE,
+            str(cm.warning)
+        )
+
+    @override_settings(COGWHEELS_TESTS_REPLACED_SETTING='boom!')
+    def test_using_suppress_warnings_has_the_desired_effect(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('REPLACED_SETTING', suppress_warnings=True)
+            self.appsettingshelper.get('REPLACEMENT_SETTING', suppress_warnings=True)
+            self.assertEqual(len(w), 0)
 
 
 @override_settings(
