@@ -148,11 +148,12 @@ This line highlighted above will now cause the following deprecation warning to 
 .. code-block:: console
     
     RemovedInYourApp18Warning: The HIDE_FULL_NAMES_IN_SUMMARY app setting is
-    deprecated in favour of using SHOW_FULL_NAMES_IN_SUMMARY. Please update your code
-    to use 'settings.SHOW_FULL_NAMES_IN_SUMMARY' instead, as continuing to reference 
-    'settings.HIDE_FULL_NAMES_IN_SUMMARY' will raise an AttributeError when support
-    is removed in two versions time. As the name suggests, the new setting has the 
-    opposite affect, and the default value is now True instead of False.
+    deprecated in favour of using SHOW_FULL_NAMES_IN_SUMMARY. Please update 
+    your code to reference the new setting, as continuing to reference 
+    HIDE_FULL_NAMES_IN_SUMMARY will cause an exception to be raised once
+    support is removed in two versions time. As the name suggests, the new
+    setting has the opposite affect, and the default value is now True instead
+    of False.
 
 .. NOTE:: If users of your app are referencing ``settings.HIDE_FULL_NAMES_IN_SUMMARY`` or calling ``settings.get('HIDE_FULL_NAMES_IN_SUMMARY')`` for any reason, this warning will be raised by their code also.
 
@@ -202,13 +203,13 @@ Because your settings helper knows all it needs to about the replacement, ``sett
 
 Although we’re still happy to the deprecated setting for a couple more versions, we want to make users awere that the setting has been replaced. So, Cogwheels will raise the following warning:
 
-    .. code-block:: console
-        
-        RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
-        renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings
-        to use the new setting, otherwise the app will revert to its default behavior 
-        in two versions time (when support for YOURAPP_FLATMENU_MENU_ICON will be
-        removed entirely).
+.. code-block:: console
+    
+    RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
+    renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings
+    to use the new setting, otherwise the app will revert to it's default
+    behavior once support for YOURAPP_FLATMENU_MENU_ICON it removed in two 
+    versions time.
 
 In some scenarios, would be all that is required, but obviously more must be done in our case, because the old and new settings have completely different meanings. We need to know where the settings module got it's value from, so that we can modify our app's behaviour accordingly.
 

@@ -129,10 +129,9 @@ This code will now raise the following deprecation warning:
 .. code-block:: console
     
     RemovedInYourApp18Warning: The FLATMENU_MENU_ICON app setting has been
-    renamed to FLAT_MENUS_MENU_ICON. Please update your code to use 
-    'settings.FLAT_MENUS_MENU_ICON' instead, as continuing to reference 
-    'settings.FLATMENU_MENU_ICON' will raise an AttributeError when support is
-    removed in two versions time.
+    renamed to FLAT_MENUS_MENU_ICON. Please update your code to reference the
+    new setting, as continuing to reference FLATMENU_MENU_ICON will cause an
+    exception to be raised once support is removed in two versions time.
 
 .. NOTE:: If users of your app are referencing ``settings.FLATMENU_MENU_ICON`` or calling ``settings.get('FLATMENU_MENU_ICON')`` for any reason, this warning will be raised by their code also.
 
@@ -178,13 +177,13 @@ Because your settings helper knows all it needs to about the rename, ``settings.
 
 Although we’re still happy to the deprecated setting for a couple more versions, we want to make users awere that the setting has been replaced. So, Cogwheels will raise the following warning:
 
-    .. code-block:: console
-        
-        RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
-        renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings to 
-        use the new setting, otherwise the app will revert to its default behavior in 
-        two versions time (when support for YOURAPP_FLATMENU_MENU_ICON will be removed 
-        entirely).
+.. code-block:: console
+    
+    RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
+    renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings
+    to use the new setting, otherwise the app will revert to it's default
+    behaviour once support for YOURAPP_FLATMENU_MENU_ICON is removed in two
+    versions time.
 
 
 4. Updating your documentation
