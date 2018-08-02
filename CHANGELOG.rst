@@ -1,8 +1,13 @@
 Changelog
 =========
 
-0.1.1 (XX.XX.XXXX) (IN DEVELOPMENT)
+0.3.0 (XX.XX.XXXX) (IN DEVELOPMENT)
 -----------------------------------
+
+- TBA
+
+0.2.0 (02.08.2018)
+------------------
 
 - Added official support for Python 3.7.
 - Default deprecation warning messages have been updated to include an indication of when a deprecated setting will be removed, and better explain the consequences of not updating.
