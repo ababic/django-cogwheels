@@ -49,8 +49,8 @@ In version ``1.6``
 ------------------
 
 
-1. Adding the new setting
-~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Updating ``conf/defaults.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First, we'll add a setting using the new name to ``defaults.py``. We also want to mark the existing settings in ``defaults.py`` in some way, to help us remember that they are deprecated. Our updated ``defaults.py`` module should look something like this:
 
@@ -80,10 +80,10 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
     HIDE_FULL_NAMES_IN_SUMMARY = False  # Remove me in v1.8!
 
 
-2. Declaring the deprecation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Updating ``conf/settings.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Next, we'll update the settings helper definition for our app, so that it knows how to handle requests for setting values:
+Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
 .. code-block:: python
     :caption: yourapp/conf/settings.py

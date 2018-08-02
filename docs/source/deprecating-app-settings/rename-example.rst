@@ -25,7 +25,9 @@ Let's pretend that the latest release of your app has two overridable app settin
 
     FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
 
-The naming convention here is a little inconsistent, so you would like to rename the ``FLATMENU_MENU_ICON`` setting to ``FLAT_MENUS_MENU_ICON``.
+The naming convention here is a little inconsistent, so you would like to rename the ``FLATMENU_MENU_ICON`` setting to ``FLAT_MENUS_MENU_ICON``, and get users to use that instead.
+
+You'll continue to respect override values defined using ``YOURAPP_FLATMENU_MENU_ICON`` for another two versions, but want to warn those users that support for the old setting will removed soon, and that they should update their Django settings to use ``YOURAPP_FLAT_MENUS_MENU_ICON`` instead.
 
 
 A few assumptions
@@ -47,10 +49,10 @@ In version ``1.6``
 ------------------
 
 
-1. Adding the new setting
-~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Updating ``conf/defaults.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, we'll add a setting using the new name to ``defaults.py``. We also want to mark the existing setting in ``defaults.py`` in some way, to help us remember that it’s deprecated. Our updated ``defaults.py`` module should look something like this:
+First, you'll want to add a setting using the new name to ``defaults.py``. You may find it helpful to mark the deprecated setting here in some way, to remind you and other app maintainers that it has been deprecated.
 
 .. code-block:: python
     :caption: yourapp/conf/defaults.py
@@ -75,13 +77,13 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
     # -------------------
     # These need to stick around until support is dropped completely
 
-    FLATMENU_MENU_ICON = 'list-ol'  # Remove me in v1.8!
+    FLATMENU_MENU_ICON = 'list-ol'  # Replaced by FLAT_MENUS_MENU_ICON. Remove in v1.8
 
 
-2. Declaring the deprecation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Updating ``conf/settings.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Next, we'll update the settings helper definition for our app, so that it knows how to handle requests for setting values:
+Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
 .. code-block:: python
     :caption: yourapp/conf/settings.py
@@ -104,7 +106,7 @@ There are a few things worth noting here:
 
 - If you need to define ``deprecations`` on your ``SettingsHelper`` class, it needs to be a tuple, even if you only need a single ``DeprecatedAppSetting`` definition.
 - In the ``DeprecatedAppSetting`` definition, setting names are supplied as strings, and we're still using internal/non-prefixed setting names (e.g. ``"FLATMENU_MENU_ICON"`` rather than ``"YOURAPP_FLATMENU_MENU_ICON"``).
-- The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning``.
+- The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning`` or ``PendingDeprecationWarning``.
 
 
 3. Updating your app code
