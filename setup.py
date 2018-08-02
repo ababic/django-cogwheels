@@ -53,7 +53,7 @@ setup(
     install_requires=requires,
     license=about['__license__'],
     zip_safe=False,
-    classifiers=(
+    classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
@@ -70,7 +70,7 @@ setup(
         "Framework :: Django :: 2.1",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
-    ),
+    ],
     python_requires='>=3.4,<3.8',
     extras_require={
         'testing': testing_extras,
