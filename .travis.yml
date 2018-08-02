@@ -1,8 +1,7 @@
 language: python
 cache: pip
-
 matrix:
-  include: 
+  include:
   - env: TOXENV=py34-dj111
     sudo: false
     dist: trusty
@@ -23,22 +22,18 @@ matrix:
     sudo: true
     dist: xenial
     python: 3.7
-
 install:
 - pip install tox codecov
-
 script:
 - tox
-
-after_success: 
+after_success:
 - codecov --token=d1c52f52-bbc0-4eeb-b7dd-e4ac89504b93
-
 deploy:
   provider: pypi
   user: ababic
   distributions: sdist bdist_wheel
   password:
-    secure: 0iJVUuHukB1/uvZHw2dftPYIggGmjN11mwid7oHacIowLLJ9EUC9TFXtIe+dN0Er5MFvnqiUjYLPa3BrHAA8/vm/WNwikQIt5QV75fwO8tDj3iDEQUCX0vT1NHMZsHGeCFN7+e+ZavbTDlrutVEBBEdX9QCDOCHNuODfFNSCpCKoxdALHd4cBMMwzuXzgwFPwnmUY3onnX7c6pLjZHhbp9n9Wfv9fRKMITS2LfoGyp5Avm9kpdX7wHQwmmTWNb7WpLohtxhWH2j6qqzcHTck7gokc7WWRfJ7o+5H3gpwJ0QOacFmioNusk28KpNKyg4XqaSBVe2efqaFlsNdaYjLxT5eftnsLy7X3ghOj+YYXUFLOW+1bJdZeQ2BA0iQIjmj1HO/AS2Q+oPN23zE/W7k+AIKUW1LExTzSEhnO09smpETHXp6SUrzX3xhYQ0anJvF7W22r1hbs3LQN31sceK30H/tHdlvHoV1tcadUFuZ7zo0OslsS+jkPS+Yr+q4/7GUJXkPnci27ihws9//KFdB3RR4k9kdt3Nlmz63f4W8aOdu5GX8qp7FplarDHSeqwnpd22OCQNou8LZCpnqqSOYypbf980jAX2Nu4FXnnsl/Lmp08jUsYpUR9pHj98wVxxnqWaAxAWbfUfWcBslR/AdzELMAQkO6oEKc73Q8NYeWr4=
+    secure: sGedAt1h+FSeVhhOfb7Upt/mWdnm0QBDolHk5OJ/aZeGTnrCvWpo37oP2JuKW5gRgA0z7mPMBUkUFtiadWSunjs5xw5wkdddLIEx3tpS7Zt4BZXW/cEniEBHXhY5tLPfOAPVj0QC5RPTAH0BYDl9/QnbW3KjhtTAtKORc5c0a47v6TSwX7vvqrhvfWR5TTc+KE8qx+l5tVhnP4ddOPZWu3OuCfMeXcYikpNwNoBJYhkr+ktLM83HsIwp6w81TNq/ppvhpcpLc2Rom4NXVisnKZl23sRhyvdvAooGkrTXXU5uxC5LbYuXEgHdJgQ4RdIJ73/fwaIhUVeBbrSd+ieCHbHW1wLzVnf/znMFgIgJ1xw0iEeJw4qEbh6JEmQnfm7+QdpNJ7pzfZq7sGkwp/GxmWqKFB+wUKgkkGQuxRXVQvdEs+Y7pPbWmRHmBhdx7hosOh1IznMAMtUtcTnKQ8vtqU1RV5+9eOa2tq1TwWBihkvUis61Ft8XOlxSeSPirDrsnmcga4KsvKqKU8Unl8gQ9TO0sdEyoTOhUwfk8zDtNcj0vO6fuf4bkZ8mXybtz0iqVX1XTBM+RasxolkK3efoBTUlRDB+lAxM0RqpvgogH2x+VCuJbUXx4utfh2QlJNNtLlzOYsMsCC6FB69czfNLEj/MdtdRuGaAHRwz8MjjYus=
   on:
     tags: true
     branch: master
