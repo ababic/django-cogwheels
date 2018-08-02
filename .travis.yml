@@ -32,10 +32,9 @@ deploy:
   provider: pypi
   user: ababic
   distributions: sdist bdist_wheel
+  password: ${PYPI_PASSWORD}
   on:
     tags: true
     branch: master
     repo: ababic/django-cogwheels
     condition: "$TOXENV = py37-dj21"
-  password:
-    secure: lejLpR7NgES3A5t/GMH9ZvT9m4UfmvjgeXhz7M9H1DMNIrPSjHRIkR/hZJB7pdfKWmGD/snoVQv4BKH5Oav4bjEpJ4boDabdapr9c82CJ0MQjwzQ9LvzZ6MsTJwrytGXzpgtx4uWh9Fi4bl9oUiHnx2IfQ7UF8zcpw9TpAgQazal7raqC86TbNJfdJR2hgKpOFYqU7xxMDjvaVTnASAMmQVOy2jEDFzKzcFZKat4pCRxO43+aGd6jIKkmu8mDJv6ay/EKWNN7Mb9itLHbM3QShybsFhYDh4/ZD5WHrDuFPh5VsqK6wRbqq3+ANfBuTmVwq10lGDbfN8XJ2ZowqgHkawR89BrgJXbAE47msv36c/K0dfgfZBVpqlpkJlWLM7W3ivliSyzsQBbX+uHFQXqSgMnvCdCVtOGiTFNGKp01O/WYPmdzIlnh3z+d4LgovGQMH1fF0mdAJ+2mMUA2C2iEA9GuJyE/zyyGMlMktZ5RJ9cgHB+sCFVLp2VYr+O3YwvyBJXkjTJjHWF+afRJqengsffEAryrkY4bI3Oi2qqRwKip74Si3DTHyfWMvUApFKhfqUprWuKeVtsxd9fiVCCwcYgTrnG5brwtMpy6mpISUExnk3sb/UALO7+BggFhn3CS8WUJ4MDdRHLeQzqJ1zs2uw+mhxwjQfSDP4JTXC6S1E=
