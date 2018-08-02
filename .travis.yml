@@ -32,8 +32,7 @@ deploy:
   provider: pypi
   user: ababic
   distributions: sdist bdist_wheel
-  password:
-    secure: "Q9u+d8+BIKbz2VbTTCf8piLUtOembCEeAK3X5IHq1jVgW4DQqO6PNRL9GIQVYKhbuT7e++BaJMfNYN4lyIxCP9Tj62jR+wRAGqdPOF/sEyOUGzLQp6vNOYuM07ptGxwYzCqdAEWd1tbPJgLFT/xLAsIp5njrBkhwQcsEdl4tRNjoV1CSPEv03f/+G4E3lDjuM/3HGQ0lXt17Yh7qmmzTyB/DOZrZHeb2n5P2wo0kHRVyVxbTOCsiwOOeWgw2qQb0YrLdQHglfg6ZMEhhZzIcvDaoVklANmz6gVYLpuXjS/7txaQh4yZoI3q53vq6pvmjsWV0jNksV8ybuUO1fgVIiAWLFzj1WJ4h+QTAiMVUFYkF5iUt77OXY7HYq0TPMWT67Nvi2vfs0UvVQVy4GtH4LcIyluAouLG8wc1Fk+7LBC/BazDVtZiQhNT+ktFc3wZlowTjcr9y/iBNsOivu/erkGH7mkM3mTi3qGGDnvxf7cu4Tm4c1sSVDcDlMOqKDw1vSEjDAZtW4rWuvDRB6EV8+ahlzeiRXEeLTxtkNuYo57+fa5pf8wN4pubnd+dJtjN4vCXw8yNH70ehiBTp+QzHO7MwfAEpGznLJ2MIxhCJ7XRVz/nn+aU0scma+swGFrsMelpSLjjCCzOxmbhxopqTAoTPDw6XoN3Yv0D3MIBNkCQ="
+  password: ${PYPI_PASSWORD}
   on:
     tags: true
     branch: master
