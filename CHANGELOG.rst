@@ -1,13 +1,13 @@
 Changelog
 =========
 
-0.3.0 (XX.XX.XXXX) (IN DEVELOPMENT)
------------------------------------
+0.3 (XX.XX.XXXX) (IN DEVELOPMENT)
+----------------------------------
 
 - TBA
 
-0.2.0 (02.08.2018)
-------------------
+0.2 (02.08.2018)
+----------------
 
 - Added official support for Python 3.7.
 - Default deprecation warning messages have been updated to include an indication of when a deprecated setting will be removed, and better explain the consequences of not updating.
@@ -20,8 +20,8 @@ Changelog
 - Renamed the ``get_raw()`` method on ``BaseAppSettingsHelper`` to ``get()`` .
 
 
-0.1.0 (27.06.2018)
-------------------
+0.1 (27.06.2018)
+----------------
 
 - Considered suitable for production
 
