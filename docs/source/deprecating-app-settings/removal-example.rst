@@ -43,6 +43,10 @@ Implementing the deprecation
 ============================
 
 
+In version ``1.6``
+------------------
+
+
 1. Updating ``conf/defaults.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -100,13 +104,13 @@ There are a few things worth noting here:
 3. Updating your app code
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-P
+In progress
 
 
 4. Updating your documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Ahh
+In progress
 
 
 In version ``1.7``
