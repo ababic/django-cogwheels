@@ -26,6 +26,14 @@ sys.path.insert(0, os.path.abspath('.'))
 
 from filters import ContributorNamesFilter, MentionsFilter
 
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
 
 # -- General configuration ------------------------------------------------
 
@@ -36,7 +44,10 @@ from filters import ContributorNamesFilter, MentionsFilter
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxcontrib.spelling']
+extensions = []
+
+if not on_rtd:
+    extensions.append('sphinxcontrib.spelling')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -92,18 +103,14 @@ spelling_filters = [ContributorNamesFilter, MentionsFilter]
 
 # -- Options for HTML output ----------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'default'
-
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 # html_theme_options = {}
 
-html_logo = '_static/django-cogwheels-logo-white.svg'
+html_logo = '_static/icon.svg'
+html_favicon = '_static/favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -180,3 +187,7 @@ texinfo_documents = [(
     __description__,
     'Miscellaneous'
 )]
+
+
+def setup(app):
+    app.add_stylesheet('css/custom.css')

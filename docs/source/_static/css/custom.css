@@ -1,0 +1,30 @@
+body.wy-body-for-nav {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.5em;
+    color: #333;
+    background-color: #e6e6e6;
+}
+
+div.wy-nav-side {
+    background-color: #333;
+}
+
+div.wy-side-nav-search {
+    background-color: #B665BA;
+}
+
+.wy-nav-top {
+    background-color: #B665BA; 
+}
+
+.wy-side-nav-search>a:hover, .wy-side-nav-search .wy-dropdown>a:hover {
+    background: transparent;
+}
+
+.wy-side-nav-search>div.version {
+    color: white;
+}
+
+.wy-side-nav-search input[type=text] {
+    border-color: #d9d9d9;
+}
