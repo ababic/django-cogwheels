@@ -1,6 +1,6 @@
-==================
-Installation guide
-==================
+============
+Installation
+============
 
 .. contents:: Contents
     :local:
@@ -34,8 +34,8 @@ To test an upcoming release, you can install the in-development version with the
 .. _pip: https://pip.pypa.io/
 
 
-Adding ``django-cogwheels`` as a dependency
-===========================================
+Adding Cogwheels as a dependency
+================================
 
 If your app is in the Python Package Index (PyPi), it's likely that it has a ``setup.py`` file in the root directory. To use ``django-cogwheels`` to manage your app settings, you'll need to ensure ``django-cogwheels`` is added to the ``install_requires`` list that is passed to the ``setup()`` method in that file. For example:
 
@@ -125,89 +125,25 @@ Defining settings for your app
 
         ORDER_FORM_CLASS = 'yourproject.forms.OrderForm'
 
-.. NOTE::
 
-    Ready to start using setting values in your code? See: :doc:`using-setting-values` 
-
-
-Optional configuration
+Advanced configuration
 ======================
 
+.. toctree::
+    :maxdepth: 1
 
-Changing the setting namespace prefix
--------------------------------------
-
-Users wanting to override setting values in their project's Django settings will do so using prefixed setting names, rather than using the exact same names you used in ``defaults.py``.  For example:
-
-.. code-block:: python
-
-    # myproject/settings/base.py
-
-    ...
-
-    # ---------------------------------
-    # Overrides for ``your-django-app``
-    # ---------------------------------
-
-    YOURAPP_MAX_ITEMS_PER_ORDER = 2
-    YOURAPP_ORDER_ITEM_MODEL = 'userproject_orders.CustomOrderItem'
-    YOURAPP_DISCOUNTS_BACKEND = 'userproject.discounts.custom_discount_backend'
-    YOURAPP_ORDER_FORM_CLASS = 'userproject.orders.forms.CustomOrderForm'
-
-This namespacing of settings is important, as not only does it help users of your app to remember which app their settings apply to, but it also helps to prevent setting name clashes between apps.
-
-You can find out the correct prefix for any given settings module by calling it's ``get_prefix()`` method, like so:
-    
-.. code-block:: console
-
-    >>> from yourproject.conf import settings
-    >>> settings.get_prefix()
-    'YOURPROJECT_'
-
-You can change this prefix to whatever you like by setting the ``prefix`` attribute on your settings helper class. For example, this:
-
-.. code-block:: python
-
-    # yourapp/conf/settings.py
-    
-    class MyAppSettingsHelper(BaseAppSettingsHelper):
-        prefix = 'CUSTOM'  # No need for a trailing underscore here
-
-Would result in this:
-
-.. code-block:: console
-
-    >>> from yourproject.conf import settings
-    >>> settings.get_prefix()
-    'CUSTOM_'
+    changing-the-namespace-prefix
+    utilising-the-conf-app
+    removing-the-conf-app
+    separating-defaults-and-settings
 
 
-Moving more 'configurational' stuff to the ``conf`` app
--------------------------------------------------------
+Other things to consider
+========================
 
-Since you now have a ``conf`` app, it might make sense to move other 'configurational' things into there too.
+.. toctree::
+    :maxdepth: 1
 
-For example, in the ``conf`` app for wagtailmenus_, there's a ``constants.py`` file for defining some fixed values that are used app-wide, and the ``apps.py`` module that normally resides in an app's root directory has also been moved to the ``conf``.
+    documenting-your-app-settings
+    custom-deprecation-warning-classes
 
-.. _wagtailmenus: https://github.com/rkhleics/wagtailmenus/tree/master/wagtailmenus
-
-
-Ditching the ``conf`` app
--------------------------
-
-Everyone has their own preferences for how they structure their projects, and that's all well and good. 
-
-There's no requirement for ``defaults.py`` and ``settings.py`` to be kept inside a ``conf`` app - it is only a recommendation. As long as you keep the two files in the same directory, things should work fine 'out of the box'.
-
-
-Using different locations for ``defaults.py`` and ``settings.py``
------------------------------------------------------------------
-
-This is supported. However, you will need to set the ``defaults_path`` attribute on your ``SettingsHelper`` class, so that it knows where to find the default values. For example:
-
-.. code-block:: python
-
-    # yourapp/settings.py
-
-    class MyAppSettingsHelper(BaseAppSettingsHelper):
-        defaults_path = 'yourapp.some_other_place.defaults'

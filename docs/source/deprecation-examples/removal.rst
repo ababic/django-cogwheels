@@ -1,6 +1,6 @@
-===========================
-A 'setting removal' example
-===========================
+===============
+Setting removal
+===============
 
 This guide demonstrates the steps required to remove support a setting, following a standard 'two release' deprecation process.
 
@@ -36,7 +36,7 @@ In the following example, we're going to assume that:
 -   The latest release version of your app was ``1.5``.
 -   The next release version of your app will be ``1.6``.
 -   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version ``1.8``.
--   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`using-custom-warning-classes`.
+-   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/installation/custom-deprecation-warning-classes`.
 
 
 Implementing the deprecation
@@ -116,7 +116,7 @@ In progress
 In version ``1.7``
 ------------------
 
-Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`using-custom-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
+Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/installation/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
 
 
 In version ``1.8``

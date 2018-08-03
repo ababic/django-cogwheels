@@ -26,8 +26,8 @@ If you're unsure what the prefix is for your app, you can use the settings modul
     
 .. code-block:: console
 
-    >>> from yourproject.conf import settings
-    >>> settings.get_prefix()
+    > from yourproject.conf import settings
+    > settings.get_prefix()
     'YOURPROJECT_'
 
 .. sealso ::

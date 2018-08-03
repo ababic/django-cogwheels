@@ -1,10 +1,10 @@
-======================================
-A 'single setting replacement' example
-======================================
+==============================
+Setting replacement (singular)
+==============================
 
 This guide demonstrates the steps required to introduce a new setting that 'logically replaces' a single existing setting, following a standard 'two release' deprecation process.
 
-If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`multi-replacement-example` more useful.
+If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`replacement-multiple` more useful.
 
 .. contents:: Contents
     :local:
@@ -38,7 +38,7 @@ In the following example, we're going to assume that:
 -   The latest release version of your app was ``1.5``.
 -   The next release version of your app will be ``1.6``.
 -   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version ``1.8``.
--   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`using-custom-warning-classes`.
+-   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/installation/custom-deprecation-warning-classes`.
 
 
 Implementing the deprecation
@@ -258,7 +258,7 @@ Raising a deprecation warning with Python is certainly helpful, but you'll also 
 In version ``1.7``
 ------------------
 
-Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`using-custom-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
+Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/installation/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
 
 
 In version ``1.8``

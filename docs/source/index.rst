@@ -6,9 +6,8 @@ Cogwheels is a tool for developers of reusable Django apps, to help them impleme
 
 Below are a some links to help you get started:
 
-- :doc:`installation`
-- :doc:`using-setting-values`
-- :doc:`overriding-setting-values`
+- :doc:`installation/index`
+- :doc:`app-setting-examples/index`
 
 
 Compatibility
@@ -25,14 +24,10 @@ Documentation index
 
 .. toctree::
     :maxdepth: 2
-    :titlesonly:
 
-    installation
-    using-setting-values
-    overriding-setting-values
-    documenting-app-settings
-    error-handling
-    deprecating-app-settings/index
+    installation/index
+    app-setting-examples/index
+    deprecation-examples/index
     example-implementations
     contributing/index
     releases/index
