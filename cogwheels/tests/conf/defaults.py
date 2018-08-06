@@ -15,12 +15,6 @@ TUPLES_SETTING = (
     (4, 'Four'),
 )
 
-DICT_SETTING = {
-    'target_cache': "default",
-    'timeout': 500,
-    'cache_key_prefix': "__DATA__",
-}
-
 
 # -----------------------------------------------------------------------------
 # Model/class and module settings
@@ -43,8 +37,6 @@ OBJECT_UNAVAILABLE_OBJECT = 'cogwheels.tests.classes.NonExistent'
 VALID_MODULE = 'cogwheels.tests.modules.default_module'
 
 UNAVAILABLE_MODULE = 'cogwheels.tests.modules.imaginary_module'
-
-VALID_METHOD = 'cogwheels.tests.classes.default_method'
 
 
 # -----------------------------------------------------------------------------
