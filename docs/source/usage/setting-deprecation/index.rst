@@ -1,6 +1,6 @@
-====================
-Deprecation examples
-====================
+=============================
+App setting deprecation guide
+=============================
 
 Deprecation is an inevitable part of managing any reusable app over time, and this applies especially to overridable app settings, which your users likely depend on to make your app function in a way that is most useful to them. 
 

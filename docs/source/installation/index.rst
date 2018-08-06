@@ -113,17 +113,17 @@ Defining settings for your app
         # For settings that refer to Django models, the default value should be a string
         # in the format 'app_name.Model', e.g.:
 
-        ORDER_ITEM_MODEL = 'yourproject.SimpleOrderItem'
+        ORDER_ITEM_MODEL = 'yourapp.SimpleOrderItem'
 
         # For settings that refer to Python modules, the default value should be an
         # 'import path' string, e.g.:
 
-        DISCOUNTS_BACKEND = 'yourproject.discount_backends.simple'
+        DISCOUNTS_BACKEND = 'yourapp.discount_backends.simple'
 
         # For settings that refer to classes, methods, or other importable Python
         # objects, the default value should be an 'object import path' string, e.g.:
 
-        ORDER_FORM_CLASS = 'yourproject.forms.OrderForm'
+        ORDER_FORM_CLASS = 'yourapp.forms.OrderForm'
 
 
 Advanced configuration

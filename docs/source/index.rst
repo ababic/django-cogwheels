@@ -7,7 +7,7 @@ Cogwheels is a tool for developers of reusable Django apps, to help them impleme
 Below are a some links to help you get started:
 
 - :doc:`installation/index`
-- :doc:`app-setting-examples/index`
+- :doc:`usage/index`
 
 
 Compatibility
@@ -26,8 +26,7 @@ Documentation index
     :maxdepth: 2
 
     installation/index
-    app-setting-examples/index
-    deprecation-examples/index
+    usage/index
     example-implementations
     contributing/index
     releases/index

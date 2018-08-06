@@ -25,7 +25,7 @@ You can find out the correct prefix for any given settings module by calling it'
     
 .. code-block:: console
 
-    > from yourproject.conf import settings
+    > from yourapp.conf import settings
     > settings.get_prefix()
     'YOURPROJECT_'
 
@@ -42,6 +42,6 @@ Would result in this:
 
 .. code-block:: console
 
-    > from yourproject.conf import settings
+    > from yourapp.conf import settings
     > settings.get_prefix()
     'CUSTOM_'
