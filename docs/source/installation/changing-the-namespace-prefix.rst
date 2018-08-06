@@ -1,6 +1,6 @@
-=====================================
-Changing the setting namespace prefix
-=====================================
+============================================
+Changing your app's setting namespace prefix
+============================================
 
 Users wanting to override setting values in their project's Django settings will do so using prefixed setting names, rather than using the exact same names you used in ``defaults.py``.  For example:
 
@@ -27,7 +27,7 @@ You can find out the correct prefix for any given settings module by calling it'
 
     > from yourapp.conf import settings
     > settings.get_prefix()
-    'YOURPROJECT_'
+    'YOURAPP_'
 
 You can change this prefix to whatever you like by setting the ``prefix`` attribute on your settings helper class. For example, this:
 
