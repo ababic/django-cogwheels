@@ -10,11 +10,11 @@ Regular settings
 What is a regular setting?
 ==========================
 
-Any setting that allows a user to override a simple Python type value is classed as a 'regular setting'. Cogweels doesn't limit the type of values you can use, but it's recommended that you stick to using well-known types, that are easy for your app's users to override.
+Any setting that allows a user to override a simple Python type value is classed as a 'regular setting'. Cogwheels doesn't limit the type of values you can use, but it's recommended that you stick to using well-known types, that are easy for your app's users to override.
 
-When you request a value for a 'regular setting' from your app's settings module (e.g. ``yourapp.conf.settings``), it returns a pointer to the exact same value in memory (not a copy) e.g.:
+When you request a regular setting value from your app's settings helper, it returns a pointer to the exact same value in memory, for example:
 
-If no override value is found, the default value you added to ``yourapp.conf.defaults.py`` is returned:
+If no override value is found, the default value from ``yourapp.conf.defaults.py`` is returned:
 
 .. code-block:: python
     
@@ -33,7 +33,7 @@ If no override value is found, the default value you added to ``yourapp.conf.def
     > settings.SETTING_NAME is defaults.SETTING_NAME
     True
 
-If a user has added an override value to their Django settings (using the correct prefix and setting name), that exact value is returned:
+If a user has added an override value to their Django settings (using the correct prefix and setting name), that value is returned:
 
 .. code-block:: python
     
@@ -53,10 +53,10 @@ If a user has added an override value to their Django settings (using the correc
     True
 
 
-Some examples
--------------
+Adding new app settings
+=======================
 
-You define app settings by simply adding variables to ``yourapp/conf/defaults.py`` with your preferred default values. e.g.:
+App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module. You just have to choose sensible default value for each one. For example:
     
 .. code-block:: python
 
@@ -125,6 +125,9 @@ Users will override these settings by adding override values to their Django set
         'cache_key_prefix': "__DATA__",
     }
 
+.. NOTE::
+    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
+
 
 Retrieving app setting values
 =============================
@@ -163,9 +166,7 @@ Referencing a setting as a direct attribute of the setting helper or using the h
 Validation and error handling
 =============================
 
-Cogwheels doesn't apply any validation to regular setting values at all by default.
-
-If you need to apply validation to setting values in your app, you'll need to implement this yourself. One way to do this would be to add a property method to your app's settings helper for the setting in question. e.g.:
+Cogwheels doesn't apply any validation to regular setting values by default. If you need to apply custom validation for a specific setting in your app, you'll need to implement that validation yourself. A sensible approach is to add a custom property method to your app's settings helper, like so:
 
 .. code-block:: python
     
@@ -180,20 +181,20 @@ If you need to apply validation to setting values in your app, you'll need to im
         @property
         def DATA_CACHE_CONFIG(self):
             """
-            Doing ``settings.DATA_CACHE_CONFIG`` will invoke this method
-            instead of the default behavior, allowing us to apply custom
-            validation to override values.
+            ``settings.DATA_CACHE_CONFIG`` will invoke this method instead of
+            the default behavior, allowing us to apply custom validation to
+            override values defined by users.
             """ 
 
-            # The get() method's ``enforce_type`` argument can be used to ensure
-            # values are of a specific type. It will also accept a tuple of types
-            # if you're happy for the value to be one of several types.
+            # The get() method's ``enforce_type`` argument can be used to
+            # ensure values are of one or more specific types
             value = self.get('DATA_CACHE_CONFIG', enforce_type=dict)
 
             # If the value has been overridden, check it's validity
             if self.is_overridden('DATA_CACHE_CONFIG') and not is_cache_config_value_valid(value):
                 raise OverrideValueFormatInvalid(
-                    "The override value you've used for YOURAPP_DATA_CACHE_CONFIG is not valid."
+                    "The override value you've used for "
+                    "YOURAPP_DATA_CACHE_CONFIG is not valid."
                 )
 
             # Don't forget to return the value!

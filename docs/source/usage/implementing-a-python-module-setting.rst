@@ -17,10 +17,10 @@ Setting values must be defined as Python import path strings (e.g. "project.app.
 When you request the module from your app's settings helper, Cogwheels utilises Python's ``importlib.import_module()`` to import the module, and caches the result to improve the efficiency of repeat requests for the same module.
 
 
-Some examples
--------------
+Adding new app settings
+=======================
 
-You define settings by simply adding variables to ``yourapp/conf/defaults.py`` with your module paths as default values:
+App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Python module settings are no exception. You just have to ensure the import path strings you use as default values are correct. For example:
 
 .. code-block:: python
 
@@ -30,7 +30,7 @@ You define settings by simply adding variables to ``yourapp/conf/defaults.py`` w
     # search engine (e.g. Whoosh, Elasticsearch, PostgreSQL)
     PAGE_SEARCH_BACKEND = "yourapp.search.backends.whoosh"
 
-Users will override these settings by adding override values to their Django settings, like so:
+Users will override this setting by adding override values to their Django settings, like so:
 
 .. code-block:: python
 
@@ -46,15 +46,13 @@ Users will override these settings by adding override values to their Django set
     YOURAPP_PAGE_SEARCH_BACKEND = 'yourapp.search.backends.postgres'
 
 .. NOTE::
-    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and
-    where your settings helper is defined. To find out the prefix for your app, or to
-    change it, see: :doc:`/installation/changing-the-namespace-prefix`.
+    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
 
 
 Retrieving app setting values
 =============================
 
-For settings that refer to Python modules, you can use the settings module's ``modules`` attribute to access the modules themselves. For example:
+You can use the settings helper's ``modules`` attribute shortcut or ``get_module()`` method to retrieve the Python module referenced by setting values. For example:
     
 .. code-block:: console
 
@@ -63,17 +61,14 @@ For settings that refer to Python modules, you can use the settings module's ``m
     > settings.modules.DISCOUNTS_BACKEND
     <module 'yourapp.discount_backends.simple' from '/system/path/to/your-django-project/yourapp/discount_backends/simple.py'>
 
-    > type(settings.modules.DISCOUNTS_BACKEND)
-    module
-
-.. NOTE ::
-    ``settings.modules.SETTING_NAME`` is equivalent to doing ``settings.get_module('SETTING_NAME')``, only the former will raise an ``AttributeError`` if the setting name is invalid, whereas ``get()`` will raise an  ``ImproperlyConfigured`` exception.
+    > settings.get_module("DISCOUNTS_BACKEND")
+    <module 'yourapp.discount_backends.simple' from '/system/path/to/your-django-project/yourapp/discount_backends/simple.py'>
 
 
 Validation and error handling
 =============================
 
-When you use the settings helper's ``modules`` attribute shortcut or ``get_module()`` method to retrieve the relevant module, Cogwheels applies some basic validation to the setting value to ensure it is a string, and will also raise a custom exception if the object cannot be imported.
+When you use the settings helper's ``modules`` attribute shortcut or ``get_module()`` method to retrieve the Python module, Cogwheels applies some basic validation to the setting value to ensure it is a string, and will also raise a custom exception if the object cannot be imported.
 
 If you define an invalid default value for the setting:
 
@@ -97,7 +92,7 @@ When you request a model setting value from ``settings`` using:
 Cogwheels does the following:
 
 1.  If the requested setting is deprecated, a helpfully worded ``DeprecationWarning`` is raised to prompt users to review their implementation.
-2.  Cogweels looks for a **raw** (string) setting value that it can use to import the module:
+2.  Cogwheels looks for a **raw** (string) setting value that it can use to import the module:
 
     1.  If users of your app have defined an override value in their Django settings using the correct prefix and setting name (e.g. ``YOURAPP_MODULE_SETTING_NAME``), that value is used.
     2.  If the requested setting is a 'replacement' for a single deprecated setting, Cogwheels also looks in your user's Django settings for override values using the **deprecated** setting name (e.g. ``YOURAPP_DEPRECATED_MODULE_SETTING_NAME``), and (after raising a helpfully worded ``DeprecationWarning``) uses that if found. 

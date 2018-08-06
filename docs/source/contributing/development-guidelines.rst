@@ -12,7 +12,7 @@ Developing the project locally
 
 If you'd like a runnable Django project to help with development of this app, follow these steps to get started (Mac only). The development environment has some additional dependencies (``ipdb``, ``django-extensions``) to help with debugging:
 
-1.  If ``virtualenvwrapper`` isn't already installed, install it by running:
+1.  If ``virtualenvwrapper`` is not already installed, install it by running:
     
     .. code-block:: console
 

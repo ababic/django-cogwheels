@@ -17,10 +17,10 @@ Setting values must be defined as Python import path strings (e.g. "project.app.
 When you request the object from your app's settings helper, Cogwheels utilises Python's ``importlib.import_module()`` to import the module and fetch you with the relevant object, caching the result to improve the efficiency of repeat requests for the same object.
 
 
-Some examples
--------------
+Adding new app settings
+=======================
 
-You define settings by simply adding variables to ``yourapp/conf/defaults.py`` with your object paths as default values:
+App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Python object settings are no exception. You just have to ensure the import path strings you use as default values are correct. For example:
 
 .. code-block:: python
 
@@ -59,15 +59,13 @@ Users will override these settings by adding override values to their Django set
     YOURAPP_MAIN_MENU_ADD_FORM = 'core.forms.menus.CustomMainMenuAddForm'
 
 .. NOTE::
-    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and
-    where your settings helper is defined. To find out the prefix for your app, or to
-    change it, see: :doc:`/installation/changing-the-namespace-prefix`.
+    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
 
 
 Retrieving app setting values
 =============================
 
-And, you can use the settings helper's ``objects`` attribute shortcut or ``get_object()`` method to retrieve the Python objects themselves.
+You can use the settings helper's ``objects`` attribute shortcut or ``get_object()`` method to retrieve the Python objects referenced by setting values.
 
 .. code-block:: console
 
@@ -117,7 +115,7 @@ When you request a model setting value from ``settings`` using:
 Cogwheels does the following:
 
 1.  If the requested setting is deprecated, a deprecation warning is raised to prompt users to review their implementation.
-2.  Cogweels looks for a **raw** (string) setting value that it can use to import the object:
+2.  Cogwheels looks for a **raw** (string) setting value that it can use to import the object:
 
     1.  If users of your app have defined an override value in their Django settings using the correct prefix and setting name (e.g. ``YOURAPP_OBJECT_SETTING_NAME``), that value is used.
     2.  If the requested setting is a 'replacement' for a single deprecated setting, Cogwheels also looks in your user's Django settings for override values using the **deprecated** setting name (e.g. ``YOURAPP_DEPRECATED_OBJECT_SETTING_NAME``), and (after raising a helpfully worded deprecation warning) uses that if found. 

@@ -11,23 +11,23 @@ All of the examples in this section assume that you are using custom deprecation
 There are currently four deprecation scenarios that are Cogwheels helps to cater for:
 
 Setting removal
-    You're simply planning to remove a setting.
+    You are simply planning to remove a setting.
 
-    You're willing to support the setting for couple more feature releases, but would like to prompt any users using it, to make them aware that support will be removed soon, and that they should review their implementation.
+    You are willing to support the setting for couple more feature releases, but would like to prompt any users using it, to make them aware that support will be removed soon, and that they should review their implementation.
 
     See: :doc:`removal`
 
 Setting renaming
-    You're changing the name of a setting. There aren't any changes to the type or range of supported override values, or to the way override values affect your app's behaviour.
+    You are changing the name of a setting. There aren't any changes to the type or range of supported override values, or to the way override values affect your app's behaviour.
 
-    You're willing to support override values defined using the previous setting name for a couple more feature releases, but would like to prompt those users to update their Django settings to use the new setting name.
+    You are willing to support override values defined using the previous setting name for a couple more feature releases, but would like to prompt those users to update their Django settings to use the new setting name.
 
     See: :doc:`rename`
 
 Setting replacement (single)
-    You're adding a new setting that allows users to override behaviour in a way that makes a single existing setting redundant. Although it is a clear logical successor for the existing setting, there may be differences in how override values affect your app's behaviour, and possibly changes to the type or range of override values that are supported.
+    You are adding a new setting that allows users to override behaviour in a way that makes a single existing setting redundant. Although it is a clear logical successor for the existing setting, there may be differences in how override values affect your app's behaviour, and possibly changes to the type or range of override values that are supported.
 
-    You're willing to support override values defined using the previous setting for a couple more feature releases, but would like to prompt those users to find out more about how the new setting works, and start using it instead of the existing one.
+    You are willing to support override values defined using the previous setting for a couple more feature releases, but would like to prompt those users to find out more about how the new setting works, and start using it instead of the existing one.
 
     See: :doc:`replacement-single`
 

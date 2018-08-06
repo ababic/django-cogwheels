@@ -177,7 +177,7 @@ Because your settings helper knows all it needs to about the rename, ``settings.
 
 3.  If no override setting was found, Cogwheels resorts to using the default value for the new setting, as you'd expect.
 
-Although we’re still happy to the deprecated setting for a couple more versions, we want to make users awere that the setting has been replaced. So, Cogwheels will raise the following warning:
+Although we’re still happy to the deprecated setting for a couple more versions, we want to make users aware that the setting has been replaced. So, Cogwheels will raise the following warning:
 
 .. code-block:: console
     

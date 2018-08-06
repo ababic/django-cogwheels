@@ -22,8 +22,10 @@ overridable
 QuerySet
 refactor
 refactored
+shortcut
 subclassed
 subclassing
+timeout
 tox
 Travis
 Transifex

@@ -23,9 +23,9 @@ Let's pretend that your app currently has an overridable setting that allows use
 
     PRODUCT_LIST_CACHE_TIMEOUT = 3000
 
-You've since decided that it will be better for your app to not use a timeout at all, and cache product data for the maximum time supported by the cache.
+You have since decided that it will be better for your app to not use a timeout at all, and cache product data for the maximum time supported by the cache.
 
-Your app should continue to respect override values defined using ``YOURAPP_PRODUCT_LIST_CACHE_TIMEOUT`` in user's Django settings for another two versions, but any users who are using it should be warned that the behavior is changing, and the override will no longer have any affect once the deprecation period has ended. You also want to include some additional guidance to warning messages, prompting users to check that they are using a cache solution that supports a ``TIMEOUT`` value of ``None``.
+Your app should continue to respect override values defined using ``YOURAPP_PRODUCT_LIST_CACHE_TIMEOUT`` in user's Django settings for another two versions, but any users who are using it should be warned that the behaviour is changing, and the override will no longer have any affect once the deprecation period has ended. You also want to include some additional guidance to warning messages, prompting users to check that they are using a cache solution that supports a ``TIMEOUT`` value of ``None``.
 
 
 A few assumptions
@@ -96,7 +96,7 @@ Next, you'll need to update your app's settings helper, so that it knows how to 
 
 There are a few things worth noting here:
 
-- When definining ``deprecations`` on your ``SettingsHelper`` class, the value must be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
+- When defining ``deprecations`` on your ``SettingsHelper`` class, the value must be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
 - In the ``DeprecatedAppSetting`` definition, setting names should be provided as strings.
 - The ``warning_category`` used in the ``DeprecatedAppSetting`` definition above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning`` or ``PendingDeprecationWarning``.
 

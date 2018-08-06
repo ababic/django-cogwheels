@@ -14,9 +14,9 @@ There are plenty of things you can do to help:
 - Reviewing pull requests from other contributors
 - Fixing bugs
 
-I'm also happy to accept pull requests for new features, but before submitting, please:
+I am also happy to accept pull requests for new features, but before submitting, please:
 
-- Raise an issue beforehand, explaining what you're looking to achieve, and await a reply.    
+- Raise an issue beforehand, explaining what you are looking to achieve, and await a reply.    
 - Be prepared to write unit tests and documentation to cover any new functionality.
 
 

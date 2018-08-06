@@ -20,14 +20,15 @@ When you request the model from your app's settings helper, Cogwheels utilises D
     When a model setting is overridden:
 
     - Cogwheels does not prevent the default model from being created or otherwise interfere with your migration history. 
-    - The default model is left in tact, and any existing data will remain untouched in the database.
+    - So long as the relevant app remains installed, the default model will remain available, and any existing data will remain untouched in the database.
     - No data is migrated to the custom model automatically. If necessary, this will be down to you or your users to implement.
     - The replacement model must be installed in order to be imported successfully (the relevant app must be added to the user's ``INSTALLED_APPS`` setting).
 
-Some examples
--------------
 
-You define settings by simply adding variables to ``yourapp/conf/defaults.py`` with your models as the default:
+Adding new app settings
+=======================
+
+App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Django model settings are no exception. You just have to ensure the model strings you use as default values are correct, and follow the "app_label.Model" format. For example:
 
 .. code-block:: python
 
@@ -59,15 +60,13 @@ Users will override these settings by adding override values to their Django set
 
 
 .. NOTE::
-    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and
-    where your settings helper is defined. To find out the prefix for your app, or to
-    change it, see: :doc:`/installation/changing-the-namespace-prefix`.
+    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
 
 
-Using the app setting in your code
-==================================
+Retrieving app setting values
+=============================
 
-You can use the settings helper's ``models`` attribute shortcut or ``get_model()`` method to retrieve Django models: 
+You can use the settings helper's ``models`` attribute shortcut or ``get_model()`` method to retrieve model classes referenced by Django model setting values. For example:
 
 .. code-block:: console
 
@@ -127,7 +126,7 @@ When you request a model setting value from ``settings`` using:
 Cogwheels does the following:
 
 1.  If the requested setting is deprecated, a helpfully worded ``DeprecationWarning`` is raised to prompt users to review their implementation.
-2.  Cogweels looks for a **raw** (string) setting value that it can use to import the model:
+2.  Cogwheels looks for a **raw** (string) setting value that it can use to import the model:
 
     1.  If users of your app have defined an override value in their Django settings using the correct prefix and setting name (e.g. ``YOURAPP_MODEL_SETTING_NAME``), that value is used.
     2.  If the requested setting is a 'replacement' for a single deprecated setting, Cogwheels also looks in your user's Django settings for override values using the **deprecated** setting name (e.g. ``YOURAPP_DEPRECATED_MODEL_SETTING_NAME``), and (after raising a helpfully worded ``DeprecationWarning``) uses that if found. 

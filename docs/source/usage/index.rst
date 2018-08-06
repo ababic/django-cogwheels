@@ -12,7 +12,7 @@ Creating and using app settings
 
 App settings in Cogwheels all work in a very similar fashion, regardless of what type of value you are using:
 
-1.  You add an app setting by simply adding a new variable to your app's ``defaults`` module with the value you wish to use by default, e.g.
+1.  App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module with a default value, e.g.
     
     .. code-block:: python
 
