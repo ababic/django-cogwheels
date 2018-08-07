@@ -1,6 +1,6 @@
-======================
-Python object settings
-======================
+====================================
+Implementing a Python object setting
+====================================
 
 A Python object setting is a setting that allows users to swap out a default class, function or other Python object for a custom one (or an alternative that is available within your app).
 
@@ -9,8 +9,8 @@ Setting values must be defined as Python import path strings (e.g. "project.app.
 When you request the object from your app's settings helper, Cogwheels utilises Python's ``importlib.import_module()`` to import the module and fetch you with the relevant object, caching the result to improve the efficiency of repeat requests for the same object.
 
 
-Adding a new app setting
-========================
+Specifying a default value
+==========================
 
 App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Python object settings are no exception. You just have to ensure the import path strings you use as default values are correct. For example:
 

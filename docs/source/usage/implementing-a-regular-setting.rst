@@ -1,6 +1,6 @@
-================
-Regular settings
-================
+==============================
+Implementing a regular setting
+==============================
 
 Any setting that allows a user to override a simple Python type value is classed as a 'regular setting'. Cogwheels doesn't limit the type of values you can use, but it's recommended that you stick to using well-known types, that are easy for your app's users to override.
 
@@ -45,8 +45,8 @@ If a user has added an override value to their Django settings (using the correc
     True
 
 
-Adding a new app setting
-========================
+Specifying a default value
+==========================
 
 App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module. You just have to choose sensible default value for each one. For example:
     

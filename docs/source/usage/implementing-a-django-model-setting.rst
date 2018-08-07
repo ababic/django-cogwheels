@@ -1,6 +1,6 @@
-=====================
-Django model settings
-=====================
+===================================
+Implementing a Django model setting
+===================================
 
 A Django model setting is a setting that allows users to swap out a default Django model for a custom one (or an alternative that including in your app).
 
@@ -17,8 +17,8 @@ When you request the model from your app's settings helper, Cogwheels utilises D
     - The replacement model must be installed in order to be imported successfully (the relevant app must be added to the user's ``INSTALLED_APPS`` setting).
 
 
-Adding a new app setting
-========================
+Specifying a default value
+==========================
 
 App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Django model settings are no exception. You just have to ensure the model strings you use as default values are correct, and follow the "app_label.Model" format. For example:
 

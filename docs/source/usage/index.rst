@@ -7,8 +7,8 @@ Usage
     :depth: 1
 
 
-App settings: The basics
-========================
+An introduction to app settings
+===============================
 
 App settings in Cogwheels all work in a similar way, regardless of what type of value you are using:
 
@@ -57,9 +57,9 @@ App settings in Cogwheels all work in a similar way, regardless of what type of 
         > settings.get('SETTING_NAME')
         "custom-value"
 
-**For more information, see:**
 
-- :doc:`implementing-a-regular-setting`
+.. seealso::
+    - :doc:`implementing-a-regular-setting`
 
 
 Retrieving Django models and other Python objects from setting values
@@ -126,12 +126,10 @@ And, you can use the helper's ``objects`` attribute shortcut or ``get_object()``
     > settings.get_object("USERNAME_VALIDATOR")
     <function yourapp.accounts.validators.username.default(username, obj)>
 
-
-**For more information, see:**
-
-- :doc:`implementing-a-django-model-setting`
-- :doc:`implementing-a-python-object-setting`
-- :doc:`implementing-a-python-module-setting`
+.. seealso::
+    - :doc:`implementing-a-django-model-setting`
+    - :doc:`implementing-a-python-object-setting`
+    - :doc:`implementing-a-python-module-setting`
     
 
 .. _finding-the-namespace-prefix:
@@ -204,9 +202,8 @@ Another major benefit of using Cogwheels is it's built-in support for app settin
 - Automatically raising sensibly worded deprecation warnings when setting values are requested
 - Allowing you to easily access deprecated setting values, so that you can continue to support deprecated behaviour until the end of the deprecation period.
 
-**For more information, see:**
-
-- :doc:`setting-deprecation/index`
+.. seealso::
+    - :doc:`setting-deprecation/index`
 
 
 Step-by-step guides

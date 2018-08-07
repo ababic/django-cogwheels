@@ -34,8 +34,8 @@ A few assumptions
 In the following example, we're going to assume that:
 
 -   The latest release version of your app was ``1.5``.
--   The next release version of your app will be ``1.6``.
--   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version ``1.8``.
+-   The next release version of your app will be **1.6**.
+-   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version **1.8**.
 -   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`.
 
 
@@ -43,7 +43,7 @@ Implementing the deprecation
 ============================
 
 
-In version ``1.6``
+In version **1.6**
 ------------------
 
 
@@ -113,13 +113,13 @@ In progress
 In progress
 
 
-In version ``1.7``
+In version **1.7**
 ------------------
 
 Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
 
 
-In version ``1.8``
+In version **1.8**
 ------------------
 
 We're finally ready to remove support for the old setting, so the following steps should be taken:
@@ -157,6 +157,6 @@ We're finally ready to remove support for the old setting, so the following step
         class MyAppSettingsHelper(BaseAppSettingsHelper):
             deprecations = ()
     
-3. Announce the breaking change in the version ``1.8`` release notes.
+3. Announce the breaking change in the version **1.8** release notes.
 
 4. Remove the entry for the old setting from the "Settings reference" page of the documentation.
