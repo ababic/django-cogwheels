@@ -33,7 +33,7 @@ A few assumptions
 
 In the following example, we're going to assume that:
 
--   The latest release version of your app was ``1.5``.
+-   The latest release version of your app was **1.5**.
 -   The next release version of your app will be **1.6**.
 -   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version **1.8**.
 -   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`.
