@@ -86,8 +86,8 @@ class BaseAppSettingsHelper:
                 module_path_parts.remove('conf')
             except ValueError:
                 pass
-            value = '_'.join(module_path_parts).upper()
-        self._prefix = value
+            value = '_'.join(module_path_parts)
+        self._prefix = value.upper()
 
     def _set_defaults_module_path(self, init_supplied_val):
         """

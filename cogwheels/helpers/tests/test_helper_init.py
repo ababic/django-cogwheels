@@ -13,9 +13,17 @@ class TestHelperInit(TestCase):
 
     def test_providing_prefix_overrides_the_class_attribute_value(self):
         test_val = 'ABRACADABRA'
-        self.assertIs(
+        self.assertEqual(
             TestSettingsHelper(prefix=test_val)._prefix,
             test_val
+        )
+
+    def test_prefix_value_is_converted_to_uppercase(self):
+        lowercase_prefix = 'beep'
+        uppercase_prefix = 'BEEP'
+        self.assertEqual(
+            TestSettingsHelper(prefix=lowercase_prefix)._prefix,
+            uppercase_prefix
         )
 
     def test_prefix_attribute_never_has_trailing_underscores(self):
