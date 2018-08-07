@@ -17,7 +17,8 @@ What we're looking to achieve
 Let's pretend your app has a few app setting that allows users to toggle something on or off using a boolean
 
 .. code-block:: python
-    :caption: yourapp/conf/defaults.py
+
+    # yourapp/conf/defaults.py
 
     # -------------------
     # Admin / UI settings
@@ -55,8 +56,9 @@ In version **1.6**
 First, we'll add a setting using the new name to ``defaults.py``. We also want to mark the existing settings in ``defaults.py`` in some way, to help us remember that they are deprecated. Our updated ``defaults.py`` module should look something like this:
 
 .. code-block:: python
-    :caption: yourapp/conf/defaults.py
-    :emphasize-lines: 5,20
+    :emphasize-lines: 7,22
+
+    # yourapp/conf/defaults.py
 
     # -------------------
     # Admin / UI settings
@@ -86,7 +88,8 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
 Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
 .. code-block:: python
-    :caption: yourapp/conf/settings.py
+    
+    # yourapp/conf/settings.py
 
     from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
     from yourapp.utils.deprecation import RemovedInYourApp18Warning
@@ -123,8 +126,9 @@ There are a few things worth noting here:
 The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine that our code currently looks something like this:
 
 .. code-block:: python
-    :caption: yourapp/views.py
-    :emphasize-lines: 8
+    :emphasize-lines: 10
+
+    # yourapp/views.py
 
     from django.views.generic import ListView
     from yourapp.conf import settings
@@ -160,8 +164,9 @@ This line highlighted above will now cause the following deprecation warning to 
 First, we want to update the view to use the new setting instead, because the above will now raise a deprecation warning, and that's not what we want:
 
 .. code-block:: python
-    :caption: yourapp/views.py
-    :emphasize-lines: 4
+    :emphasize-lines: 6
+
+    # yourapp/views.py
 
     class TransactionSummaryList(ListView):
         
@@ -180,7 +185,8 @@ Because your settings helper knows all it needs to about the replacement, ``sett
 1.  It first looks for an override setting using the new name (which is the 'ideal' scenario) and where we want all our users to be eventually. For example:
 
     .. code-block:: python
-        :caption: userproject/settings/base.py
+        
+        # userproject/settings/base.py
 
         # ---------------------------------
         # Overrides for ``your-django-app``
@@ -191,7 +197,8 @@ Because your settings helper knows all it needs to about the replacement, ``sett
 2.  Next, Cogwheels will look for an override setting defined using the old name. For example:
 
     .. code-block:: python
-        :caption: userproject/settings/base.py
+
+        # userproject/settings/base.py
 
         # ---------------------------------
         # Overrides for ``your-django-app``
@@ -216,8 +223,9 @@ In some scenarios, would be all that is required, but obviously more must be don
 The settings helper's ``is_value_from_deprecated_setting()`` method can help us here:
 
 .. code-block:: python
-    :caption: yourapp/views.py
-    :emphasize-lines: 6-12
+    :emphasize-lines: 8-18
+
+    # yourapp/views.py
 
     class TransactionSummaryList(ListView):
         
@@ -248,11 +256,27 @@ Now our code is catering for all users, whether they are overriding the deprecat
 Raising a deprecation warning with Python is certainly helpful, but you'll also want to update your documentation to reflect the new changes, by:
 
 1.  Mentioning the deprecation in the **1.6** release notes.
-2.  Adding an entry for the new setting to the "Settings reference", and updating any references to the old setting entry to the new one.
+2.  Adding an entry for the new setting to the "Settings reference", and updating any references to the old setting entry to the new one. For example::
+        
+        .. _SHOW_FULL_NAMES_IN_SUMMARY:
+
+        ``YOURAPP_SHOW_FULL_NAMES_IN_SUMMARY``
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        .. versionadded:: 1.6
+            Replaces :ref:`HIDE_FULL_NAMES_IN_SUMMARY`.
+
+        Value type expected:
+            ``boolean``
+        Default value:
+            ``True``
+
+        Use this setting to toggle whether full names are displayed in the summary view
+
 3.  Updating the entry for the existing setting in the "Settings reference", using Sphinx's `deprecated directive <http://www.sphinx-doc.org/en/stable/markup/para.html#directive-deprecated>`_ to mark the old setting as deprecated. For example::
 
         .. deprecated:: 1.6
-            Use :ref:`YOURAPP_HIDE_FULL_NAMES_IN_SUMMARY` instead.
+            Use :ref:`SHOW_FULL_NAMES_IN_SUMMARY` instead.
 
 
 In version **1.7**
@@ -269,8 +293,9 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 1.  Remove the default value for the old setting from ``defaults.py`` 
     
     .. code-block:: python
-        :caption: yourapp/conf/defaults.py
-        :emphasize-lines: 20
+        :emphasize-lines: 22
+
+        # yourapp/conf/defaults.py
 
         # -------------------
         # Admin / UI settings
@@ -296,8 +321,9 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 2.  Remove the deprecation definition from your setting helper class in ``settings.py``
 
     .. code-block:: python
-        :caption: yourapp/conf/settings.py
-        :emphasize-lines: 5
+        :emphasize-lines: 7
+
+        # yourapp/conf/settings.py
         
         from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
         from yourapp.utils.deprecation import RemovedInYourApp18Warning

@@ -15,7 +15,8 @@ What we're looking to achieve
 Let's pretend that the latest release of your app has two overridable app settings, which appear in the ``defaults.py`` module like so:
 
 .. code-block:: python
-    :caption: yourapp/conf/defaults.py
+    
+    # yourapp/conf/defaults.py
 
     # -------------------
     # Admin / UI settings
@@ -55,8 +56,9 @@ In version **1.6**
 First, you'll want to add a setting using the new name to ``defaults.py``. You may find it helpful to mark the deprecated setting here in some way, to remind you and other app maintainers that it has been deprecated.
 
 .. code-block:: python
-    :caption: yourapp/conf/defaults.py
-    :emphasize-lines: 5,20
+    :emphasize-lines: 7,22
+
+    # yourapp/conf/defaults.py
 
     # -------------------
     # Admin / UI settings
@@ -86,7 +88,8 @@ First, you'll want to add a setting using the new name to ``defaults.py``. You m
 Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
 .. code-block:: python
-    :caption: yourapp/conf/settings.py
+
+    # yourapp/conf/settings.py
 
     from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
     from yourapp.utils.deprecation import RemovedInYourApp18Warning
@@ -115,8 +118,9 @@ There are a few things worth noting here:
 The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine our code currently looks something like this:
 
 .. code-block:: python
-    :caption: yourapp/modeladmin.py
-    :emphasize-lines: 7
+    :emphasize-lines: 9
+
+    # yourapp/modeladmin.py
 
     from wagtail.contrib.modeladmin.options import ModelAdmin
 
@@ -140,8 +144,9 @@ This code will now raise the following deprecation warning:
 To resolve this for a 'setting rename', all you have to do is change any references to the old name to the new one, like so:
 
 .. code-block:: python
-    :caption: yourapp/modeladmin.py
-    :emphasize-lines: 7
+    :emphasize-lines: 9
+
+    # yourapp/modeladmin.py
 
     from wagtail.contrib.modeladmin.options import ModelAdmin
 
@@ -156,7 +161,8 @@ Because your settings helper knows all it needs to about the rename, ``settings.
 1.  It first looks for an override setting using the new name (which is the 'ideal' scenario), and where we want all our users to be eventually. For example:
 
     .. code-block:: python
-        :caption: userproject/settings/base.py
+
+        # userproject/settings/base.py
 
         # ---------------------------------
         # Overrides for ``your-django-app``
@@ -167,7 +173,8 @@ Because your settings helper knows all it needs to about the rename, ``settings.
 2.  Next, Cogwheels will look for an override setting defined using the old name. For example:
 
     .. code-block:: python
-        :caption: userproject/settings/base.py
+        
+        # userproject/settings/base.py
 
         # ---------------------------------
         # Overrides for ``your-django-app``
@@ -194,11 +201,27 @@ Although we’re still happy to the deprecated setting for a couple more version
 Raising a deprecation warning with Python is certainly helpful, but you'll also want to update your documentation to reflect the new changes, by:
 
 1.  Mentioning the deprecation in the **1.6** release notes
-2.  Adding an entry for the new setting to the "Settings reference", and updating any references to the old setting entry to the new one
+2.  Adding an entry for the new setting to the "Settings reference", and updating any references to the old setting entry to the new one, for example::
+
+        .. _FLAT_MENUS_MENU_ICON:
+
+        ``YOURAPP_FLAT_MENUS_MENU_ICON``
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        .. versionadded:: 1.6
+            Replaces :ref:`FLATMENU_MENU_ICON`.
+
+        Value type expected:
+            ``string``
+        Default value:
+            ``"list-ol"``
+
+        Use this setting to change the icon used to represent 'Flat menus' in the admin UI. Any icon class name from _`Font Awesome V4 <https://fontawesome.com/icons/>` is supported.
+
 3.  Updating the entry for the existing setting in the "Settings reference", using Sphinx's `deprecated directive <http://www.sphinx-doc.org/en/stable/markup/para.html#directive-deprecated>`_ to mark the old setting as deprecated, for example::
 
         .. deprecated:: 1.6
-            Use :ref:`YOURAPP_FLAT_MENUS_MENU_ICON` instead.
+            Use :ref:`FLAT_MENUS_MENU_ICON` instead.
 
 
 In version **1.7**
@@ -215,8 +238,9 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 1.  Remove the default value for the old setting from ``defaults.py`` 
     
     .. code-block:: python
-        :caption: yourapp/conf/defaults.py
-        :emphasize-lines: 14
+        :emphasize-lines: 16
+
+        # yourapp/conf/defaults.py
 
         # -------------------
         # Admin / UI settings
@@ -236,8 +260,9 @@ We're finally ready to remove support for the old setting (YEY!), so the followi
 2.  Remove the deprecation definition from your app's setting helper in ``settings.py``
 
     .. code-block:: python
-        :caption: yourapp/conf/settings.py
-        :emphasize-lines: 5
+        :emphasize-lines: 7
+
+        # yourapp/conf/settings.py
         
         from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
         from yourapp.utils.deprecation import RemovedInYourApp18Warning

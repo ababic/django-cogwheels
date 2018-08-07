@@ -15,7 +15,8 @@ What we're looking to achieve
 Let's pretend that your app currently has an overridable setting that allows users to modify the cache timeout used by a specific feature. Like all your app settings, the default value appears in ``defaults.py`` like so:
 
 .. code-block:: python
-    :caption: yourapp/conf/defaults.py
+    
+    # yourapp/conf/defaults.py
 
     # ---------------------
     # Product data settings
@@ -53,8 +54,9 @@ In version **1.6**
 You may find it helpful to mark the deprecated setting here in some way, to remind you and other app maintainers that it has been deprecated.
 
 .. code-block:: python
-    :caption: yourapp/conf/defaults.py
-    :emphasize-lines: 6
+    :emphasize-lines: 8
+
+    # yourapp/conf/defaults.py
 
     # -------------------
     # Deprecated settings
@@ -70,7 +72,8 @@ You may find it helpful to mark the deprecated setting here in some way, to remi
 Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
 .. code-block:: python
-    :caption: yourapp/conf/settings.py
+
+    # yourapp/conf/settings.py
 
     from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
     from yourapp.utils.deprecation import RemovedInYourApp18Warning
@@ -127,8 +130,9 @@ We're finally ready to remove support for the old setting, so the following step
 1.  Remove the default value for the setting from ``defaults.py`` 
     
     .. code-block:: python
-        :caption: yourapp/conf/defaults.py
-        :emphasize-lines: 14
+        :emphasize-lines: 16
+
+        # yourapp/conf/defaults.py
 
         # -------------------
         # Admin / UI settings
@@ -148,8 +152,9 @@ We're finally ready to remove support for the old setting, so the following step
 2.  Remove the deprecation definition from your app's setting helper in ``settings.py``
 
     .. code-block:: python
-        :caption: yourapp/conf/settings.py
-        :emphasize-lines: 5
+        :emphasize-lines: 7
+
+        # yourapp/conf/settings.py
         
         from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
         from yourapp.utils.deprecation import RemovedInYourApp18Warning
