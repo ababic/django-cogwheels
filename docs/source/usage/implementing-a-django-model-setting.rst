@@ -16,10 +16,6 @@ When you request the model from your app's settings helper, Cogwheels utilises D
     - No data is migrated to the custom model automatically. If necessary, this will be down to you or your users to implement.
     - The replacement model must be installed in order to be imported successfully (the relevant app must be added to the user's ``INSTALLED_APPS`` setting).
 
-.. contents:: Contents:
-    :local:
-    :depth: 1
-
 
 Adding a new app setting
 ========================
@@ -56,7 +52,7 @@ Users will override these settings by adding override values to their Django set
 
 
 .. NOTE::
-    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-the-namespace-prefix`.
+    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of where the ``conf`` app is defined in the example, but this will differ for your app. For more information see: :ref:`finding-the-namespace-prefix`.
 
 
 Retrieving the app setting value

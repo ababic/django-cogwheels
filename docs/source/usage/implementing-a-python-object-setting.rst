@@ -8,10 +8,6 @@ Setting values must be defined as Python import path strings (e.g. "project.app.
 
 When you request the object from your app's settings helper, Cogwheels utilises Python's ``importlib.import_module()`` to import the module and fetch you with the relevant object, caching the result to improve the efficiency of repeat requests for the same object.
 
-.. contents:: Contents:
-    :local:
-    :depth: 1
-
 
 Adding a new app setting
 ========================
@@ -55,7 +51,7 @@ Users will override these settings by adding override values to their Django set
     YOURAPP_MAIN_MENU_ADD_FORM = 'core.forms.menus.CustomMainMenuAddForm'
 
 .. NOTE::
-    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-the-namespace-prefix`.
+    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of where the ``conf`` app is defined in the example, but this will differ for your app. For more information see: :ref:`finding-the-namespace-prefix`.
 
 
 Retrieving the app setting value

@@ -37,7 +37,7 @@ App settings in Cogwheels all work in a similar way, regardless of what type of 
 3.  When you request a setting value from the helper, it checks your user's Django settings modules for override values, and if found, uses those values instead of the default.
 
     .. NOTE::
-        Users define overrides using *prefixed* setting names. The prefix used in the example below is **YOURAPP_** because of the where the ``conf`` app has been created, but this will differ for your app. For more information see: :ref:`finding-the-namespace-prefix`.
+        Users define overrides using *prefixed* setting names. The prefix used in the example below is **YOURAPP_** because of where the ``conf`` app is defined in the example, but this will differ for your app. For more information see: :ref:`finding-the-namespace-prefix`.
 
     .. code-block:: python
 
@@ -220,9 +220,6 @@ Step-by-step guides
     implementing-a-python-module-setting
     implementing-a-python-object-setting
     setting-deprecation/index
-
-
-
 
 
 
