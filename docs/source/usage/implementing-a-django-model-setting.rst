@@ -2,14 +2,6 @@
 Django model settings
 =====================
 
-.. contents:: Contents:
-    :local:
-    :depth: 1
-
-
-What is a Django model setting?
-===============================
-
 A Django model setting is a setting that allows users to swap out a default Django model for a custom one (or an alternative that including in your app).
 
 Setting values must be defined as `model strings`, in the format "app_label.Model".
@@ -23,6 +15,10 @@ When you request the model from your app's settings helper, Cogwheels utilises D
     - So long as the relevant app remains installed, the default model will remain available, and any existing data will remain untouched in the database.
     - No data is migrated to the custom model automatically. If necessary, this will be down to you or your users to implement.
     - The replacement model must be installed in order to be imported successfully (the relevant app must be added to the user's ``INSTALLED_APPS`` setting).
+
+.. contents:: Contents:
+    :local:
+    :depth: 1
 
 
 Adding a new app setting
@@ -60,7 +56,7 @@ Users will override these settings by adding override values to their Django set
 
 
 .. NOTE::
-    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-your-apps-namespace-prefix`.
+    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-the-namespace-prefix`.
 
 
 Retrieving the app setting value

@@ -2,14 +2,6 @@
 Regular settings
 ================
 
-.. contents:: Contents:
-    :local:
-    :depth: 1
-
-
-What is a regular setting?
-==========================
-
 Any setting that allows a user to override a simple Python type value is classed as a 'regular setting'. Cogwheels doesn't limit the type of values you can use, but it's recommended that you stick to using well-known types, that are easy for your app's users to override.
 
 When you request a regular setting value from your app's settings helper, it returns a pointer to the exact same value in memory, for example:
@@ -51,6 +43,10 @@ If a user has added an override value to their Django settings (using the correc
 
     > settings.SETTING_NAME is django_settings.YOURAPP_SETTING_NAME
     True
+
+.. contents:: Contents:
+    :local:
+    :depth: 1
 
 
 Adding a new app setting
@@ -126,7 +122,7 @@ Users will override these settings by adding override values to their Django set
     }
 
 .. NOTE::
-    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-your-apps-namespace-prefix`.
+    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-the-namespace-prefix`.
 
 
 Retrieving the app setting value

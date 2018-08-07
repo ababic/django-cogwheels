@@ -2,19 +2,15 @@
 Python module settings
 ======================
 
-.. contents:: Contents:
-    :local:
-    :depth: 1
-
-
-What is a Python module setting?
-================================
-
 A Python module setting is a setting that allows users to swap out an entire Python module for a custom one (or an alternative that is available within your app).
 
 Setting values must be defined as Python import path strings (e.g. "project.app.module").
 
 When you request the module from your app's settings helper, Cogwheels utilises Python's ``importlib.import_module()`` to import the module, and caches the result to improve the efficiency of repeat requests for the same module.
+
+.. contents:: Contents:
+    :local:
+    :depth: 1
 
 
 Adding a new app setting
@@ -46,7 +42,7 @@ Users will override this setting by adding override values to their Django setti
     YOURAPP_PAGE_SEARCH_BACKEND = 'yourapp.search.backends.postgres'
 
 .. NOTE::
-    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-your-apps-namespace-prefix`.
+    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-the-namespace-prefix`.
 
 
 Retrieving the app setting value

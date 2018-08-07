@@ -1,8 +1,8 @@
-=============================
-App setting deprecation guide
-=============================
+========================
+Deprecating app settings
+========================
 
-Deprecation is an inevitable part of managing any reusable app over time, and this applies especially to overridable app settings, which your users likely depend on to make your app function in a way that is most useful to them. 
+Deprecation is an inevitable part of managing any reusable app over time, and this applies especially to overridable app settings, which your users likely depend on to make your app function in a way that fits their requirements.
 
 Cogwheels was designed with this in mind, and has features built-in to help you manage app setting deprecation in an standardised, effective way. You'll still have to do some work, but Cogwheels should certainly make your life easier.
 

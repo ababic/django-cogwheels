@@ -7,8 +7,8 @@ Usage
     :depth: 1
 
 
-How app settings work
-=====================
+App settings: The basics
+========================
 
 App settings in Cogwheels all work in a similar way, regardless of what type of value you are using:
 
@@ -37,7 +37,7 @@ App settings in Cogwheels all work in a similar way, regardless of what type of 
 3.  When you request a setting value from the helper, it checks your user's Django settings modules for override values, and if found, uses those values instead of the default.
 
     .. NOTE::
-        Users define overrides using *prefixed* setting names. The prefix used in the example below is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-your-apps-namespace-prefix`.
+        Users define overrides using *prefixed* setting names. The prefix used in the example below is **YOURAPP_** because of the where the ``conf`` app has been created, but this will differ for your app. For more information see: :ref:`finding-the-namespace-prefix`.
 
     .. code-block:: python
 
@@ -60,67 +60,6 @@ App settings in Cogwheels all work in a similar way, regardless of what type of 
 **For more information, see:**
 
 - :doc:`implementing-a-regular-setting`
-
-
-.. _finding-your-apps-namespace-prefix:
-
-Finding your app's settings namespace prefix
-============================================
-
-In order to override app settings, your users will add override values to their project's Django settings using **prefixed** setting names.
-
-This namespacing of settings is important, as it helps users of your app to remember which app their settings apply to, and also helps to prevent setting name clashes between apps.
-
-Coghwheels uses the Python path of your ``conf`` app to generate a unique prefix for each settings helper. You can find out what this prefix is by calling the settings helper's ``get_prefix()`` method, like so:
-
-.. code-block:: console
-
-    > from yourapp.conf import settings
-
-    > settings.get_prefix()
-    "YOURAPP_"
-
-So, to override settings for this particular app, users must prefix their setting names with **YOURAPP_**, like so:
-
-.. code-block:: python
-
-    # userdjangoproject/settings/base.py
-
-    ...
-
-    # ---------------------------------
-    # Overrides for ``your-django-app``
-    # ---------------------------------
-
-    # Overrides: yourapp.conf.settings.ADMIN_UI_PROJECT_NAME
-    YOURAPP_ADMIN_UI_PROJECT_NAME = "The Best Project Ever!"
-
-    # Overrides: yourapps.conf.settings.SEND_EMAILS_ON_DISPATCH
-    YOURAPP_SEND_EMAILS_ON_DISPATCH = False
-
-    # Overrides: yourapps.conf.settings.MAIN_MENU_MAX_DEPTH
-    YOURAPP_MAIN_MENU_MAX_DEPTH = 1
-
-
-If you are unhappy with default prefix chosen by Cogwheels, you can easily specficy your own by adding a ``prefix`` attribute to your settings helper class. e.g.
-
-.. code-block:: python
-
-    # yourapp/conf/settings.py
-    
-    class MyAppSettingsHelper(BaseAppSettingsHelper):
-        prefix = 'custom'
-
-
-Coghweels will automatically translate this string into upper-case if a lower or mixed case string is provided, and will also add the underscore when necessary, so you don't have to include it yourself. 
-
-With the above changes applied, ``get_prefix()`` will now return the following:
-
-.. code-block:: console
-
-    > from yourapp.conf import settings
-    > settings.get_prefix()
-    'CUSTOM_'
 
 
 Retrieving Django models and other Python objects from setting values
@@ -195,6 +134,67 @@ And, you can use the helper's ``objects`` attribute shortcut or ``get_object()``
 - :doc:`implementing-a-python-module-setting`
     
 
+.. _finding-the-namespace-prefix:
+
+Finding the settings namespace prefix for your app
+==================================================
+
+In order to override app settings, your users will add override values to their project's Django settings using **prefixed** setting names.
+
+This namespacing of settings is important, as it helps users of your app to remember which app their settings apply to, and also helps to prevent setting name clashes between apps.
+
+Coghwheels uses the Python path of your ``conf`` app to generate a unique prefix for each settings helper. You can find out what this prefix is by calling the settings helper's ``get_prefix()`` method, like so:
+
+.. code-block:: console
+
+    > from yourapp.conf import settings
+
+    > settings.get_prefix()
+    "YOURAPP_"
+
+So, to override settings for this particular app, users must prefix their setting names with **YOURAPP_**, like so:
+
+.. code-block:: python
+
+    # userdjangoproject/settings/base.py
+
+    ...
+
+    # ---------------------------------
+    # Overrides for ``your-django-app``
+    # ---------------------------------
+
+    # Overrides: yourapp.conf.settings.ADMIN_UI_PROJECT_NAME
+    YOURAPP_ADMIN_UI_PROJECT_NAME = "The Best Project Ever!"
+
+    # Overrides: yourapp.conf.settings.SEND_EMAILS_ON_DISPATCH
+    YOURAPP_SEND_EMAILS_ON_DISPATCH = False
+
+    # Overrides: yourapp.conf.settings.MAIN_MENU_MAX_DEPTH
+    YOURAPP_MAIN_MENU_MAX_DEPTH = 1
+
+
+If you are unhappy with default prefix chosen by Cogwheels, you can easily specficy your own by adding a ``prefix`` attribute to your settings helper class. e.g.
+
+.. code-block:: python
+
+    # yourapp/conf/settings.py
+    
+    class MyAppSettingsHelper(BaseAppSettingsHelper):
+        prefix = 'custom'
+
+
+Coghweels will automatically translate this string into upper-case if a lower or mixed case string is provided, and will also add the underscore when necessary, so you don't have to include it yourself. 
+
+With the above changes applied, ``get_prefix()`` will now return the following:
+
+.. code-block:: console
+
+    > from yourapp.conf import settings
+    > settings.get_prefix()
+    'CUSTOM_'
+
+
 Deprecation handling for app settings
 =====================================
 
@@ -209,8 +209,8 @@ Another major benefit of using Cogwheels is it's built-in support for app settin
 - :doc:`setting-deprecation/index`
 
 
-Setting implementation guides
-=============================
+Step-by-step guides
+===================
 
 .. toctree::
     :maxdepth: 1
@@ -219,16 +219,7 @@ Setting implementation guides
     implementing-a-django-model-setting
     implementing-a-python-module-setting
     implementing-a-python-object-setting
-
-
-Other guides
-============
-
-.. toctree::
-    :maxdepth: 2
-    
     setting-deprecation/index
-
 
 
 
