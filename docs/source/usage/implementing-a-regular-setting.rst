@@ -2,7 +2,7 @@
 Implementing a regular setting
 ==============================
 
-Any setting that allows a user to override a simple Python type value is classed as a 'regular setting'. Cogwheels doesn't limit the type of values you can use, but it's recommended that you stick to using well-known types, that are easy for your app's users to override.
+Any setting that allows a user to override a simple Python type value is classed as a 'regular setting'. Cogwheels does not limit the type of values you can use, but it's recommended that you stick to using well-known types, that are easy for your app's users to override.
 
 When you request a regular setting value from your app's settings helper, it returns a pointer to the exact same value in memory, for example:
 
@@ -158,7 +158,7 @@ Referencing a setting as a direct attribute of the setting helper or using the h
 Validation and error handling
 =============================
 
-Cogwheels doesn't apply any validation to regular setting values by default. If you need to apply custom validation for a specific setting in your app, you'll need to implement that validation yourself. A sensible approach is to add a custom property method to your app's settings helper, like so:
+Cogwheels does not apply any validation to regular setting values by default. If you need to apply custom validation for a specific setting in your app, you'll need to implement that validation yourself. A sensible approach is to add a custom property method to your app's settings helper, like so:
 
 .. code-block:: python
     

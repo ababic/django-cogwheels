@@ -216,7 +216,9 @@ Raising a deprecation warning with Python is certainly helpful, but you'll also 
         Default value:
             ``"list-ol"``
 
-        Use this setting to change the icon used to represent 'Flat menus' in the admin UI. Any icon class name from _`Font Awesome V4 <https://fontawesome.com/icons/>` is supported.
+        Use this setting to change the icon used to represent 'Flat menus' in the admin UI. 
+
+        Any icon class name from _`Font Awesome V4 <https://fontawesome.com/icons/>` is supported.
 
 3.  Updating the entry for the existing setting in the "Settings reference", using Sphinx's `deprecated directive <http://www.sphinx-doc.org/en/stable/markup/para.html#directive-deprecated>`_ to mark the old setting as deprecated, for example::
 

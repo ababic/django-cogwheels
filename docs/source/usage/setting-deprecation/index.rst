@@ -18,7 +18,7 @@ Setting removal
     See: :doc:`removal`
 
 Setting renaming
-    You are changing the name of a setting. There aren't any changes to the type or range of supported override values, or to the way override values affect your app's behaviour.
+    You are changing the name of a setting. There are not any changes to the type or range of supported override values, or to the way override values affect your app's behaviour.
 
     You are willing to support override values defined using the previous setting name for a couple more feature releases, but would like to prompt those users to update their Django settings to use the new setting name.
 

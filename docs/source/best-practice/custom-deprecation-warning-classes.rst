@@ -34,7 +34,7 @@ The following example assumes that:
 Adding custom warning classes
 -----------------------------
 
-If you were to add custom deprecation warning classes at this point in your app's lifecycle, they would look something like this:
+If you were to add custom deprecation warning classes at this point in your app's life cycle, they would look something like this:
 
 .. code-block:: python
 

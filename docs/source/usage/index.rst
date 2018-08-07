@@ -141,7 +141,7 @@ In order to override app settings, your users will add override values to their 
 
 This namespacing of settings is important, as it helps users of your app to remember which app their settings apply to, and also helps to prevent setting name clashes between apps.
 
-Coghwheels uses the Python path of your ``conf`` app to generate a unique prefix for each settings helper. You can find out what this prefix is by calling the settings helper's ``get_prefix()`` method, like so:
+Cogwheels uses the Python path of your ``conf`` app to generate a unique prefix for each settings helper. You can find out what this prefix is by calling the settings helper's ``get_prefix()`` method, like so:
 
 .. code-block:: console
 
@@ -172,7 +172,7 @@ So, to override settings for this particular app, users must prefix their settin
     YOURAPP_MAIN_MENU_MAX_DEPTH = 1
 
 
-If you are unhappy with default prefix chosen by Cogwheels, you can easily specficy your own by adding a ``prefix`` attribute to your settings helper class. e.g.
+If you are unhappy with default prefix chosen by Cogwheels, you can easily specify your own by adding a ``prefix`` attribute to your settings helper class. e.g.
 
 .. code-block:: python
 
@@ -182,7 +182,7 @@ If you are unhappy with default prefix chosen by Cogwheels, you can easily specf
         prefix = 'custom'
 
 
-Coghweels will automatically translate this string into upper-case if a lower or mixed case string is provided, and will also add the underscore when necessary, so you don't have to include it yourself. 
+Cogwheels will automatically translate this string into upper-case if a lower or mixed case string is provided, and will also add the underscore when necessary, so you don't have to include it yourself. 
 
 With the above changes applied, ``get_prefix()`` will now return the following:
 
