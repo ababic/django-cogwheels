@@ -6,7 +6,7 @@ Cogwheels is a tool for developers of reusable Django apps, to help them impleme
 
 Below are a some links to help you get started:
 
-- :doc:`installation/index`
+- :doc:`installation`
 - :doc:`usage/index`
 
 
@@ -25,8 +25,9 @@ Documentation index
 .. toctree::
     :maxdepth: 2
 
-    installation/index
+    installation
     usage/index
+    best-practice/index
     example-implementations
     contributing/index
     releases/index

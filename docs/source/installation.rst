@@ -94,28 +94,33 @@ Cogwheels provides a `Django app template <https://github.com/ababic/cogwheels-c
 
 3.  All app settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module with a default value. To find out more about how to define and use app setting values, see: :doc:`/usage/index`
 
-.. NOTE ::
-    If your app contains multiple sub-apps, you may wish to create multiple ``conf`` apps, within some or all those. Cogwheels fully supports this, and will generate a unique :doc:`setting namespace prefix <changing-the-namespace-prefix>` for each sub-app.
-
 
 Advanced configuration
 ======================
 
-.. toctree::
-    :maxdepth: 1
 
-    changing-the-namespace-prefix
-    utilising-the-conf-app
-    removing-the-conf-app
-    separating-defaults-and-settings
+Defining more than one ``conf`` app
+-----------------------------------
+
+If your app contains multiple sub-apps, you may wish to create a separate ``conf`` for each of those (or at least more than one). Cogwheels fully supports this approach. You can define as many ``conf`` apps as you need, and Cogwheels will automatically generate a unique namespace prefix for each settings helper, depending on where it is defined.
 
 
-Other things to consider
-========================
+Removing the ``conf`` app
+-------------------------
 
-.. toctree::
-    :maxdepth: 1
+Everyone has their own preferences for how they structure their projects, and that's all well and good. 
 
-    documenting-your-app-settings
-    custom-deprecation-warning-classes
+There's no requirement for ``defaults.py`` and ``settings.py`` to be kept inside a ``conf`` app - it is only a recommendation. As long as you keep the two files in the same directory, things should work fine 'out of the box'.
 
+
+Separating ``defaults.py`` and ``settings.py``
+----------------------------------------------
+
+If you can't keep these two files in the same location for any reason, it is possible to separate them. However, you will need to set the ``defaults_path`` attribute on your ``SettingsHelper`` class, so that it knows where to find the default values. For example, if ``defaults.py`` were in **yourapp/some_other_place/**, and ``settings.py`` in **yourapp/**, you would do:
+
+.. code-block:: python
+
+    # yourapp/settings.py
+
+    class MyAppSettingsHelper(BaseAppSettingsHelper):
+        defaults_path = 'yourapp.some_other_place.defaults'

@@ -6,15 +6,11 @@ All of the deprecation examples in the Cogwheels documentation assume that you'r
 
 For developers unfamiliar with this approach, this guide outlines the benefits of this approach, and provides examples of how to adopt it yourself. 
 
-.. contents:: Contents
-    :local:
-    :depth: 1
 
+Benefits of this approach
+=============================
 
-What are the benefits?
-======================
-
-The main arguments for defining and using custom deprecation warnings within your app are:
+The main benefits of defining and using custom deprecation warnings within your app are:
 
 - Developers typically see the name of the warning class when a warning is raised, so it’s a convenient way to provide them with more information. For example, from the warning class ``RemovedInWagtail21Warning``, you can easily ascertain that:   
     - ``Wagtail`` is the app that raised the warning.
@@ -25,16 +21,20 @@ The main arguments for defining and using custom deprecation warnings within you
 - Developers only interested in specific classes of warning can more easily identify warnings from your app if they need to.
 
 
-An example implementation
-=========================
+Implementation example
+======================
 
 The following example assumes that:
 
--   The latest release version of your app is ``1.5``.
--   The next release version of your app will be ``1.6``.
+-   The latest release version of your app is **1.5**.
+-   The next release version of your app will be **1.6**.
 -   The latest version was just released, so deprecation warnings have not yet been cycled.
 
-If you were to add custom deprecation warning classes for your app now, they would look something like this:
+
+Adding custom warning classes
+-----------------------------
+
+If you were to add custom deprecation warning classes at this point in your app's lifecycle, they would look something like this:
 
 .. code-block:: python
 
@@ -54,9 +54,12 @@ If you were to add custom deprecation warning classes for your app now, they wou
     removed_in_following_version_warning = RemovedInYourApp18Warning
 
 
-Because we're starting work on a new release, any code using the ``DeprecationWarning`` class to raise warnings has now reached the end of it's deprecation period, so support for the deprecated functionality can be removed, and the warning should no needs to be raised.
+Reviewing your current deprecations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Any warnings raised using the ``PendingDeprecationWarning`` class must be updated to reflect the fact that deprecation is now `imminent` rather than `pending`, which you'll do using the new ``RemovedInYourApp17Warning`` class instead.
+Because we're starting work on a new release, any code using the ``DeprecationWarning`` class to raise warnings has now reached the end of it's deprecation period, so support for the deprecated functionality can safely be removed, and the warning should no longer need need to be raised.
+
+Any warnings raised using the ``PendingDeprecationWarning`` class must be updated to reflect the fact that deprecation is now **imminent** rather than **pending**, which you'll do using the new ``RemovedInYourApp17Warning`` class instead.
 
 For example, this: 
 
@@ -85,16 +88,16 @@ Would be updated to:
         category=RemovedInYourApp17Warning
     )
 
-Any functionality deprecated between now and the release of version ``1.6`` should use the ``RemovedInYourApp18Warning``, as the functionality won't be removed for another two versions.
+Any functionality deprecated between now and the release of version **1.6** should use the ``RemovedInYourApp18Warning``, as the functionality won't be removed for another two versions.
 
 
-Cycling the warnings for future releases
-----------------------------------------
+Cycling the warnings in future releases
+---------------------------------------
 
 Following on from the example above, let's pretend that:
 
--   You have just released version ``1.6`` of your app.
--   The next release version of your app is now ``1.7``.
+-   You have just released version **1.6** of your app.
+-   The next release version of your app is now **1.7**.
 
 Any code currently using the ``RemovedInYourApp17Warning`` warning class has now reached the end of it's deprecation period, so support for the deprecated functionality can be removed, and the warnings should no longer be raised.
 

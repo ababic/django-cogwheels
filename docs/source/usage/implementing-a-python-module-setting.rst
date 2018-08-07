@@ -46,7 +46,7 @@ Users will override this setting by adding override values to their Django setti
     YOURAPP_PAGE_SEARCH_BACKEND = 'yourapp.search.backends.postgres'
 
 .. NOTE::
-    The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
+    Users define overrides using *prefixed* setting names. The prefix used in the example above is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-your-apps-namespace-prefix`.
 
 
 Retrieving the app setting value

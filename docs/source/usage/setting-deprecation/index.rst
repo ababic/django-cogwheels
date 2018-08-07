@@ -6,7 +6,7 @@ Deprecation is an inevitable part of managing any reusable app over time, and th
 
 Cogwheels was designed with this in mind, and has features built-in to help you manage app setting deprecation in an standardised, effective way. You'll still have to do some work, but Cogwheels should certainly make your life easier.
 
-All of the examples in this section assume that you are using custom deprecation warnings classes within your app to help manage deprecations, so it might be best for you to start by reading :doc:`/installation/custom-deprecation-warning-classes`.
+All of the examples in this section assume that you are using custom deprecation warnings classes within your app to help manage deprecations, so it might be best for you to start by reading :doc:`/best-practice/custom-deprecation-warning-classes`.
 
 There are currently four deprecation scenarios that are Cogwheels helps to cater for:
 
