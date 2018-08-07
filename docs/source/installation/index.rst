@@ -71,11 +71,14 @@ If your app is in the Python Package Index (PyPi), it's likely that it has a ``s
     )
 
 
-.. _defining_settings:
+.. _creating_the_conf_app:
 
-Defining settings for your app
-==============================
+Creating a conf app
+===================
 
+The ``conf`` app is where you define the available app settings for your app, the default values for those settings, and where you'll import your `settings helper` object from (for retrieving setting values). 
+
+Cogwheels provides a `Django app template <https://github.com/ababic/cogwheels-conf-app/>`_ that you can use for this step, making it quick and easy:
 
 1.  From the console, ``cd`` into your project's root app directory, for example:
     
@@ -83,47 +86,16 @@ Defining settings for your app
 
         $ cd your-django-app/yourapp/
 
-
-2.  Use Django's ``startapp`` command to create a ``conf`` app, using the official cogwheels app template:
+2.  Use Django's ``startapp`` command to create a ``conf`` app, using the Django app template provided by Cogwheels:
 
     .. code-block:: console
 
         $ django-admin.py startapp conf --template=https://github.com/ababic/cogwheels-conf-app/zipball/master
 
+3.  All app settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module with a default value. To find out more about how to define and use app setting values, see: :doc:`/usage/index`
 
-3.  Any overridable settings you want to support in your app simply need adding as standard variables to the newly created ``conf/defaults.py`` module. Here is some friendly advice:
-
-    - The variable names for your settings should be in upper case (e.g. ``SOME_SETTING``).
-    - There's no need to prefix setting names with ``"YOURAPP_"`` or similar here. Cogwheels will take care of adding this prefix automatically when it is useful. 
-    - You can use any native Python type as a value (e.g. string, int, boolean, float, list, tuple, dict, date, time), but try to stick to well-known types that are easy for your app's users to define when they want to override something.
-    - It's absolutely fine to use dictionaries to allow overriding of more complicated features, but try not to group together unrelated bits of configuration into large dictionaries, when they would make more sense as separate settings. 
-
-    Your setting definitions should look something like this:
-
-    .. code-block:: python
-
-        # your-django-app/yourapp/conf/defaults.py
-
-        ...
-
-        MAX_ITEMS_PER_ORDER = 5
-
-        SEND_ORDER_CONFIRMATION_EMAILS = True
-
-        # For settings that refer to Django models, the default value should be a string
-        # in the format 'app_name.Model', e.g.:
-
-        ORDER_ITEM_MODEL = 'yourapp.SimpleOrderItem'
-
-        # For settings that refer to Python modules, the default value should be an
-        # 'import path' string, e.g.:
-
-        DISCOUNTS_BACKEND = 'yourapp.discount_backends.simple'
-
-        # For settings that refer to classes, methods, or other importable Python
-        # objects, the default value should be an 'object import path' string, e.g.:
-
-        ORDER_FORM_CLASS = 'yourapp.forms.OrderForm'
+.. NOTE ::
+    If your app contains multiple sub-apps, you may wish to create multiple ``conf`` apps, within some or all those. Cogwheels fully supports this, and will generate a unique :doc:`setting namespace prefix <changing-the-namespace-prefix>` for each sub-app.
 
 
 Advanced configuration

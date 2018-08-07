@@ -17,8 +17,8 @@ Setting values must be defined as Python import path strings (e.g. "project.app.
 When you request the object from your app's settings helper, Cogwheels utilises Python's ``importlib.import_module()`` to import the module and fetch you with the relevant object, caching the result to improve the efficiency of repeat requests for the same object.
 
 
-Adding new app settings
-=======================
+Adding a new app setting
+========================
 
 App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Python object settings are no exception. You just have to ensure the import path strings you use as default values are correct. For example:
 
@@ -44,7 +44,7 @@ Users will override these settings by adding override values to their Django set
 
 .. code-block:: python
 
-    # usersdjangoproject/settings/base.py
+    # userdjangoproject/settings/base.py
 
     ...
 
@@ -62,8 +62,8 @@ Users will override these settings by adding override values to their Django set
     The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
 
 
-Retrieving app setting values
-=============================
+Retrieving the app setting value
+================================
 
 You can use the settings helper's ``objects`` attribute shortcut or ``get_object()`` method to retrieve the Python objects referenced by setting values.
 

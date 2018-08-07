@@ -25,8 +25,8 @@ When you request the model from your app's settings helper, Cogwheels utilises D
     - The replacement model must be installed in order to be imported successfully (the relevant app must be added to the user's ``INSTALLED_APPS`` setting).
 
 
-Adding new app settings
-=======================
+Adding a new app setting
+========================
 
 App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module, and Django model settings are no exception. You just have to ensure the model strings you use as default values are correct, and follow the "app_label.Model" format. For example:
 
@@ -44,7 +44,7 @@ Users will override these settings by adding override values to their Django set
 
 .. code-block:: python
 
-    # usersdjangoproject/settings/base.py
+    # userdjangoproject/settings/base.py
 
     ...
 
@@ -63,8 +63,8 @@ Users will override these settings by adding override values to their Django set
     The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
 
 
-Retrieving app setting values
-=============================
+Retrieving the app setting value
+================================
 
 You can use the settings helper's ``models`` attribute shortcut or ``get_model()`` method to retrieve model classes referenced by Django model setting values. For example:
 

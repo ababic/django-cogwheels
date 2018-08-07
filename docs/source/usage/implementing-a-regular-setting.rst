@@ -37,7 +37,7 @@ If a user has added an override value to their Django settings (using the correc
 
 .. code-block:: python
     
-    # usersdjangoproject/settings/base.py
+    # userdjangoproject/settings/base.py
 
     YOURAPP_SETTING_NAME = 'override-value'
 
@@ -53,8 +53,8 @@ If a user has added an override value to their Django settings (using the correc
     True
 
 
-Adding new app settings
-=======================
+Adding a new app setting
+========================
 
 App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module. You just have to choose sensible default value for each one. For example:
     
@@ -107,7 +107,7 @@ Users will override these settings by adding override values to their Django set
 
 .. code-block:: python
 
-    # usersdjangoproject/settings/base.py
+    # userdjangoproject/settings/base.py
 
     ...
 
@@ -129,8 +129,8 @@ Users will override these settings by adding override values to their Django set
     The `YOURAPP_` prefix used above will differ for you app, depending on your app's name, and where your settings helper is defined. To find out the prefix for your app, or to change it, see: :doc:`/installation/changing-the-namespace-prefix`.
 
 
-Retrieving app setting values
-=============================
+Retrieving the app setting value
+================================
 
 Referencing a setting as a direct attribute of the setting helper or using the helper's ``get()`` method returns values **exactly** as they are defined in ``defaults.py``, or in your user's Django settings.
 

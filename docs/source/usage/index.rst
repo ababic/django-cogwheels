@@ -1,16 +1,16 @@
-===========
-Usage guide
-===========
+=====
+Usage
+=====
 
 .. contents:: Contents:
     :local:
     :depth: 1
 
 
-Creating and using app settings
-===============================
+How app settings work
+=====================
 
-App settings in Cogwheels all work in a very similar fashion, regardless of what type of value you are using:
+App settings in Cogwheels all work in a similar way, regardless of what type of value you are using:
 
 1.  App settings are simply variables with upper-case names, added to your app's ``conf/defaults.py`` module with a default value, e.g.
     
@@ -20,7 +20,7 @@ App settings in Cogwheels all work in a very similar fashion, regardless of what
 
         SETTING_NAME = "default-value"
 
-2.  Instead of importing variables from the ``defaults`` module directly, you import a `settings helper` object, and query that for your setting values instead, e.g.
+2.  Within your project, rather than importing variables from ``defaults``, you import a `settings helper` object, and query that for your setting values instead, e.g.
     
     .. code-block:: console
 
@@ -34,11 +34,14 @@ App settings in Cogwheels all work in a very similar fashion, regardless of what
         > settings.get('SETTING_NAME') 
         "default-value"
     
-3.  When you request a setting value from the helper, it checks your user's Django settings module for an override value using a prefixed version of the setting name (To find out or change the prefix for your app, see :doc:`/installation/changing-the-namespace-prefix`). If found, the override value will be returned instead of the default.
+3.  When you request a setting value from the helper, it checks your user's Django settings modules for override values, and if found, uses those values instead of the default.
+
+    .. NOTE::
+        Users define overrides using *prefixed* setting names. The prefix used in the example below is **YOURAPP_** because of the app name and location of the ``conf`` app, but this will differ for your app. To learn more, see :ref:`finding-your-apps-namespace-prefix`.
 
     .. code-block:: python
 
-        # usersdjangoproject/settings/base.py
+        # userdjangoproject/settings/base.py
 
         YOURAPP_SETTING_NAME = "custom-value"
 
@@ -57,7 +60,67 @@ App settings in Cogwheels all work in a very similar fashion, regardless of what
 **For more information, see:**
 
 - :doc:`implementing-a-regular-setting`
-- :doc:`/installation/changing-the-namespace-prefix`
+
+
+.. _finding-your-apps-namespace-prefix:
+
+Finding your app's settings namespace prefix
+============================================
+
+In order to override app settings, your users will add override values to their project's Django settings using **prefixed** setting names.
+
+This namespacing of settings is important, as it helps users of your app to remember which app their settings apply to, and also helps to prevent setting name clashes between apps.
+
+Coghwheels uses the Python path of your ``conf`` app to generate a unique prefix for each settings helper. You can find out what this prefix is by calling the settings helper's ``get_prefix()`` method, like so:
+
+.. code-block:: console
+
+    > from yourapp.conf import settings
+
+    > settings.get_prefix()
+    "YOURAPP_"
+
+So, to override settings for this particular app, users must prefix their setting names with **YOURAPP_**, like so:
+
+.. code-block:: python
+
+    # userdjangoproject/settings/base.py
+
+    ...
+
+    # ---------------------------------
+    # Overrides for ``your-django-app``
+    # ---------------------------------
+
+    # Overrides: yourapp.conf.settings.ADMIN_UI_PROJECT_NAME
+    YOURAPP_ADMIN_UI_PROJECT_NAME = "The Best Project Ever!"
+
+    # Overrides: yourapps.conf.settings.SEND_EMAILS_ON_DISPATCH
+    YOURAPP_SEND_EMAILS_ON_DISPATCH = False
+
+    # Overrides: yourapps.conf.settings.MAIN_MENU_MAX_DEPTH
+    YOURAPP_MAIN_MENU_MAX_DEPTH = 1
+
+
+If you are unhappy with default prefix chosen by Cogwheels, you can easily specficy your own by adding a ``prefix`` attribute to your settings helper class. e.g.
+
+.. code-block:: python
+
+    # yourapp/conf/settings.py
+    
+    class MyAppSettingsHelper(BaseAppSettingsHelper):
+        prefix = 'custom'
+
+
+Coghweels will automatically translate this string into upper-case if a lower or mixed case string is provided, and will also add the underscore when necessary, so you don't have to include it yourself. 
+
+With the above changes applied, ``get_prefix()`` will now return the following:
+
+.. code-block:: console
+
+    > from yourapp.conf import settings
+    > settings.get_prefix()
+    'CUSTOM_'
 
 
 Retrieving Django models and other Python objects from setting values
