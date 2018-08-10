@@ -1,14 +1,13 @@
-==============================
-Setting replacement (singular)
-==============================
+==================================
+Replacing a setting with a new one
+==================================
+
+.. warning ::
+    This examples assumes you are using custom deprecation warnings classes to help manage deprecations for your app. If you are not, you may find it tricky to follow in parts. It isn't a requirement that you use custom deprecation warning classes for app setting deprecations, but it will make your life (and following this example) easier. Check out the following guide: :doc:`/best-practice/custom-deprecation-warning-classes`.
 
 This guide demonstrates the steps required to introduce a new setting that 'logically replaces' a single existing setting, following a standard 'two release' deprecation process.
 
-If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`replacement-multiple` more useful.
-
-.. contents:: Contents
-    :local:
-    :depth: 2
+If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`replacement-multiple` example scenario more useful.
 
 
 What we're looking to achieve
@@ -39,19 +38,14 @@ In the following example, we're going to assume that:
 -   The latest release version of your app was **1.5**.
 -   The next release version of your app will be **1.6**.
 -   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version **1.8**.
--   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`.
 
 
-Implementing the deprecation
-============================
-
-
-In version **1.6**
-------------------
+Changes required for the upcoming release (1.6)
+===============================================
 
 
 1. Updating ``conf/defaults.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 First, we'll add a setting using the new name to ``defaults.py``. We also want to mark the existing settings in ``defaults.py`` in some way, to help us remember that they are deprecated. Our updated ``defaults.py`` module should look something like this:
 
@@ -83,7 +77,7 @@ First, we'll add a setting using the new name to ``defaults.py``. We also want t
 
 
 2. Updating ``conf/settings.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
@@ -121,7 +115,7 @@ There are a few things worth noting here:
 
 
 3. Updating your app code
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine that our code currently looks something like this:
 
@@ -251,7 +245,7 @@ Now our code is catering for all users, whether they are overriding the deprecat
 
 
 4. Updating your documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 Raising a deprecation warning with Python is certainly helpful, but you'll also want to update your documentation to reflect the new changes, by:
 
@@ -261,7 +255,7 @@ Raising a deprecation warning with Python is certainly helpful, but you'll also 
         .. _SHOW_FULL_NAMES_IN_SUMMARY:
 
         ``YOURAPP_SHOW_FULL_NAMES_IN_SUMMARY``
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        -------------------------------------------
 
         .. versionadded:: 1.6
             Replaces :ref:`HIDE_FULL_NAMES_IN_SUMMARY`.
@@ -279,14 +273,14 @@ Raising a deprecation warning with Python is certainly helpful, but you'll also 
             Use :ref:`SHOW_FULL_NAMES_IN_SUMMARY` instead.
 
 
-In version **1.7**
-------------------
+Changes required for the next release (1.7)
+===========================================
 
 Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
 
 
-In version **1.8**
-------------------
+Changes required for the following release (1.8)
+================================================
 
 We're finally ready to remove support for the old setting (YEY!), so the following steps should be taken:
 

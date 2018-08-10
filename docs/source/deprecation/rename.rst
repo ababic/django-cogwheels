@@ -1,57 +1,56 @@
-================
-Setting renaming
-================
+=======================
+Renaming an app setting
+=======================
 
-This guide demonstrates the steps required to rename a setting, following a standard 'two release' deprecation process. 
+.. warning ::
+    This examples assumes you are using custom deprecation warnings classes to help manage deprecations for your app. If you are not, you may find it tricky to follow in parts. It isn't a requirement that you use custom deprecation warning classes for app setting deprecations, but it will make your life (and following this example) easier. Check out the following guide: :doc:`/best-practice/custom-deprecation-warning-classes`.
 
-.. contents:: Contents
-    :local:
-    :depth: 2
+For the sake of this example, we're going to pretend that:
 
+-   The latest release version of your app is **1.5**.
+-   The next release version of your app will be **1.6**.
+-   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, we'll be looking to do that in version **1.8**.
 
-What we're looking to achieve
-=============================
+What we want to acheive
+=======================
 
-Let's pretend that the latest release of your app has two overridable app settings, which appear in the ``defaults.py`` module like so:
+Let's pretend that we have currently have a ``ICON_FOR_MAIN_MENUS`` settings, which appears in the ``conf/defaults.py`` module like so:
 
 .. code-block:: python
     
     # yourapp/conf/defaults.py
 
-    # -------------------
-    # Admin / UI settings
-    # -------------------
+    ICON_FOR_MAIN_MENUS = 'list-ol'
 
-    FLATMENU_MENU_ICON = 'list-ol'
-
-    FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
-
-The naming convention here is a little inconsistent, so you would like to rename the ``FLATMENU_MENU_ICON`` setting to ``FLAT_MENUS_MENU_ICON``, and get users to use that instead.
-
-You'll continue to respect override values defined using ``YOURAPP_FLATMENU_MENU_ICON`` for another two versions, but want to warn those users that support for the old setting will removed soon, and that they should update their Django settings to use ``YOURAPP_FLAT_MENUS_MENU_ICON`` instead.
+We've decided that we want to rename the setting to ``MAIN_MENUS_ADMIN_UI_ICON`` to make it more descriptive, and to get rid of the redundant 'FOR' from the setting name.
 
 
-A few assumptions
------------------
+How we'll achieve it
+====================
 
-In the following example, we're going to assume that:
+As with any deprecation process, the change will span several releases, so we'll have to do things in stages. Let's take a while and plan what we'll need to do and when:
 
--   The latest release version of your app was **1.5**.
--   The next release version of your app will be **1.6**.
--   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version **1.8**.
--   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`.
+For our upcoming release (1.6), we'll want to:
+    - Add a new setting with the new name
+    - Mark the old setting as 'pending deprecation'
+    - Update our code to simultaneously respect override values using the new OR old setting name.
+    - Warn anyone using the old setting name the old setting is 'pending deprecation', and encourage them to use the new setting instead.
+    - Update the documentation
+
+In the next release (1.7) we'll want to:
+    - Warn anyone still using the old setting name that the old setting is now offically deprecated, and encourage them to use the new setting instead.
+
+In the following release (1.8) we'll want to:
+    - Update our code to only support override values defined using the new setting name
+    - Stop warning
 
 
-Implementing the deprecation
-============================
-
-
-In version **1.6**
-------------------
+Changes required for the upcoming release (1.6)
+===============================================
 
 
 1. Updating ``conf/defaults.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 First, you'll want to add a setting using the new name to ``defaults.py``. You may find it helpful to mark the deprecated setting here in some way, to remind you and other app maintainers that it has been deprecated.
 
@@ -83,7 +82,7 @@ First, you'll want to add a setting using the new name to ``defaults.py``. You m
 
 
 2. Updating ``conf/settings.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
@@ -113,7 +112,7 @@ There are a few things worth noting here:
 
 
 3. Updating your app code
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine our code currently looks something like this:
 
@@ -196,7 +195,7 @@ Although we’re still happy to the deprecated setting for a couple more version
 
 
 4. Updating your documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 Raising a deprecation warning with Python is certainly helpful, but you'll also want to update your documentation to reflect the new changes, by:
 
@@ -206,7 +205,7 @@ Raising a deprecation warning with Python is certainly helpful, but you'll also 
         .. _FLAT_MENUS_MENU_ICON:
 
         ``YOURAPP_FLAT_MENUS_MENU_ICON``
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        -------------------------------------------
 
         .. versionadded:: 1.6
             Replaces :ref:`FLATMENU_MENU_ICON`.
@@ -226,14 +225,14 @@ Raising a deprecation warning with Python is certainly helpful, but you'll also 
             Use :ref:`FLAT_MENUS_MENU_ICON` instead.
 
 
-In version **1.7**
-------------------
+Changes required for the next release (1.7)
+===========================================
 
 Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
 
 
-In version **1.8**
-------------------
+Changes required for the following release (1.8)
+================================================
 
 We're finally ready to remove support for the old setting (YEY!), so the following steps should be taken:
 

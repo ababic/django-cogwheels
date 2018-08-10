@@ -1,12 +1,11 @@
-===============
-Setting removal
-===============
+=======================
+Removing an app setting
+=======================
+
+.. warning ::
+    This examples assumes you are using custom deprecation warnings classes to help manage deprecations for your app. If you are not, you may find it tricky to follow in parts. It isn't a requirement that you use custom deprecation warning classes for app setting deprecations, but it will make your life (and following this example) easier. Check out the following guide: :doc:`/best-practice/custom-deprecation-warning-classes`.
 
 This guide demonstrates the steps required to remove support a setting, following a standard 'two release' deprecation process.
-
-.. contents:: Contents
-    :local:
-    :depth: 2
 
 
 What we're looking to achieve
@@ -37,19 +36,14 @@ In the following example, we're going to assume that:
 -   The latest release version of your app was **1.5**.
 -   The next release version of your app will be **1.6**.
 -   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, in each example, we'll be aiming to remove support completely in version **1.8**.
--   You are defining and using custom deprecation warnings within your app, using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`.
 
 
-Implementing the deprecation
-============================
-
-
-In version **1.6**
-------------------
+Changes required for the upcoming release (1.6)
+===============================================
 
 
 1. Updating ``conf/defaults.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 You may find it helpful to mark the deprecated setting here in some way, to remind you and other app maintainers that it has been deprecated.
 
@@ -67,7 +61,7 @@ You may find it helpful to mark the deprecated setting here in some way, to remi
 
 
 2. Updating ``conf/settings.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
 
@@ -105,25 +99,25 @@ There are a few things worth noting here:
 
 
 3. Updating your app code
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 In progress
 
 
 4. Updating your documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 In progress
 
 
-In version **1.7**
-------------------
+Changes required for the next release (1.7)
+===========================================
 
 Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
 
 
-In version **1.8**
-------------------
+Changes required for the following release (1.8)
+================================================
 
 We're finally ready to remove support for the old setting, so the following steps should be taken:
 

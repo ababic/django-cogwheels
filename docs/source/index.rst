@@ -27,6 +27,7 @@ Documentation index
 
     installation
     usage/index
+    deprecation/index
     best-practice/index
     example-implementations
     contributing/index
