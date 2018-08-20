@@ -1,12 +1,10 @@
 =========================================
-Example scenario: Renaming an app setting
+Renaming an app setting: Example scenario
 =========================================
 
 For the sake of this example, imagine your app has a setting called ``ICON_FOR_BLOG_POSTS`` that allows users to override the icon used to represent blog posts in a UI somewhere.
 
-You want to rename this setting to ``BLOG_POSTS_UI_ICON``.
-
-This is a change in **name only**, so all of the following must the same:
+You want to rename this setting to ``BLOG_POSTS_UI_ICON``. It's a change in name only, so there will be **no** changes to any of the following: 
 
 - The default setting value or behaviour
 - The range or type of override values supported
@@ -19,24 +17,21 @@ In terms of your project's life cycle, we'll pretend that:
 -   Your app has a release policy that allows backwards-compatible changes to public APIs between MINOR releases, but only if followed a reasonable deprecation period (where possible). In the Django app space, deprecation periods of two MINOR releases are common, so in this example, we'll be aiming to drop support for the old setting in **1.8**.
 
 
-Implementing the changes
-========================
-
-Because we are having to support a deprecation period spanning multiple releases, we have no choice but to make our changes in stages. This section outlines what changes must be made in each release:
+Because we are having to support a deprecation period spanning multiple releases, we have no choice but to make our changes in stages:
 
 .. contents::
     :local:
     :depth: 3
 
 
-IN THE UPCOMING RELEASE (1.6)
------------------------------
+In the upcoming release (1.6)
+=============================
 
 
 .. _rename_step_1:
 
-Adding a setting with the new name
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Adding a setting with the new name
+-------------------------------------
 
 All app settings are simply variables added to the ``defaults.py`` module, and this new setting is no exception. Add a variable with the new setting name, with the same value as the existing setting.
 
@@ -56,8 +51,8 @@ All app settings are simply variables added to the ``defaults.py`` module, and t
 
 .. _rename_step_2:
 
-Marking the old setting as deprecated
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Marking the old setting as deprecated
+----------------------------------------
 
 First, we'll add a comment above the current setting in ``defaults.py``, which will serve as a reminder to ourselves and other app maintainers about the setting's current status. You may find it helpful to keep your regular and deprecated settings separate, by adding a "Deprecated settings" section to the end of the module too, like so:
 
@@ -100,14 +95,15 @@ Next, we'll update the app's settings helper definition, so that it knows how to
 There are a few things worth noting here:
 
 -   The ``deprecations`` attribute value should always be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
+-   For setting renames, use the ``renamed_to`` argument to indicate which setting is replacing the deprecated one.
 -   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"ICON_FOR_BLOG_POSTS"`` rather than ``"YOURAPP_ICON_FOR_BLOG_POSTS"``). Prefixes should only be used by your app's users when adding overrides to their Django settings.
 -   The ``warning_category`` used above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. We're using Python's built-in ``PendingDeprecationWarning`` here to indicate that deprecation is not yet imminent, but any sub-class of ``DeprecationWarning`` or ``PendingDeprecationWarning`` is supported (you might like to consider: :doc:`/best-practice/custom-deprecation-warning-classes`).
 
 
 .. _rename_step_3:
 
-Updating the app code to support both the new and old settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. Updating the app code to support both settings simultaneously
+----------------------------------------------------------------
 
 Let's pretend the setting is currently being used in the following way by our app's codebase:
 
@@ -170,8 +166,8 @@ The settings helper will automatically do some extra work to support users still
 
 .. _rename_step_4:
 
-Warn any users still using the old setting
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. Warn any users still using the old setting
+---------------------------------------------
 
 Assuming you have already made the changes in steps 2 and 3 above, Cogwheels already has you covered here.
 
@@ -200,8 +196,8 @@ There are a couple of things worth noting here:
 
 .. _rename_step_5:
 
-Updating the documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. Updating the documentation
+-----------------------------
 
 How exactly you document your app settings is up to you, but it's highly recommended that you have some kind of reference to help users understand what behaviour they can override in your app and how.
 
@@ -216,8 +212,8 @@ If you do have a settings reference, you should make the following changes:
 
 .. _rename_step_6:
 
-Mentioning the deprecation in the release notes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+6. Mentioning the deprecation in the release notes
+--------------------------------------------------
 
 How and where you define the release notes for your app is up to you, but it's highly recommended that you include information about any new deprecations for each version. For this release, you should include something about the old setting being deprecated, including details about how they can update their code, and when support for old setting will be removed entirely (e.g. version 1.8 in this example). This might look something like::
 
@@ -238,14 +234,14 @@ How and where you define the release notes for your app is up to you, but it's h
         :ref:`BLOG_POSTS_UI_ICON`
 
 
-IN THE NEXT RELEASE (1.7)
--------------------------
+In the next release (1.7)
+=========================
 
 
 .. _rename_step_7:
 
-Use stronger deprecation warnings to indicate that removal is now imminent
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+7. Use stronger deprecation warnings to indicate removal is now imminent
+------------------------------------------------------------------------
 
 Assuming you followed the example and used ``PendingDeprecationWarning`` (or a custom sub-class of it) as the ``warning_class`` value for the ``DeprecatedAppSetting`` definition in :ref:`step two <rename_step_2>`, all you should need to do here is update that ``DeprecatedAppSetting`` to use ``DeprecationWarning`` (or a custom sub-class of it) as the ``warning_class`` value instead, like so:
 
@@ -271,22 +267,22 @@ Assuming you followed the example and used ``PendingDeprecationWarning`` (or a c
 Doing so should change the both the class used for any deprecation warnings raised in relation to this setting, and the descriptive text used for those warnings to read "in the next version" instead of "in two versions time".
 
 
-IN THE FOLLOWING RELEASE (1.8)
-------------------------------
+In the following release (1.8)
+==============================
 
 
 .. _rename_step_8:
 
-Remove support for the deprecated setting in app code
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+8. Removing support for the deprecated setting
+----------------------------------------------
     
 Because Cogwheels handles so much for you automatically, you shouldn't have to do much in terms of updating your app code now. The changes already made back in :ref:`step 3 <rename_step_3>` should be all that is needed. 
 
 
 .. _rename_step_9:
 
-Removing the deprecated setting 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+9. Removing the deprecated setting itself
+-----------------------------------------
 
 First, we'll update our app's settings helper definition again. This time, to remove the ``DeprecatedAppSetting`` definition that was added back in :ref:`step 2 <rename_step_2>`:
 
@@ -330,18 +326,18 @@ Next, we'll remove any lines related to the old setting from the ``defaults.py``
 
 .. _rename_step_10:
 
-Updating the documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+10. Updating the documentation
+------------------------------
 
 How exactly you do this is up to you, but to avoid any ambiguity surrounding the new and old setting, it's recommended that you remove the entry for the old setting from your 'Settings reference' where possible, reviewing any references to it in the process.
 
 
 .. _rename_step_11:
 
-Mentioning the backwards-incompatible change in the release notes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+11. Mentioning the backwards-incompatible change in the release notes
+---------------------------------------------------------------------
 
-This version of your app will now behave differently for any users still using the old setting name to override the icon, and will raise an exception for anyone requesting old setting values from your app's settings helper. So, it's important to let them know about these changes in your release notes. Your addition might look something like this::
+This version of your app will now behave differently for any users still using the old setting name to override the icon, and will raise an exception for anyone requesting old setting values from your settings helper. Because of this, it's important to let users know about the changes in your release notes. Your addition might look something like this::
 
     Backwards-incompatible changes
     ==============================
