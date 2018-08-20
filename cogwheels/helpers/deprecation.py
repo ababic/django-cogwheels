@@ -22,6 +22,12 @@ SIMPLE_DEPRECATION_WARNING_FORMAT = (
     "{removed_in_version}."
 )
 
+DEPRECATED_SETTING_OVERRIDDEN_WARNING_FORMAT = (
+    "The {prefix}_{setting_name} setting is deprecated. The override value "
+    "from your project's Django settings will no longer have any affect "
+    "once support is removed in {removed_in_version}."
+)
+
 COMMON_OLD_SETTING_USED_WARNING_FORMAT = (
     "Please update your Django settings to use the new setting, otherwise the "
     "app will revert to it's default behaviour once support for "
@@ -78,6 +84,13 @@ class DeprecatedAppSetting:
             setting_name=self.setting_name,
             replacement_name=self.replacement_name,
             removed_in_version=self.get_removed_in_version_text(),
+        )
+
+    def warn_if_overridden(self, stacklevel=2):
+        warnings.warn(
+            self._make_warning_message(DEPRECATED_SETTING_OVERRIDDEN_WARNING_FORMAT),
+            category=self.warning_category,
+            stacklevel=stacklevel,
         )
 
     def warn_if_deprecated_setting_value_requested(self, stacklevel=2):
