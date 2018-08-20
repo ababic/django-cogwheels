@@ -2,6 +2,7 @@ app
 apps
 backend
 backends
+blog
 callable
 callables
 CI

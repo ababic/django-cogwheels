@@ -8,17 +8,17 @@ Cogwheels was designed with this in mind, and has features built-in to help you 
 
 There are currently four deprecation scenarios that Cogwheels helps to cater for:
 
-Removing an app setting
-    You wish to remove a setting, and are not planning to replace it with another setting.
-
 Renaming an app setting
-    There are no changes in functionality, but you wish to rename the setting to improve consistency or to make the name more descriptive / accurate.
+    There are no changes in functionality, but you wish to rename the setting to improve consistency or to make the name more descriptive / accurate. :doc:`View an example scenrio <rename>`
+
+Removing an app setting
+    You wish to remove a setting, and are not planning to replace it with another setting. :doc:`View an example scenrio <remove>`
 
 Replacing a single setting with a new one
-    You wish to add a new setting that logically replaces an existing one, but there are some functional differences between the two.
+    You wish to add a new setting that logically replaces an existing one, but there are some functional differences between the two. :doc:`View an example scenrio <replace-single>`
 
 Replacing multiple settings with a new one
-    You wish to add add a new setting that logically replaces several existing ones.
+    You wish to add add a new setting that logically replaces several existing ones. :doc:`View an example scenrio <replace-multiple>`
 
 
 Example scenarios
@@ -29,10 +29,10 @@ The best way to show how Cogwheels helps with app setting deprecation is with so
 .. toctree::
     :maxdepth: 1
 
-    removal
-    rename
-    replacement-single
-    replacement-multiple
+    Renaming an app setting <rename>
+    Removing an app settings <remove>
+    Replacing a single setting with a new one <replace-single> 
+    Replacing multiple settings with a new one <replace-multiple>
     
 
 

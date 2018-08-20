@@ -4,7 +4,7 @@ Replacing a setting with a new one
 
 This guide demonstrates the steps required to introduce a new setting that 'logically replaces' a single existing setting, following a standard 'two release' deprecation process.
 
-If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`replacement-multiple` example scenario more useful.
+If you're looking to add a setting that replaces multiple existing settings, you may find the :doc:`replace-multiple` example scenario more useful.
 
 
 What we're looking to achieve

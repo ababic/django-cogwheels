@@ -2,13 +2,17 @@
 Example scenario: Renaming an app setting
 =========================================
 
-Imagine that, in your app, there is setting called ``ICON_FOR_BLOG_POSTS``, and that you want to rename this setting to ``BLOG_POSTS_UI_ICON``. It's a change in **name only**, so all of the following will remain unchanged:
+For the sake of this example, imagine your app has a setting called ``ICON_FOR_BLOG_POSTS`` that allows users to override the icon used to represent blog posts in a UI somewhere.
+
+You want to rename this setting to ``BLOG_POSTS_UI_ICON``.
+
+This is a change in **name only**, so all of the following must the same:
 
 - The default setting value or behaviour
 - The range or type of override values supported
 - The side effects of overriding
 
-For the sake of this example, we'll pretend that:
+In terms of your project's life cycle, we'll pretend that:
 
 -   The latest release version of your app is **1.5**.
 -   The next release version of your app will be **1.6**.
@@ -226,7 +230,7 @@ How and where you define the release notes for your app is up to you, but it's h
     The ``YOURAPP_ICON_FOR_BLOG_POSTS`` setting has been renamed
     ------------------------------------------------------------
 
-    If you are using this setting to override the fontawesome icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this by version ``1.8`` will resort in the default icon ("fa-newspaper") being used.
+    If you are using this setting to override the icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this by version ``1.8`` will resort in the default icon ("fa-newspaper") being used.
 
     Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using the ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also.
 
@@ -337,7 +341,7 @@ How exactly you do this is up to you, but to avoid any ambiguity surrounding the
 Mentioning the backwards-incompatible change in the release notes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This version of your app will now behave differently for any users still using the old setting name to override the icon, so it's important to let them know about this change in your release notes. Your addition might look something like this::
+This version of your app will now behave differently for any users still using the old setting name to override the icon, and will raise an exception for anyone requesting old setting values from your app's settings helper. So, it's important to let them know about these changes in your release notes. Your addition might look something like this::
 
     Backwards-incompatible changes
     ==============================
@@ -348,9 +352,9 @@ This version of your app will now behave differently for any users still using t
     The ``YOURAPP_ICON_FOR_BLOG_POSTS`` setting
     -------------------------------------------
 
-    If you are using this setting to override the fontawesome icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this after upgrading will resort in the default icon ("fa-newspaper") being used.
+    If you are using this setting to override the icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this after upgrading will result in the default icon ("fa-newspaper") being used.
 
-    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also.
+    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also. Failure to do this after upgrading will result in an ``AttributeError`` or ``ImproperlyConfigured`` error.
 
     ..seealso::
         :ref:`BLOG_POSTS_UI_ICON`
