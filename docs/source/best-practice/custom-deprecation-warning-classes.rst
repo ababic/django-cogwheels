@@ -2,13 +2,8 @@
 Using custom deprecation warning classes in your app
 ====================================================
 
-All of the deprecation examples in the Cogwheels documentation assume that you're defining and using custom deprecation warning classes for your app, and that you 'cycle' those warnings before start work on features for each new release. 
-
-For developers unfamiliar with this approach, this guide outlines the benefits of this approach, and provides examples of how to adopt it yourself. 
-
-
-Benefits of this approach
-=============================
+What are the benefits?
+======================
 
 The main benefits of defining and using custom deprecation warnings within your app are:
 
