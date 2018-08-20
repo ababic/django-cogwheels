@@ -1,163 +1,143 @@
-=======================
-Renaming an app setting
-=======================
+=========================================
+Example scenario: Renaming an app setting
+=========================================
 
-.. warning ::
-    This examples assumes you are using custom deprecation warnings classes to help manage deprecations for your app. If you are not, you may find it tricky to follow in parts. It isn't a requirement that you use custom deprecation warning classes for app setting deprecations, but it will make your life (and following this example) easier. Check out the following guide: :doc:`/best-practice/custom-deprecation-warning-classes`.
+Imagine that, in your app, there is setting called ``ICON_FOR_BLOG_POSTS``, and that you want to rename this setting to ``BLOG_POSTS_UI_ICON``. It's a change in **name only**, so all of the following will remain unchanged:
 
-For the sake of this example, we're going to pretend that:
+- The default setting value or behaviour
+- The range or type of override values supported
+- The side effects of overriding
+
+For the sake of this example, we'll pretend that:
 
 -   The latest release version of your app is **1.5**.
 -   The next release version of your app will be **1.6**.
--   You have a deprecation policy that continues to support deprecated behaviour for two 'feature releases' before support is dropped completely. So, we'll be looking to do that in version **1.8**.
+-   Your app has a release policy that allows backwards-compatible changes to public APIs between MINOR releases, but only if followed a reasonable deprecation period (where possible). In the Django app space, deprecation periods of two MINOR releases are common, so in this example, we'll be aiming to drop support for the old setting in **1.8**.
 
-What we want to acheive
-=======================
 
-Let's pretend that we have currently have a ``ICON_FOR_MAIN_MENUS`` settings, which appears in the ``conf/defaults.py`` module like so:
+Implementing the changes
+========================
+
+Because we are having to support a depecation period spanning multiple releases, we have no choice but to make our changes in stages. This section outlines what changes must be made in each release:
+
+.. contents::
+    :local:
+    :depth: 3
+
+
+IN THE UPCOMING RELEASE (1.6)
+-----------------------------
+
+
+.. _rename_step_1:
+
+Adding a setting with the new name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All app settings are simply variables added to the ``defaults.py`` module, and this new setting is no exception. Add a variable with the new setting name, with the same value as the existing setting.
 
 .. code-block:: python
+    :emphasize-lines: 7
+
+    # yourapp/conf/defaults.py
+
+    ...
+
+    ICON_FOR_BLOG_POSTS = 'fa-newspaper'
+
+    BLOG_POSTS_UI_ICON = 'fa-newspaper'
+
+    ...
+
+
+.. _rename_step_2:
+
+Marking the old setting as deprecated
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, we'll add a comment above the current setting in ``defaults.py``, which will serve as a reminder to ourselves and other app maintainers about the setting's current status. You may find it helpful to keep your regular and deprecated settings separate, by adding a "Deprecated settings" section to the end of the module too, like so:
+
+.. code-block:: python
+    :emphasize-lines: 11-12
     
     # yourapp/conf/defaults.py
 
-    ICON_FOR_MAIN_MENUS = 'list-ol'
-
-We've decided that we want to rename the setting to ``MAIN_MENUS_ADMIN_UI_ICON`` to make it more descriptive, and to get rid of the redundant 'FOR' from the setting name.
-
-
-How we'll achieve it
-====================
-
-As with any deprecation process, the change will span several releases, so we'll have to do things in stages. Let's take a while and plan what we'll need to do and when:
-
-For our upcoming release (1.6), we'll want to:
-    - Add a new setting with the new name
-    - Mark the old setting as 'pending deprecation'
-    - Update our code to simultaneously respect override values using the new OR old setting name.
-    - Warn anyone using the old setting name the old setting is 'pending deprecation', and encourage them to use the new setting instead.
-    - Update the documentation
-
-In the next release (1.7) we'll want to:
-    - Warn anyone still using the old setting name that the old setting is now offically deprecated, and encourage them to use the new setting instead.
-
-In the following release (1.8) we'll want to:
-    - Update our code to only support override values defined using the new setting name
-    - Stop warning
-
-
-Changes required for the upcoming release (1.6)
-===============================================
-
-
-1. Updating ``conf/defaults.py``
---------------------------------
-
-First, you'll want to add a setting using the new name to ``defaults.py``. You may find it helpful to mark the deprecated setting here in some way, to remind you and other app maintainers that it has been deprecated.
-
-.. code-block:: python
-    :emphasize-lines: 7,22
-
-    # yourapp/conf/defaults.py
-
-    # -------------------
-    # Admin / UI settings
-    # -------------------
-
-    FLAT_MENUS_MENU_ICON = 'list-ol'
-
-    FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
-
-    # -------------------
-    # Other settings
-    # -------------------
-
     ...
+
+    BLOG_POSTS_UI_ICON = 'fa-newspaper'
 
     # -------------------
     # Deprecated settings
     # -------------------
-    # These need to stick around until support is dropped completely
 
-    FLATMENU_MENU_ICON = 'list-ol'  # Replaced by FLAT_MENUS_MENU_ICON. Remove in v1.8
+    # Replaced by BLOG_POSTS_UI_ICON. To be removed in 1.8:
+    ICON_FOR_BLOG_POSTS = 'fa-newspaper'
 
-
-2. Updating ``conf/settings.py``
---------------------------------
-
-Next, you'll need to update your app's settings helper, so that it knows how to handle requests for setting values. For example:
+Next, we'll update the app's settings helper definition, so that it knows how to handle requests for both the old and new settings:
 
 .. code-block:: python
+    :emphasize-lines: 9-13
 
     # yourapp/conf/settings.py
 
     from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
-    from yourapp.utils.deprecation import RemovedInYourApp18Warning
 
     
     class MyAppSettingsHelper(BaseAppSettingsHelper):
 
         deprecations = (
             DeprecatedAppSetting(
-                setting_name="FLATMENU_MENU_ICON",
-                renamed_to="FLAT_MENUS_MENU_ICON",
-                warning_category=RemovedInYourApp18Warning,
+                setting_name="ICON_FOR_BLOG_POSTS",
+                renamed_to="BLOG_POSTS_UI_ICON",
+                warning_category=PendingDeprecationWarning,
             ),
         )
 
 There are a few things worth noting here:
 
-- If you need to define ``deprecations`` on your ``SettingsHelper`` class, it needs to be a tuple, even if you only need a single ``DeprecatedAppSetting`` definition.
-- In the ``DeprecatedAppSetting`` definition, setting names are supplied as strings, and we're still using internal/non-prefixed setting names (e.g. ``"FLATMENU_MENU_ICON"`` rather than ``"YOURAPP_FLATMENU_MENU_ICON"``).
-- The ``warning_category`` used in the ``DeprecatedAppSetting`` definition here will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. It should be a subclass of ``DeprecationWarning`` or ``PendingDeprecationWarning``.
+-   The ``deprecations`` attribute value should always be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
+-   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"ICON_FOR_BLOG_POSTS"`` rather than ``"YOURAPP_ICON_FOR_BLOG_POSTS"``). Prefixes should only be used by your app's users when adding overrides to their Django settings.
+-   The ``warning_category`` used above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. We're using Python's built-in ``PendingDeprecationWarning`` here to indicate that deprecation is not yet imminent, but any sub-class of ``DeprecationWarning`` or ``PendingDeprecationWarning``is supported (you might like to consider: :doc:`/best-practice/custom-deprecation-warning-classes`).
 
 
-3. Updating your app code
--------------------------
+.. _rename_step_3:
 
-The above steps take care of the deprecation definition, but we still have to update our code to use the new setting. Let's imagine our code currently looks something like this:
+Updating the app code to support both the new and old settings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let's pretend the setting is currently being used in the following way by our app's codebase:
 
 .. code-block:: python
-    :emphasize-lines: 9
+    :emphasize-lines: 11
 
     # yourapp/modeladmin.py
 
     from wagtail.contrib.modeladmin.options import ModelAdmin
 
+    from yourapp.blog.models import BlogPost
     from yourapp.conf import settings
 
 
-    class FlatMenuAdmin(ModelAdmin):
-        menu_icon = settings.FLATMENU_MENU_ICON
+    class BlogPostModelAdmin(ModelAdmin):
+        model = BlogPost
+        menu_icon = settings.ICON_FOR_BLOG_POSTS  # The OLD setting name!
 
-This code will now raise the following deprecation warning:
 
-.. code-block:: console
-    
-    RemovedInYourApp18Warning: The FLATMENU_MENU_ICON app setting has been
-    renamed to FLAT_MENUS_MENU_ICON. Please update your code to reference the
-    new setting, as continuing to reference FLATMENU_MENU_ICON will cause an
-    exception to be raised once support is removed in two versions time.
-
-.. NOTE:: If users of your app are referencing ``settings.FLATMENU_MENU_ICON`` or calling ``settings.get('FLATMENU_MENU_ICON')`` for any reason, this warning will be raised by their code also.
-
-To resolve this for a 'setting rename', all you have to do is change any references to the old name to the new one, like so:
+Typically, supporting both the new and old app settings here simultaneously would involve having to make some considerable changes. But, because we're using Coghweels, and our settings helper knows about this deprecation, all we have to do is this:
 
 .. code-block:: python
-    :emphasize-lines: 9
+    :emphasize-lines: 4
 
     # yourapp/modeladmin.py
 
-    from wagtail.contrib.modeladmin.options import ModelAdmin
+    class BlogPostModelAdmin(ModelAdmin):
+        menu_icon = settings.BLOG_POSTS_UI_ICON  # The NEW setting name!
 
-    from yourapp.conf import settings
+
+The settings helper will automatically do some extra work to support users still using the old setting name:
 
 
-    class FlatMenuAdmin(ModelAdmin):
-        menu_icon = settings.FLAT_MENUS_MENU_ICON
-
-Because your settings helper knows all it needs to about the rename, ``settings.FLAT_MENUS_MENU_ICON`` will do some extra work to support users still using the old setting name:
-
-1.  It first looks for an override setting using the new name (which is the 'ideal' scenario), and where we want all our users to be eventually. For example:
+1.  First, it looks for an override value defined using the new name, e.g.
 
     .. code-block:: python
 
@@ -167,9 +147,9 @@ Because your settings helper knows all it needs to about the rename, ``settings.
         # Overrides for ``your-django-app``
         # ---------------------------------
 
-        YOURAPP_FLAT_MENUS_MENU_ICON = 'icon-new'  # I'm cutting edge!
+        YOURAPP_BLOG_POSTS_UI_ICON = 'fa-rss'  # I'm cutting edge!
 
-2.  Next, Cogwheels will look for an override setting defined using the old name. For example:
+2.  Next, it looks for an override value defined using the old name, e.g.
 
     .. code-block:: python
         
@@ -179,98 +159,163 @@ Because your settings helper knows all it needs to about the rename, ``settings.
         # Overrides for ``your-django-app``
         # ---------------------------------
 
-        YOURAPP_FLATMENU_MENU_ICON = 'icon-old'  # I'm old-skool!
+        YOURAPP_ICON_FOR_BLOG_POSTS = 'fa-rss'  # I'm old-skool!
 
-3.  If no override setting was found, Cogwheels resorts to using the default value for the new setting, as you'd expect.
+3.  If no override setting was found, Cogwheels resorts to using the default value for the new setting.
 
-Although we’re still happy to the deprecated setting for a couple more versions, we want to make users aware that the setting has been replaced. So, Cogwheels will raise the following warning:
 
-.. code-block:: console
+.. _rename_step_4:
+
+Warn any users still using the old setting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Assuming you have already made the changes in steps 2 and 3 above, Cogwheels already has you covered here.
+
+When your code requests a value for the new setting from the settings helper using ``settings.BLOG_POSTS_UI_ICON`` or ``settings.get("BLOG_POSTS_UI_ICON")``, any users found to be using the old setting name (and with Python configured to surface deprecation warnings) will be presented with the following warning:
+
+.. container:: highlight warning-sample
+
+    PendingDeprecationWarning: The YOURAPP_ICON_FOR_BLOG_POSTS setting has been renamed to YOURAPP_BLOG_POSTS_UI_ICON. Please update your Django settings to use the new setting, otherwise the app will revert to it's default behaviour once support for YOURAPP_ICON_FOR_BLOG_POSTS is removed in two versions time.
+
+There are a couple of things worth noting here:
+
+-   This warning is intended for your app's core users, who will be using prefixed setting names in their Django settings to override your app's behaviour, so prefixed setting names are used in the warning text also.
+-   The message ends with **"removed in two versions time"** because ``PendingDeprecationWarning`` was used as the ``warning_class`` value for the ``DeprecatedAppSetting`` definition in :ref:`step two <rename_step_2>`. Using ``DeprecationWarning`` (or a subclass of it) instead would result in the message ending with **"removed in the next version"**.
+
+And, just in case there are any users out there using ``settings.ICON_FOR_BLOG_POSTS`` or ``settings.get("ICON_FOR_BLOG_POSTS")`` in their projects to request the old setting value from your settings helper (less likely, but perfectly possible), Cogwheels will present those users with a different (but similar) warning:
+
+.. container:: highlight warning-sample
+
+    PendingDeprecationWarning: The ICON_FOR_BLOG_POSTS app setting has been renamed to BLOG_POSTS_UI_ICON. Please update your code to reference the new setting, as continuing to reference ICON_FOR_BLOG_POSTS will cause an exception to be raised once support is removed in two versions time.
+
+There are a couple of things worth noting here:
+
+-   Because this warning is triggered by users referencing the settings from your app's settings helper using non-prefixed setting names (like you do in your app), non-prefixed setting names are used in this message also.
+-   The message ends with **"removed in two versions time"** because ``PendingDeprecationWarning`` was used as the ``warning_class`` value for the ``DeprecatedAppSetting`` definition in :ref:`step two <rename_step_2>`. Using ``DeprecationWarning`` (or a subclass of it) instead would result in the message ending with **"removed in the next version"**.
+
+
+.. _rename_step_5:
+
+Updating the documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+How exactly you document your app settings is up to you, but it's highly recommended that you have some kind of reference to help users understand what behaviour they can override in your app and how.
+
+.. seealso:: :doc:`/best-practice/documenting-your-app-settings`
+
+If you do have a settings reference, you should make the following changes:
+
+1. Add an entry for the new setting. If you are using Sphinx to build your documentation, use the :ref:`versionadded directive<versionadded-directive>` directive to indicate when the new setting was added.
+2. Update the entry for the existing setting to mark it as deprecated. If you are using Sphinx to build documentation, use the :ref:`deprecated directive<deprecated-directive>` for this.
+3. Review any direct references to the existing setting throughout the rest of the documentation, and update them to reference the entry for the new setting instead.
+
+
+.. _rename_step_6:
+
+Mentioning the deprecation in the release notes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+How and where you define the release notes for your app is up to you, but it's highly recommended that you include information about any new deprecations for each version. For this release, you should include something about the old setting being deprecated, including details about how they can update their code, and when support for old setting will be removed entirely (e.g. version 1.8 in this example). This might look something like::
+
+    Deprecations
+    ============
+
+    The following features have been deprecated in this version. Unless otherwise stated, support for deprecated features is retained for two minor releases, so you have until version **1.8** to make any necessary changes to your implementation.
+
+
+    The ``YOURAPP_ICON_FOR_BLOG_POSTS`` setting has been renamed
+    ------------------------------------------------------------
+
+    If you are using this setting to override the fontawesome icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this by version ``1.8`` will resort in the default icon ("fa-newspaper") being used.
+
+    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using the ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also.
+
+    ..seealso::
+        :ref:`BLOG_POSTS_UI_ICON`
+
+
+IN THE NEXT RELEASE (1.7)
+-------------------------
+
+
+.. _rename_step_7:
+
+Use stronger deprecation warnings to indicate that removal is now imminent
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Assuming you followed the example and used ``PendingDeprecationWarning`` (or a custom sub-class of it) as the ``warning_class`` value for the ``DeprecatedAppSetting`` definition in :ref:`step two <rename_step_2>`, all you should need to do here is update that ``DeprecatedAppSetting`` to use ``DeprecationWarning`` (or a custom sub-class of it) as the ``warning_class`` value instead, like so:
+
+.. code-block:: python
+    :emphasize-lines: 12
+
+    # yourapp/conf/settings.py
+
+    from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
+
     
-    RemovedInYourApp18Warning: The YOURAPP_FLATMENU_MENU_ICON setting has been 
-    renamed to YOURAPP_FLAT_MENUS_MENU_ICON. Please update your Django settings
-    to use the new setting, otherwise the app will revert to it's default
-    behaviour once support for YOURAPP_FLATMENU_MENU_ICON is removed in two
-    versions time.
+    class MyAppSettingsHelper(BaseAppSettingsHelper):
+
+        deprecations = (
+            DeprecatedAppSetting(
+                setting_name="ICON_FOR_BLOG_POSTS",
+                renamed_to="BLOG_POSTS_UI_ICON",
+                warning_category=DeprecationWarning,
+            ),
+        )
 
 
-4. Updating your documentation
+Doing so should change the both the class used for any deprecation warnings raised in relation to this setting, and the descriptive text used for those warnings to read "in the next version" instead of "in two versions time".
+
+
+IN THE FOLLOWING RELEASE (1.8)
 ------------------------------
 
-Raising a deprecation warning with Python is certainly helpful, but you'll also want to update your documentation to reflect the new changes, by:
 
-1.  Mentioning the deprecation in the **1.6** release notes
-2.  Adding an entry for the new setting to the "Settings reference", and updating any references to the old setting entry to the new one, for example::
+.. _rename_step_8:
 
-        .. _FLAT_MENUS_MENU_ICON:
-
-        ``YOURAPP_FLAT_MENUS_MENU_ICON``
-        -------------------------------------------
-
-        .. versionadded:: 1.6
-            Replaces :ref:`FLATMENU_MENU_ICON`.
-
-        Value type expected:
-            ``string``
-        Default value:
-            ``"list-ol"``
-
-        Use this setting to change the icon used to represent 'Flat menus' in the admin UI. 
-
-        Any icon class name from _`Font Awesome V4 <https://fontawesome.com/icons/>` is supported.
-
-3.  Updating the entry for the existing setting in the "Settings reference", using Sphinx's `deprecated directive <http://www.sphinx-doc.org/en/stable/markup/para.html#directive-deprecated>`_ to mark the old setting as deprecated, for example::
-
-        .. deprecated:: 1.6
-            Use :ref:`FLAT_MENUS_MENU_ICON` instead.
-
-
-Changes required for the next release (1.7)
-===========================================
-
-Provided you are defining and using custom deprecation warnings within your app (using the approach outlined in: :doc:`/best-practice/custom-deprecation-warning-classes`), and cycle those warnings for this release, no further changes should be needed in regards to this specific deprecation. The message text for any warnings raised in relation to this setting should change automatically to read 'in the next version' instead of 'in two versions time'.
-
-
-Changes required for the following release (1.8)
-================================================
-
-We're finally ready to remove support for the old setting (YEY!), so the following steps should be taken:
-
-1.  Remove the default value for the old setting from ``defaults.py`` 
+Remove support for the deprecated setting in app code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    .. code-block:: python
-        :emphasize-lines: 16
+Laa laa laa
+
+
+.. _rename_step_9:
+
+Removing the deprecated setting 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Simply remove any lines related to the old setting from your ``defaults.py`` module: 
+
+.. code-block:: python
+        :emphasize-lines: 12-13
 
         # yourapp/conf/defaults.py
 
-        # -------------------
-        # Admin / UI settings
-        # -------------------
+        ...
 
-        FLAT_MENUS_MENU_ICON = 'list-ol'
-
-        FLAT_MENUS_EDITABLE_IN_WAGTAILADMIN = True
+        BLOG_POSTS_UI_ICON = 'fa-newspaper'
 
         # -------------------
         # Deprecated settings
         # -------------------
         # These need to stick around until support is dropped completely
 
-        FLATMENU_MENU_ICON = 'list-ol'  # REMOVE THIS LINE!
+        # Replaced by BLOG_POSTS_UI_ICON. To be removed in 1.8:
+        ICON_FOR_BLOG_POSTS = 'fa-newspaper'
 
-2.  Remove the deprecation definition from your app's setting helper in ``settings.py``
 
-    .. code-block:: python
-        :emphasize-lines: 7
+.. _rename_step_10:
 
-        # yourapp/conf/settings.py
-        
-        from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
-        from yourapp.utils.deprecation import RemovedInYourApp18Warning
+Updating the documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        class MyAppSettingsHelper(BaseAppSettingsHelper):
-            deprecations = ()
-    
-3. Announce the breaking change in the version **1.8** release notes.
+Laa laa laa
 
-4. Remove the entry for the old setting from the "Settings reference" page of the documentation.
+
+.. _rename_step_11:
+
+Mentioning the backwards-incompatible change in the release notes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Laa laa laa
+
