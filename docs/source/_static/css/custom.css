@@ -28,3 +28,16 @@ div.wy-side-nav-search {
 .wy-side-nav-search input[type=text] {
     border-color: #d9d9d9;
 }
+
+.rst-content .warning-sample {
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
+    font-size: 13px;
+    line-height: 1.5em;
+    padding: 12px;
+    display: block;
+    overflow: auto;
+}
+
+.rst-content .warning-sample > :last-child {
+    margin-bottom: 0;
+}
