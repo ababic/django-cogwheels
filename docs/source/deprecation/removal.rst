@@ -2,9 +2,6 @@
 Removing an app setting
 =======================
 
-.. warning ::
-    This examples assumes you are using custom deprecation warnings classes to help manage deprecations for your app. If you are not, you may find it tricky to follow in parts. It isn't a requirement that you use custom deprecation warning classes for app setting deprecations, but it will make your life (and following this example) easier. Check out the following guide: :doc:`/best-practice/custom-deprecation-warning-classes`.
-
 This guide demonstrates the steps required to remove support a setting, following a standard 'two release' deprecation process.
 
 
