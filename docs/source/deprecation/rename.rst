@@ -18,7 +18,7 @@ For the sake of this example, we'll pretend that:
 Implementing the changes
 ========================
 
-Because we are having to support a depecation period spanning multiple releases, we have no choice but to make our changes in stages. This section outlines what changes must be made in each release:
+Because we are having to support a deprecation period spanning multiple releases, we have no choice but to make our changes in stages. This section outlines what changes must be made in each release:
 
 .. contents::
     :local:
@@ -97,7 +97,7 @@ There are a few things worth noting here:
 
 -   The ``deprecations`` attribute value should always be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
 -   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"ICON_FOR_BLOG_POSTS"`` rather than ``"YOURAPP_ICON_FOR_BLOG_POSTS"``). Prefixes should only be used by your app's users when adding overrides to their Django settings.
--   The ``warning_category`` used above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. We're using Python's built-in ``PendingDeprecationWarning`` here to indicate that deprecation is not yet imminent, but any sub-class of ``DeprecationWarning`` or ``PendingDeprecationWarning``is supported (you might like to consider: :doc:`/best-practice/custom-deprecation-warning-classes`).
+-   The ``warning_category`` used above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. We're using Python's built-in ``PendingDeprecationWarning`` here to indicate that deprecation is not yet imminent, but any sub-class of ``DeprecationWarning`` or ``PendingDeprecationWarning`` is supported (you might like to consider: :doc:`/best-practice/custom-deprecation-warning-classes`).
 
 
 .. _rename_step_3:
@@ -123,7 +123,7 @@ Let's pretend the setting is currently being used in the following way by our ap
         menu_icon = settings.ICON_FOR_BLOG_POSTS  # The OLD setting name!
 
 
-Typically, supporting both the new and old app settings here simultaneously would involve having to make some considerable changes. But, because we're using Coghweels, and our settings helper knows about this deprecation, all we have to do is this:
+Typically, supporting both the new and old app settings here simultaneously would involve having to make some considerable changes. But, because we're using Cogwheels, and our settings helper knows about this deprecation, all we have to do is this:
 
 .. code-block:: python
     :emphasize-lines: 4
@@ -276,7 +276,7 @@ IN THE FOLLOWING RELEASE (1.8)
 Remove support for the deprecated setting in app code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-Laa laa laa
+Because Cogwheels handles so much for you automatically, you shouldn't have to do much in terms of updating your app code now. The changes already made back in :ref:`step 3 <rename_step_3>` should be all that is needed. 
 
 
 .. _rename_step_9:
@@ -284,7 +284,27 @@ Laa laa laa
 Removing the deprecated setting 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Simply remove any lines related to the old setting from your ``defaults.py`` module: 
+First, we'll update our app's settings helper definition again. This time, to remove the ``DeprecatedAppSetting`` definition that was added back in :ref:`step 2 <rename_step_2>`:
+
+.. code-block:: python
+    :emphasize-lines: 9-13
+
+    # yourapp/conf/settings.py
+
+    from cogwheels import BaseAppSettingsHelper, DeprecatedAppSetting
+
+    
+    class MyAppSettingsHelper(BaseAppSettingsHelper):
+
+        deprecations = (
+            DeprecatedAppSetting(
+                setting_name="ICON_FOR_BLOG_POSTS",
+                renamed_to="BLOG_POSTS_UI_ICON",
+                warning_category=PendingDeprecationWarning,
+            ),
+        )
+
+Next, we'll remove any lines related to the old setting from the ``defaults.py`` module: 
 
 .. code-block:: python
         :emphasize-lines: 12-13
@@ -309,7 +329,7 @@ Simply remove any lines related to the old setting from your ``defaults.py`` mod
 Updating the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Laa laa laa
+How exactly you do this is up to you, but to avoid any ambiguity surrounding the new and old setting, it's recommended that you remove the entry for the old setting from your 'Settings reference' where possible, reviewing any references to it in the process.
 
 
 .. _rename_step_11:
@@ -317,5 +337,23 @@ Laa laa laa
 Mentioning the backwards-incompatible change in the release notes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Laa laa laa
+This version of your app will now behave differently for any users still using the old setting name to override the icon, so it's important to let them know about this change in your release notes. Your addition might look something like this::
+
+    Backwards-incompatible changes
+    ==============================
+
+    Following a standard deprecation period a two minor releases, the following functionality has now been removed.
+
+
+    The ``YOURAPP_ICON_FOR_BLOG_POSTS`` setting
+    -------------------------------------------
+
+    If you are using this setting to override the fontawesome icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this after upgrading will resort in the default icon ("fa-newspaper") being used.
+
+    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also.
+
+    ..seealso::
+        :ref:`BLOG_POSTS_UI_ICON`
+
+
 
