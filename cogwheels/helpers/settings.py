@@ -245,7 +245,7 @@ class BaseAppSettingsHelper:
         attr_name = self.get_prefixed_setting_name(setting_name)
         return hasattr(django_settings, attr_name)
 
-    def raise_setting_error(
+    def raise_setting_value_error(
         self, setting_name, additional_text,
         user_value_error_class=None, default_value_error_class=None,
         **text_format_kwargs
@@ -391,7 +391,7 @@ class BaseAppSettingsHelper:
                     current_type=type(result).__name__,
                     required_type=enforce_type.__name__,
                 )
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueTypeInvalid,
                 default_value_error_class=DefaultValueTypeInvalid,
@@ -437,7 +437,7 @@ class BaseAppSettingsHelper:
             self._models_cache[cache_key] = result
             return result
         except ValueError:
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueFormatInvalid,
                 default_value_error_class=DefaultValueFormatInvalid,
@@ -448,7 +448,7 @@ class BaseAppSettingsHelper:
                 value=raw_value,
             )
         except LookupError:
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
@@ -490,7 +490,7 @@ class BaseAppSettingsHelper:
             self._modules_cache[cache_key] = result
             return result
         except ImportError:
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
@@ -532,7 +532,7 @@ class BaseAppSettingsHelper:
         try:
             module_path, object_name = raw_value.rsplit(".", 1)
         except ValueError:
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueFormatInvalid,
                 default_value_error_class=DefaultValueFormatInvalid,
@@ -548,7 +548,7 @@ class BaseAppSettingsHelper:
             self._objects_cache[cache_key] = result
             return result
         except ImportError:
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
@@ -561,7 +561,7 @@ class BaseAppSettingsHelper:
                 module_path=module_path,
             )
         except AttributeError:
-            self.raise_setting_error(
+            self.raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
