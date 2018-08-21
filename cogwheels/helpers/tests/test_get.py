@@ -1,5 +1,4 @@
 import warnings
-from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
 from cogwheels import DefaultValueTypeInvalid
@@ -10,7 +9,7 @@ from cogwheels.tests.conf import defaults
 class TestGetMethod(AppSettingTestCase):
 
     def test_raises_error_if_no_default_defined(self):
-        with self.assertRaises(ImproperlyConfigured):
+        with self.assertRaises(ValueError):
             self.appsettingshelper.get('NOT_REAL_SETTING')
 
     def test_integer_setting_returns_default_value_by_default(self):
@@ -97,6 +96,19 @@ class TestDeprecatedSetting(AppSettingTestCase):
             self.appsettingshelper.get('DEPRECATED_SETTING')
             self.appsettingshelper.get('DEPRECATED_SETTING')
             self.assertEqual(len(w), 3)
+
+    def test_warning_not_raised_if_not_overridden_and_warn_only_if_overridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('DEPRECATED_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 0)
+
+    @override_settings(COGWHEELS_TESTS_DEPRECATED_SETTING='blah')
+    def test_warning_is_raised_if_overridden_and_warn_only_if_overrridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('DEPRECATED_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 1)
 
 
 class TestRenamedSetting(AppSettingTestCase):

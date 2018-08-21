@@ -9,7 +9,6 @@ from cogwheels import (
     DefaultValueFormatInvalid, DefaultValueNotImportable,
 )
 from cogwheels.exceptions.deprecations import (
-    ImproperlyConfigured,
     IncorrectDeprecationsValueType, InvalidDeprecationDefinition,
     DuplicateDeprecationError,
 )
@@ -56,8 +55,7 @@ class BaseAppSettingsHelper:
         invalid.
         """
         if not self.in_defaults(name):
-            raise AttributeError("{} object has no attribute '{}'".format(
-                self.__class__.__name__, name))
+            self._raise_invalid_setting_name_error(name, error_class=AttributeError)
         return self.get(name, warning_stacklevel=4)
 
     def _set_prefix(self, init_supplied_val):
@@ -217,18 +215,7 @@ class BaseAppSettingsHelper:
         return setting_name in self._defaults
 
     def get_default_value(self, setting_name):
-        try:
-            return self._defaults[setting_name]
-        except KeyError:
-            pass
-        raise ImproperlyConfigured(
-            "No default value could be found in {default_module} with the "
-            "name '{setting_name}'."
-            .format(
-                setting_name=setting_name,
-                default_module=self._defaults_module_path,
-            )
-        )
+        return self._defaults[setting_name]
 
     def get_prefix(self):
         return self._prefix + '_'
@@ -244,7 +231,17 @@ class BaseAppSettingsHelper:
         attr_name = self.get_prefixed_setting_name(setting_name)
         return hasattr(django_settings, attr_name)
 
-    def raise_setting_error(
+    def _raise_invalid_setting_name_error(self, setting_name, error_class=ValueError):
+        raise error_class(
+            "'{}' is not a valid setting name. Valid settings names for "
+            "{} are: {}." .format(
+                setting_name,
+                self.__module__,
+                ', '.join("'%s'" % v for v in self._defaults.keys())
+            )
+        )
+
+    def _raise_setting_value_error(
         self, setting_name, additional_text,
         user_value_error_class=None, default_value_error_class=None,
         **text_format_kwargs
@@ -268,21 +265,42 @@ class BaseAppSettingsHelper:
         message += ' ' + additional_text.format(**text_format_kwargs)
         raise error_class(message)
 
+    def _warn_if_deprecated_setting_value_requested(
+        self, setting_name, warn_only_if_overridden, suppress_warnings,
+        warning_stacklevel,
+    ):
+        """
+        Whether used directly or indirectly (via an attribute shortcut),
+        get(), get_object(), get_model() and get_module() must all check
+        whether the requested app setting is deprecated before attempting to
+        return a value. The variables/arguments that determine whether the
+        warning should be raised is identical for each method, so this method
+        is used to reduce duplication.
+        """
+        if(
+            not suppress_warnings and
+            not warn_only_if_overridden and
+            setting_name in self._deprecated_settings
+        ):
+            depr = self._deprecated_settings[setting_name]
+            depr.warn_if_deprecated_setting_value_requested(warning_stacklevel + 1)
+
     def _get_raw_value(self, setting_name, accept_deprecated='',
-                       suppress_warnings=False, warning_stacklevel=3):
+                       warn_if_overridden=False, suppress_warnings=False,
+                       warning_stacklevel=3):
         """
         Returns the value of the app setting named by ``setting_name``,
         exactly as it has been defined in the defaults module or a user's
         Django settings.
 
-        If the requested setting is deprecated, a suitable deprecation
-        warning is raised to help inform developers of the change.
+        If the requested setting is deprecated, ``warn_if_overridden`` is
+        ``True``, and the setting is overridden by a user, a suitable
+        deprecation warning is raised to help inform them of the change.
 
         If the requested setting replaces a single deprecated setting, and no
-        user defined setting name is defined using the new name, the method
-        will look for a user defined setting value using the deprecated setting
-        name, and return that if found. A deprecation warning will also be
-        raised.
+        user defined setting is defined using the new name, the method will
+        look for a user defined setting using the deprecated setting name, and
+        return that if found. A deprecation warning will also be raised.
 
         If the requested setting replaces multiple deprecated settings, the
         ``accept_deprecated`` keyword argument can be used to specify which of
@@ -291,7 +309,16 @@ class BaseAppSettingsHelper:
         If no override value was found in the Django setting, then the
         relevant value from the defaults module is returned.
         """
+        if not self.in_defaults(setting_name):
+            self._raise_invalid_setting_name_error(setting_name)
+
         if self.is_overridden(setting_name):
+            if(
+                warn_if_overridden and not suppress_warnings and
+                setting_name in self._deprecated_settings
+            ):
+                depr = self._deprecated_settings[setting_name]
+                depr.warn_if_overridden(warning_stacklevel)
             return self.get_user_defined_value(setting_name)
 
         if setting_name in self._replacement_settings:
@@ -308,18 +335,18 @@ class BaseAppSettingsHelper:
 
     def is_value_from_deprecated_setting(self, setting_name, deprecated_setting_name):
         """
-        Help developers determine where the settings helper got it's value from
-        when dealing settings that replace deprecated settings.
+        Helps developers to determine where the settings helper got it's value
+        from when dealing with settings that replace deprecated settings.
 
         Returns ``True`` when the new setting (with the name ``setting_name``)
         is a replacement for a deprecated setting (with the name
-        ``deprecated_setting_name``) and the user is still using the deprecated
+        ``deprecated_setting_name``) and the user is using the deprecated
         setting in their Django settings to override behaviour.
         """
         if not self.in_defaults(setting_name):
-            raise ValueError("'%s' is not a valid setting name" % setting_name)
+            self._raise_invalid_setting_name_error(setting_name)
         if not self.in_defaults(deprecated_setting_name):
-            raise ValueError("'%s' is not a valid setting name" % deprecated_setting_name)
+            self._raise_invalid_setting_name_error(deprecated_setting_name)
         if deprecated_setting_name not in self._deprecated_settings:
             raise ValueError(
                 "The '%s' setting is not deprecated. When using "
@@ -341,8 +368,8 @@ class BaseAppSettingsHelper:
         return False
 
     def get(self, setting_name, accept_deprecated='', enforce_type=None,
-            check_if_setting_deprecated=True, suppress_warnings=False,
-            warning_stacklevel=3):
+            check_if_setting_deprecated=True, warn_only_if_overridden=False,
+            suppress_warnings=False, warning_stacklevel=3):
         """
         A wrapper for self._get_raw_value(), that caches the raw setting value
         for faster future access, and (if ``enforce_type`` is supplied) checks
@@ -352,12 +379,10 @@ class BaseAppSettingsHelper:
         settings, the ``accept_deprecated`` keyword argument can be used to
         specify which of those deprecated settings to accept as the value.
         """
-        if(
-            check_if_setting_deprecated and not suppress_warnings and
-            setting_name in self._deprecated_settings
-        ):
-            depr = self._deprecated_settings[setting_name]
-            depr.warn_if_deprecated_setting_value_requested(warning_stacklevel)
+        if check_if_setting_deprecated:
+            self._warn_if_deprecated_setting_value_requested(
+                setting_name, warn_only_if_overridden, suppress_warnings,
+                warning_stacklevel)
 
         cache_key = self._make_cache_key(setting_name, accept_deprecated)
         if cache_key in self._raw_cache:
@@ -366,6 +391,7 @@ class BaseAppSettingsHelper:
         result = self._get_raw_value(
             setting_name,
             accept_deprecated=accept_deprecated,
+            warn_if_overridden=warn_only_if_overridden,
             suppress_warnings=suppress_warnings,
             warning_stacklevel=warning_stacklevel + 1,
         )
@@ -390,7 +416,7 @@ class BaseAppSettingsHelper:
                     current_type=type(result).__name__,
                     required_type=enforce_type.__name__,
                 )
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueTypeInvalid,
                 default_value_error_class=DefaultValueTypeInvalid,
@@ -400,7 +426,7 @@ class BaseAppSettingsHelper:
         self._raw_cache[cache_key] = result
         return result
 
-    def get_model(self, setting_name, accept_deprecated='',
+    def get_model(self, setting_name, accept_deprecated='', warn_only_if_overridden=False,
                   suppress_warnings=False, warning_stacklevel=3):
         """
         Returns a Django model referenced by an app setting where the value is
@@ -413,9 +439,9 @@ class BaseAppSettingsHelper:
         settings, the ``accept_deprecated`` keyword argument can be used to
         specify which of those deprecated settings to accept as the raw value.
         """
-        if not suppress_warnings and setting_name in self._deprecated_settings:
-            depr = self._deprecated_settings[setting_name]
-            depr.warn_if_deprecated_setting_value_requested(warning_stacklevel)
+        self._warn_if_deprecated_setting_value_requested(
+            setting_name, warn_only_if_overridden, suppress_warnings,
+            warning_stacklevel)
 
         cache_key = self._make_cache_key(setting_name, accept_deprecated)
         if cache_key in self._models_cache:
@@ -426,6 +452,7 @@ class BaseAppSettingsHelper:
             enforce_type=str,
             accept_deprecated=accept_deprecated,
             check_if_setting_deprecated=False,
+            warn_only_if_overridden=warn_only_if_overridden,
             suppress_warnings=suppress_warnings,
             warning_stacklevel=warning_stacklevel + 1,
         )
@@ -436,7 +463,7 @@ class BaseAppSettingsHelper:
             self._models_cache[cache_key] = result
             return result
         except ValueError:
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueFormatInvalid,
                 default_value_error_class=DefaultValueFormatInvalid,
@@ -447,7 +474,7 @@ class BaseAppSettingsHelper:
                 value=raw_value,
             )
         except LookupError:
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
@@ -457,7 +484,7 @@ class BaseAppSettingsHelper:
                 value=raw_value
             )
 
-    def get_module(self, setting_name, accept_deprecated='',
+    def get_module(self, setting_name, accept_deprecated='', warn_only_if_overridden=False,
                    suppress_warnings=False, warning_stacklevel=3):
         """
         Returns a Python module referenced by an app setting where the value is
@@ -467,9 +494,9 @@ class BaseAppSettingsHelper:
         Raises an ``ImproperlyConfigured`` error if the setting value is not
         a valid import path.
         """
-        if not suppress_warnings and setting_name in self._deprecated_settings:
-            depr = self._deprecated_settings[setting_name]
-            depr.warn_if_deprecated_setting_value_requested(warning_stacklevel)
+        self._warn_if_deprecated_setting_value_requested(
+            setting_name, warn_only_if_overridden, suppress_warnings,
+            warning_stacklevel)
 
         cache_key = self._make_cache_key(setting_name, accept_deprecated)
         if cache_key in self._modules_cache:
@@ -480,6 +507,7 @@ class BaseAppSettingsHelper:
             enforce_type=str,
             accept_deprecated=accept_deprecated,
             check_if_setting_deprecated=False,
+            warn_only_if_overridden=warn_only_if_overridden,
             suppress_warnings=suppress_warnings,
             warning_stacklevel=warning_stacklevel + 1,
         )
@@ -489,7 +517,7 @@ class BaseAppSettingsHelper:
             self._modules_cache[cache_key] = result
             return result
         except ImportError:
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
@@ -501,7 +529,7 @@ class BaseAppSettingsHelper:
                 value=raw_value
             )
 
-    def get_object(self, setting_name, accept_deprecated='',
+    def get_object(self, setting_name, accept_deprecated='', warn_only_if_overridden=False,
                    suppress_warnings=False, warning_stacklevel=3):
         """
         Returns a python class, method, or other object referenced by an app
@@ -512,9 +540,9 @@ class BaseAppSettingsHelper:
         a valid import path, or the object cannot be found in the specified
         module.
         """
-        if not suppress_warnings and setting_name in self._deprecated_settings:
-            depr = self._deprecated_settings[setting_name]
-            depr.warn_if_deprecated_setting_value_requested(warning_stacklevel)
+        self._warn_if_deprecated_setting_value_requested(
+            setting_name, warn_only_if_overridden, suppress_warnings,
+            warning_stacklevel)
 
         cache_key = self._make_cache_key(setting_name, accept_deprecated)
         if cache_key in self._objects_cache:
@@ -525,13 +553,14 @@ class BaseAppSettingsHelper:
             enforce_type=str,
             accept_deprecated=accept_deprecated,
             check_if_setting_deprecated=False,
+            warn_only_if_overridden=warn_only_if_overridden,
             suppress_warnings=suppress_warnings,
             warning_stacklevel=warning_stacklevel + 1,
         )
         try:
             module_path, object_name = raw_value.rsplit(".", 1)
         except ValueError:
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueFormatInvalid,
                 default_value_error_class=DefaultValueFormatInvalid,
@@ -547,7 +576,7 @@ class BaseAppSettingsHelper:
             self._objects_cache[cache_key] = result
             return result
         except ImportError:
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,
@@ -560,7 +589,7 @@ class BaseAppSettingsHelper:
                 module_path=module_path,
             )
         except AttributeError:
-            self.raise_setting_error(
+            self._raise_setting_value_error(
                 setting_name=setting_name,
                 user_value_error_class=OverrideValueNotImportable,
                 default_value_error_class=DefaultValueNotImportable,

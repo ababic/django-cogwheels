@@ -123,3 +123,16 @@ class TestReplacedModelSetting(AppSettingTestCase):
             self.appsettingshelper.get_model('REPLACED_MODEL_SETTING', suppress_warnings=True)
             self.appsettingshelper.get_model('REPLACEMENT_MODEL_SETTING', suppress_warnings=True)
             self.assertEqual(len(w), 0)
+
+    def test_warning_not_raised_if_not_overridden_and_warn_only_if_overridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get_model('REPLACED_MODEL_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 0)
+
+    @override_settings(COGWHEELS_TESTS_REPLACED_MODEL_SETTING='tests.ReplacementModel')
+    def test_warning_is_raised_if_overridden_and_warn_only_if_overrridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get_model('REPLACED_MODEL_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 1)

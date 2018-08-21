@@ -127,10 +127,23 @@ class TestReplacedObjectSetting(AppSettingTestCase):
                 str(w[0])
             )
 
-    @override_settings(COGWHEELS_TESTS_REPLACED_MODEL_SETTING='cogwheels.tests.classes.ReplacementClass')
+    @override_settings(COGWHEELS_TESTS_REPLACED_OBJECT_SETTING='cogwheels.tests.classes.ReplacementClass')
     def test_using_suppress_warnings_has_the_desired_effect(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             self.appsettingshelper.get_object('REPLACED_OBJECT_SETTING', suppress_warnings=True)
             self.appsettingshelper.get_object('REPLACEMENT_OBJECT_SETTING', suppress_warnings=True)
             self.assertEqual(len(w), 0)
+
+    def test_warning_not_raised_if_not_overridden_and_warn_only_if_overridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get_object('REPLACED_OBJECT_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 0)
+
+    @override_settings(COGWHEELS_TESTS_REPLACED_OBJECT_SETTING='cogwheels.tests.classes.ReplacementClass')
+    def test_warning_is_raised_if_overridden_and_warn_only_if_overrridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get_object('REPLACED_OBJECT_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 1)
