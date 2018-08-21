@@ -4,7 +4,8 @@ Changelog
 0.3 (XX.XX.XXXX) (IN DEVELOPMENT)
 ----------------------------------
 
-- TBA
+- Added the ``warn_only_if_overridden`` argument to all 'value fetching' methods on ``BaseAppSettingsHelper``, which can be used to request deprecated setting values without raising the usual 'this setting is deprecated' warning, but will raise a warning if the setting is overridden.
+- Improved the consistency and usefulness of error messages raised when attribute helpers or methods are called with invalid setting names.
 
 0.2 (02.08.2018)
 ----------------
