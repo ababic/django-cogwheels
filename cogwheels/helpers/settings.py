@@ -9,7 +9,6 @@ from cogwheels import (
     DefaultValueFormatInvalid, DefaultValueNotImportable,
 )
 from cogwheels.exceptions.deprecations import (
-    ImproperlyConfigured,
     IncorrectDeprecationsValueType, InvalidDeprecationDefinition,
     DuplicateDeprecationError,
 )
@@ -56,9 +55,7 @@ class BaseAppSettingsHelper:
         invalid.
         """
         if not self.in_defaults(name):
-            raise AttributeError("{} object has no attribute '{}'".format(
-                self.__class__.__name__, name))
-            )
+            self.raise_invalid_setting_name_error(name, error_class=AttributeError)
         return self.get(name, warning_stacklevel=4)
 
     def _set_prefix(self, init_supplied_val):
@@ -222,14 +219,6 @@ class BaseAppSettingsHelper:
             return self._defaults[setting_name]
         except KeyError:
             pass
-        raise ImproperlyConfigured(
-            "No default value could be found in {default_module} with the "
-            "name '{setting_name}'."
-            .format(
-                setting_name=setting_name,
-                default_module=self._defaults_module_path,
-            )
-        )
 
     def get_prefix(self):
         return self._prefix + '_'
@@ -244,6 +233,16 @@ class BaseAppSettingsHelper:
     def is_overridden(self, setting_name):
         attr_name = self.get_prefixed_setting_name(setting_name)
         return hasattr(django_settings, attr_name)
+
+    def raise_invalid_setting_name_error(self, setting_name, error_class=ValueError):
+        raise error_class(
+            "'{}' is not a valid setting name. Valid settings names for "
+            "{} are: {}." .format(
+                setting_name,
+                self.__module__,
+                ', '.join("'%s'" % v for v in self._defaults.keys())
+            )
+        )
 
     def raise_setting_value_error(
         self, setting_name, additional_text,
@@ -292,6 +291,9 @@ class BaseAppSettingsHelper:
         If no override value was found in the Django setting, then the
         relevant value from the defaults module is returned.
         """
+        if not self.in_defaults(setting_name):
+            self.raise_invalid_setting_name_error(setting_name)
+
         if self.is_overridden(setting_name):
             return self.get_user_defined_value(setting_name)
 
@@ -309,18 +311,18 @@ class BaseAppSettingsHelper:
 
     def is_value_from_deprecated_setting(self, setting_name, deprecated_setting_name):
         """
-        Help developers determine where the settings helper got it's value from
-        when dealing settings that replace deprecated settings.
+        Helps developers to determine where the settings helper got it's value
+        from when dealing with settings that replace deprecated settings.
 
         Returns ``True`` when the new setting (with the name ``setting_name``)
         is a replacement for a deprecated setting (with the name
-        ``deprecated_setting_name``) and the user is still using the deprecated
+        ``deprecated_setting_name``) and the user is using the deprecated
         setting in their Django settings to override behaviour.
         """
         if not self.in_defaults(setting_name):
-            raise ValueError("'%s' is not a valid setting name" % setting_name)
+            self.raise_invalid_setting_name_error(setting_name)
         if not self.in_defaults(deprecated_setting_name):
-            raise ValueError("'%s' is not a valid setting name" % deprecated_setting_name)
+            self.raise_invalid_setting_name_error(deprecated_setting_name)
         if deprecated_setting_name not in self._deprecated_settings:
             raise ValueError(
                 "The '%s' setting is not deprecated. When using "

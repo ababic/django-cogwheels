@@ -32,9 +32,7 @@ class AttrReferToMethodHelper:
 
     def __getattr__(self, name):
         if not self.settings_helper.in_defaults(name):
-            raise AttributeError(
-                "'{}' is not a valid app setting".format(name)
-            )
+            self.settings_helper.raise_invalid_setting_name_error(name, error_class=AttributeError)
         return self.get_value_via_helper_method(name)
 
     def get_value_via_helper_method(self, setting_name):
