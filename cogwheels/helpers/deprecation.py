@@ -87,6 +87,8 @@ class DeprecatedAppSetting:
         )
 
     def warn_if_overridden(self, stacklevel=2):
+        # TODO: Figure out a clean way to raise this warning so that it appears
+        # to come from the override setting definition in the user's Django settings.
         warnings.warn(
             self._make_warning_message(DEPRECATED_SETTING_OVERRIDDEN_WARNING_FORMAT),
             category=self.warning_category,
