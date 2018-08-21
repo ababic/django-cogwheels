@@ -215,10 +215,7 @@ class BaseAppSettingsHelper:
         return setting_name in self._defaults
 
     def get_default_value(self, setting_name):
-        try:
-            return self._defaults[setting_name]
-        except KeyError:
-            pass
+        return self._defaults[setting_name]
 
     def get_prefix(self):
         return self._prefix + '_'
