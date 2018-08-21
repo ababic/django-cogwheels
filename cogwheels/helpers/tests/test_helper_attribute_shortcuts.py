@@ -17,8 +17,7 @@ class TestModelsShortcut(AppSettingTestCase):
     """
     @patch.object(BaseAppSettingsHelper, 'get_model')
     def test_raises_attributeerror_if_no_default_defined(self, mocked_method):
-        expected_message = (
-            "TestAppSettingsHelper object has no attribute 'I_DONT_THINK_SO'")
+        expected_message = "'I_DONT_THINK_SO' is not a valid setting name"
         with self.assertRaisesRegex(AttributeError, expected_message):
             self.appsettingshelper.models.I_DONT_THINK_SO
         mocked_method.assert_not_called()
@@ -54,9 +53,7 @@ class TestModulesShortcut(AppSettingTestCase):
     """
     @patch.object(BaseAppSettingsHelper, 'get_module')
     def test_raises_attributeerror_if_no_default_defined(self, mocked_method):
-        expected_message = (
-            "TestAppSettingsHelper object has no attribute "
-            "'I_DONT_THINK_SO'")
+        expected_message = "'I_DONT_THINK_SO' is not a valid setting name"
         with self.assertRaisesRegex(AttributeError, expected_message):
             self.appsettingshelper.modules.I_DONT_THINK_SO
         mocked_method.assert_not_called()
@@ -91,9 +88,7 @@ class TestObjectsShortcut(AppSettingTestCase):
     """
     @patch.object(BaseAppSettingsHelper, 'get_object')
     def test_raises_attributeerror_if_no_default_defined(self, mocked_method):
-        expected_message = (
-            "TestAppSettingsHelper object has no attribute "
-            "'I_DONT_THINK_SO'")
+        expected_message = "'I_DONT_THINK_SO' is not a valid setting name"
         with self.assertRaisesRegex(AttributeError, expected_message):
             self.appsettingshelper.objects.I_DONT_THINK_SO
         mocked_method.assert_not_called()

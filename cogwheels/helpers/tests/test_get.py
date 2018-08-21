@@ -1,5 +1,4 @@
 import warnings
-from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
 from cogwheels import DefaultValueTypeInvalid
@@ -10,7 +9,7 @@ from cogwheels.tests.conf import defaults
 class TestGetMethod(AppSettingTestCase):
 
     def test_raises_error_if_no_default_defined(self):
-        with self.assertRaises(ImproperlyConfigured):
+        with self.assertRaises(ValueError):
             self.appsettingshelper.get('NOT_REAL_SETTING')
 
     def test_integer_setting_returns_default_value_by_default(self):
