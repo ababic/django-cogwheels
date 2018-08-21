@@ -108,7 +108,7 @@ class TestReplacedModuleSetting(AppSettingTestCase):
                 str(w[0])
             )
 
-    @override_settings(COGWHEELS_TESTS_REPLACED_MODEL_SETTING='cogwheels.tests.modules.replacement_module')
+    @override_settings(COGWHEELS_TESTS_REPLACED_MODULE_SETTING='cogwheels.tests.modules.replacement_module')
     def test_using_suppress_warnings_has_the_desired_effect(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
