@@ -58,6 +58,7 @@ class BaseAppSettingsHelper:
         if not self.in_defaults(name):
             raise AttributeError("{} object has no attribute '{}'".format(
                 self.__class__.__name__, name))
+            )
         return self.get(name, warning_stacklevel=4)
 
     def _set_prefix(self, init_supplied_val):

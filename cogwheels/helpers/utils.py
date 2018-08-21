@@ -31,10 +31,11 @@ class AttrReferToMethodHelper:
         self.getter_method_name = getter_method_name
 
     def __getattr__(self, name):
-        if self.settings_helper.in_defaults(name):
-            return self.get_value_via_helper_method(name)
-        raise AttributeError("{} object has no attribute '{}'".format(
-            self.settings_helper.__class__.__name__, name))
+        if not self.settings_helper.in_defaults(name):
+            raise AttributeError(
+                "'{}' is not a valid app setting".format(name)
+            )
+        return self.get_value_via_helper_method(name)
 
     def get_value_via_helper_method(self, setting_name):
         method = getattr(self.settings_helper, self.getter_method_name)
