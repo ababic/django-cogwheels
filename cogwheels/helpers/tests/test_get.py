@@ -97,6 +97,19 @@ class TestDeprecatedSetting(AppSettingTestCase):
             self.appsettingshelper.get('DEPRECATED_SETTING')
             self.assertEqual(len(w), 3)
 
+    def test_warning_not_raised_if_not_overridden_and_warn_only_if_overridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('DEPRECATED_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 0)
+
+    @override_settings(COGWHEELS_TESTS_DEPRECATED_SETTING='blah')
+    def test_warning_is_raised_if_overridden_and_warn_only_if_overrridden_is_true(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.appsettingshelper.get('DEPRECATED_SETTING', warn_only_if_overridden=True)
+        self.assertEqual(len(w), 1)
+
 
 class TestRenamedSetting(AppSettingTestCase):
 
