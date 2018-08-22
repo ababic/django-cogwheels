@@ -72,7 +72,7 @@ First, we'll add a comment above the current setting in ``defaults.py``, which w
     # Replaced by BLOG_POSTS_UI_ICON. To be removed in 1.8:
     ICON_FOR_BLOG_POSTS = 'fa-newspaper'
 
-Next, we'll update the app's settings helper definition, so that it knows how to handle requests for both the old and new settings:
+Next, we'll update the settings helper definition for our app, to make it aware of the deprecation:
 
 .. code-block:: python
     :emphasize-lines: 9-13
@@ -102,8 +102,8 @@ There are a few things worth noting here:
 
 .. _rename_step_3:
 
-3. Updating the app code to support both settings simultaneously
-----------------------------------------------------------------
+3. Updating the code where the setting value is used
+----------------------------------------------------
 
 Let's pretend the setting is currently being used in the following way by our app's codebase:
 
