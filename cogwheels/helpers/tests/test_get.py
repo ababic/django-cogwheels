@@ -125,7 +125,7 @@ class TestRenamedSetting(AppSettingTestCase):
                 "The RENAMED_SETTING_OLD app setting has been renamed to RENAMED_SETTING_NEW. "
                 "Please update your code to reference the new setting, as continuing to reference "
                 "RENAMED_SETTING_OLD will cause an exception to be raised once support is removed "
-                "in the next version.",
+                "in 1.7.",
                 str(w[0])
             )
 
@@ -148,7 +148,7 @@ class TestRenamedSetting(AppSettingTestCase):
             "The COGWHEELS_TESTS_RENAMED_SETTING_OLD setting has been renamed to "
             "COGWHEELS_TESTS_RENAMED_SETTING_NEW. Please update your Django settings to use the "
             "new setting, otherwise the app will revert to it's default behaviour once support for "
-            "COGWHEELS_TESTS_RENAMED_SETTING_OLD is removed in the next version.",
+            "COGWHEELS_TESTS_RENAMED_SETTING_OLD is removed in 1.7.",
             str(cm.warning)
         )
 
@@ -167,7 +167,7 @@ class TestReplacedSetting(AppSettingTestCase):
                 "The REPLACED_SETTING app setting is deprecated in favour of using "
                 "REPLACEMENT_SETTING. Please update your code to reference the new setting, as "
                 "continuing to reference REPLACED_SETTING will cause an exception to be raised "
-                "once support is removed in two versions time.",
+                "once support is removed in 1.8.",
                 str(w[0])
             )
             # The additional guidance should be present also
@@ -194,7 +194,7 @@ class TestReplacedSetting(AppSettingTestCase):
             "The COGWHEELS_TESTS_REPLACED_SETTING setting is deprecated in favour of using "
             "COGWHEELS_TESTS_REPLACEMENT_SETTING. Please update your Django settings to use the "
             "new setting, otherwise the app will revert to it's default behaviour once support for "
-            "COGWHEELS_TESTS_REPLACED_SETTING is removed in two versions time.",
+            "COGWHEELS_TESTS_REPLACED_SETTING is removed in 1.8.",
             str(cm.warning)
         )
         # The additional guidance should be present also

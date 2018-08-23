@@ -17,12 +17,14 @@ class TestAppSettingsHelper(BaseAppSettingsHelper):
             'RENAMED_SETTING_OLD',
             renamed_to='RENAMED_SETTING_NEW',
             warning_category=DeprecationWarning,
+            removing_in='1.7',
         ),
         DeprecatedAppSetting(
             'REPLACED_SETTING',
             replaced_by='REPLACEMENT_SETTING',
+            additional_guidance=COMPLEX_REPLACEMENT_GUIDANCE,
             warning_category=PendingDeprecationWarning,
-            additional_guidance=COMPLEX_REPLACEMENT_GUIDANCE
+            removing_in='1.8',
         ),
         DeprecatedAppSetting(
             'REPLACED_MODEL_SETTING',
