@@ -40,6 +40,7 @@ Adding Cogwheels as a dependency
 If your app is in the Python Package Index (PyPi), it's likely that it has a ``setup.py`` file in the root directory. To use ``django-cogwheels`` to manage your app settings, you'll need to ensure ``django-cogwheels`` is added to the ``install_requires`` list that is passed to the ``setup()`` method in that file. For example:
 
 .. code-block:: python
+    :emphasize-lines: 24
 
     # your-django-app/setup.py
 
@@ -63,9 +64,8 @@ If your app is in the Python Package Index (PyPi), it's likely that it has a ``s
             ...
         ),
         install_requires=[
-            'some-requirement',
-            'some-other-requirement',
-            'django-cogwheels',  # ADD THIS HERE!
+            ...
+            'django-cogwheels>=0.3,<0.4',
         ],
         ...
     )
