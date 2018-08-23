@@ -1,5 +1,5 @@
 =========================================
-Renaming an app setting: Example scenario
+Example scenario: Renaming an app setting 
 =========================================
 
 For the sake of this example, imagine your app has a setting called ``ICON_FOR_BLOG_POSTS`` that allows users to override the icon used to represent blog posts in a UI somewhere.
@@ -96,14 +96,14 @@ There are a few things worth noting here:
 
 -   The ``deprecations`` attribute value should always be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
 -   For setting renames, use the ``renamed_to`` argument to indicate which setting is replacing the deprecated one.
--   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"ICON_FOR_BLOG_POSTS"`` rather than ``"YOURAPP_ICON_FOR_BLOG_POSTS"``). Prefixes should only be used by your app's users when adding overrides to their Django settings.
+-   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"ICON_FOR_BLOG_POSTS"`` rather than ``"YOURAPP_ICON_FOR_BLOG_POSTS"``).
 -   The ``warning_category`` used above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. We're using Python's built-in ``PendingDeprecationWarning`` here to indicate that deprecation is not yet imminent, but any sub-class of ``DeprecationWarning`` or ``PendingDeprecationWarning`` is supported (you might like to consider: :doc:`/best-practice/custom-deprecation-warning-classes`).
 
 
 .. _rename_step_3:
 
-3. Updating the code where the setting value is used
-----------------------------------------------------
+3. Updating the code that uses the setting
+------------------------------------------
 
 Let's pretend the setting is currently being used in the following way by our app's codebase:
 
@@ -220,15 +220,24 @@ How and where you define the release notes for your app is up to you, but it's h
     Deprecations
     ============
 
-    The following features have been deprecated in this version. Unless otherwise stated, support for deprecated features is retained for two minor releases, so you have until version **1.8** to make any necessary changes to your implementation.
+    The following features have been deprecated in this version. Unless otherwise stated,
+    support for deprecated features is retained for two minor releases, so you have until
+    version **1.8** to make any necessary changes to your implementation.
 
 
     The ``YOURAPP_ICON_FOR_BLOG_POSTS`` setting has been renamed
     ------------------------------------------------------------
 
-    If you are using this setting to override the icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this by version ``1.8`` will resort in the default icon ("fa-newspaper") being used.
+    If you are using this setting to override the icon used to represent blog posts in
+    the admin area UI, you should update your Django settings to use the new setting name
+    of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this by version ``1.8`` will
+    resort in the default icon ("fa-newspaper") being used.
 
-    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using the ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also.
+    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project,
+    and are requesting the old setting value from it (as an attribute: 
+    ``settings.ICON_FOR_BLOG_POSTS``, or using the ``get()``: 
+    ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new
+    setting name also.
 
     ..seealso::
         :ref:`BLOG_POSTS_UI_ICON`
@@ -342,15 +351,23 @@ This version of your app will now behave differently for any users still using t
     Backwards-incompatible changes
     ==============================
 
-    Following a standard deprecation period a two minor releases, the following functionality has now been removed.
+    Following a standard deprecation period a two minor releases, the following functionality
+    has now been removed.
 
 
     The ``YOURAPP_ICON_FOR_BLOG_POSTS`` setting
     -------------------------------------------
 
-    If you are using this setting to override the icon used to represent blog posts in the admin area UI, you should update your Django settings to use the new setting name of ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this after upgrading will result in the default icon ("fa-newspaper") being used.
+    If you are using this setting to override the icon used to represent blog posts in the admin
+    area UI, you should update your Django settings to use the new setting name of
+    ``YOURAPP_BLOG_POSTS_UI_ICON`` instead. Failure to do this after upgrading will result in
+    the default icon ("fa-newspaper") being used.
 
-    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting the old setting value from it (as an attribute: ``settings.ICON_FOR_BLOG_POSTS``, or using ``get()``: ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting name also. Failure to do this after upgrading will result in an ``AttributeError`` or ``ImproperlyConfigured`` error.
+    Similarly, if you are importing ``yourapp.conf.settings`` anywhere within your project, and
+    are requesting the old setting value from it (as an attribute: 
+    ``settings.ICON_FOR_BLOG_POSTS``, or using ``get()``:
+    ``settings.get("ICON_FOR_BLOG_POSTS")``), you should update that code to use the new setting
+    name also. Failure to do this after upgrading will result in a fatal exception being raised.
 
     ..seealso::
         :ref:`BLOG_POSTS_UI_ICON`

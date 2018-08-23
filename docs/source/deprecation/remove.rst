@@ -1,5 +1,5 @@
 =========================================
-Removing an app setting: Example scenario
+Example scenario: Removing an app setting
 =========================================
 
 For the sake of this example, imagine your app has a setting called ``DEFAULT_MENU_DEPTH`` that allows users to override how many levels deep a menu is rendered by a function when no alternative value is specified. 
@@ -72,7 +72,7 @@ Next, we'll update the settings helper definition for our app, to make it aware 
 There are a few things worth noting here:
 
 -   The ``deprecations`` attribute value should always be a tuple, even if it only contains a single ``DeprecatedAppSetting`` definition.
--   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"DEFAULT_MENU_DEPTH"`` rather than ``"YOURAPP_DEFAULT_MENU_DEPTH"``). Prefixes should only be used by your app's users when adding overrides to their Django settings.
+-   For ``DeprecatedAppSetting`` definitions, setting names should be supplied as strings, and you should use non-prefixed setting names here (e.g. ``"DEFAULT_MENU_DEPTH"`` rather than ``"YOURAPP_DEFAULT_MENU_DEPTH"``).
 -   The ``warning_category`` used above will be passed to Python's ``warnings.warn()`` method when raising deprecation warnings related to this setting. We're using Python's built-in ``PendingDeprecationWarning`` here to indicate that deprecation is not yet imminent, but any sub-class of ``DeprecationWarning`` or ``PendingDeprecationWarning`` is supported (you might like to consider: :doc:`/best-practice/custom-deprecation-warning-classes`).
 -   The ``additional_guidance`` argument can be used to provide additional information to users when raising deprecation warnings related to the setting.
 
@@ -82,8 +82,8 @@ There are a few things worth noting here:
 
 .. _remove_step_2:
 
-2. Updating the code where the setting value is used
-----------------------------------------------------
+2. Updating the code that uses the setting
+------------------------------------------
 
 Let's pretend the setting is currently being used in the following way by our app's codebase:
 
@@ -175,18 +175,27 @@ How and where you define the release notes for your app is up to you, but it's h
     Deprecations
     ============
 
-    The following features have been deprecated in this version. Unless otherwise stated, support for deprecated features is retained for two minor releases, so you have until version **1.8** to make any necessary changes to your implementation.
+    The following features have been deprecated in this version. Unless otherwise stated,
+    support for deprecated features is retained for two minor releases, so you have until
+    version **1.8** to make any necessary changes to your implementation.
 
 
     The ``YOURAPP_DEFAULT_MENU_DEPTH`` setting has been deprecated
     --------------------------------------------------------------
 
-    Overrides will continue to work until **1.8**, but after this, they will be ignored, and the default depth will be fixed at ``2``. If you are using this setting to override the default ``depth`` value used by the ``render_menu()`` tag, you should update your code to use the ``depth`` argument of ``render_menu()`` instead, like so:
+    Overrides will continue to work until **1.8**, but after this, they will be ignored,
+    and the default depth will be fixed at ``2``. If you are using this setting to
+    override the default ``depth`` value used by the ``render_menu()`` tag, you should
+    update your code to use the ``depth`` argument of ``render_menu()`` instead, like so:
 
     ..code:: html
         {% render_menu depth=1 %}
 
-    If you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting ``DEFAULT_MENU_DEPTH`` the setting value from it (as an attribute: ``settings.DEFAULT_MENU_DEPTH``, or using the ``get()``: ``settings.get("DEFAULT_MENU_DEPTH")``), use the value ``2`` instead to silence any deprecation warnings.
+    If you are importing ``yourapp.conf.settings`` anywhere within your project, and are
+    requesting ``DEFAULT_MENU_DEPTH`` the setting value from it (as an attribute:
+    ``settings.DEFAULT_MENU_DEPTH``, or using ``get()``:
+    ``settings.get("DEFAULT_MENU_DEPTH")``), use the value ``2`` instead to silence any
+    deprecation warnings.
 
 
 In the next release (1.7)
@@ -327,18 +336,24 @@ This version of your app will now behave differently for any users still relying
     Backwards-incompatible changes
     ==============================
 
-    Following a standard deprecation period a two minor releases, the following functionality has now been removed.
+    Following a standard deprecation period a two minor releases, the following functionality
+    has now been removed.
 
 
     The ``YOURAPP_DEFAULT_MENU_DEPTH`` setting is no longer supported
     -----------------------------------------------------------------
 
-    The default ``depth`` value used by ``render_menu()`` is now fixed at ``2``. If you wish to render menus of a different depth, you should use the ``depth`` argument of ``render_menu()`` to indicate this, like so:
+    The default ``depth`` value used by ``render_menu()`` is now fixed at ``2``. If you wish
+    to render menus of a different depth, you should use the ``depth`` argument of
+    ``render_menu()`` to indicate this, like so:
 
     ..code:: html
         {% render_menu depth=1 %}
 
-    If you are importing ``yourapp.conf.settings`` anywhere within your project, and are requesting ``DEFAULT_MENU_DEPTH`` the setting value from it (as an attribute: ``settings.DEFAULT_MENU_DEPTH``, or using the ``get()``: ``settings.get("DEFAULT_MENU_DEPTH")``), update your code to use the value ``2`` instead.
+    If you are importing ``yourapp.conf.settings`` anywhere within your project, and are
+    requesting ``DEFAULT_MENU_DEPTH`` the setting value from it (as an attribute:
+    ``settings.DEFAULT_MENU_DEPTH``, or using ``get()``:
+    ``settings.get("DEFAULT_MENU_DEPTH")``), update your code to use the value ``2`` instead.
 
 
 

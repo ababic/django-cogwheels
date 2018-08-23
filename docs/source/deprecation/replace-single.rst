@@ -108,7 +108,7 @@ There are a few things worth noting here:
 -   The ``additional_guidance`` argument is optional. But, if supplied, this string will be appended to any of the deprecation warnings raised in relation to this setting. The automatically generated warnings text is quite thorough, so you only really need to explain about nuances between the two settings (if there are any), which is something  Cogwheels cannot realistically infer.
     
     .. NOTE::
-        If the issue is particularly difficult to summarise succinctly, it's perfectly valid to include a URL to your release notes / documentation in ``additional_guidance``, and explain things in more thoroughly there.
+        If the change is difficult to summarise succinctly, it's perfectly valid to include a URL to your release notes / documentation in ``additional_guidance``, and explain things in more detail there.
 
 
 3. Updating your app code

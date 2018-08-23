@@ -1,6 +1,6 @@
-=============
-Best practice
-============= 
+=====================
+General best practice
+=====================
 
 .. toctree::
     :maxdepth: 1
