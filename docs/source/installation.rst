@@ -49,7 +49,7 @@ If your app is in the Python Package Index (PyPi), it's likely that it has a ``s
     ...
     
     setup(
-        name='your-django-project',
+        name='your-django-app',
         description="An app that does something super useful.",
         classifiers=(
             "Programming Language :: Python",
