@@ -51,17 +51,22 @@ class DeprecatedAppSetting:
     app setting, and helps to raise warnings related with that deprecation.
     """
     def __init__(
-        self, setting_name, renamed_to=None, replaced_by=None,
+        self, setting_name, renamed_to=None, replaced_by=None, removing_in=None,
         warning_category=None, additional_guidance=None
     ):
         self.setting_name = setting_name
         self.replacement_name = renamed_to or replaced_by
         self.is_renamed = renamed_to is not None
+        self.removing_in = removing_in
         self.warning_category = warning_category or DeprecationWarning
         self.additional_guidance = additional_guidance
         self._prefix = ''
-        self.is_imminent = not issubclass(
-            self.warning_category, PendingDeprecationWarning)
+
+    @property
+    def is_imminent(self):
+        # TODO: Replace this with something that sniffs out the app's current
+        # version and compares it with self.removing_in.
+        return issubclass(self.warning_category, DeprecationWarning)
 
     @property
     def prefix(self):
@@ -72,6 +77,9 @@ class DeprecatedAppSetting:
         self._prefix = value
 
     def get_removed_in_version_text(self):
+        # To be removed once 'removed_in' is required.
+        if self.removing_in is not None:
+            return self.removing_in
         if self.is_imminent:
             return 'the next version'
         return 'two versions time'
@@ -87,8 +95,6 @@ class DeprecatedAppSetting:
         )
 
     def warn_if_overridden(self, stacklevel=2):
-        # TODO: Figure out a clean way to raise this warning so that it appears
-        # to come from the override setting definition in the user's Django settings.
         warnings.warn(
             self._make_warning_message(DEPRECATED_SETTING_OVERRIDDEN_WARNING_FORMAT),
             category=self.warning_category,
