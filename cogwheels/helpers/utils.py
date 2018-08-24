@@ -1,29 +1,23 @@
 class AttrReferToMethodHelper:
     """
-    ``BaseAppSettingsHelper`` creates several instances of this class on
-    initialisation to allow developers to neatly reference settings to get a
-    value cast as a certain type of object. Behind the scenes, attribute
-    requests on ``AttrReferToMethodHelper`` instance are forwarded on to
-    one of the helper instance's 'get_x()' methods.
+    Each settings helper defines several instances of this class as attributes,
+    to provide a cleaner way to access Django models, Python modules and other
+    objects from setting values. Each instance essentially just forwards
+    request to the relevant 'get_x()' method on the helper itself.
 
-    For example, if you want the actual python module referenced by a setting,
-    instead of doing this:
+    For example::
 
-    ``appsettingshelper.get_module('MODULE_SETTING_NAME')``
+        # For accessing Django models, these are equivalent:
+        appsettingshelper.get_model("MODEL_SETTING_NAME")
+        appsettingshelper.models.MODEL_SETTING_NAME
 
-    The 'modules' ``AttrReferToMethodHelper`` instance (set as an attribute
-    on every setting helper) allows you to do this:
+        # For accessing Python modules, these are equivalent:
+        appsettingshelper.get_module("MODULE_SETTING_NAME")
+        appsettingshelper.modules.MODULE_SETTING_NAME
 
-    ``appsettingshelper.modules.MODULE_SETTING_NAME``
-
-    An 'objects' attribute also allows you to neatly access python objects from
-    setting values too, like:
-
-    ``appsettingshelper.objects.OBJECT_SETTING_NAME``
-
-    And 'models' allows you to access Django models, like:
-
-    ``appsettingshelper.models.MODEL_SETTING_NAME``
+        # For accessing other Python objects, these are equivalent:
+        appsettingshelper.get_object("OBJECT_SETTING_NAME")
+        appsettingshelper.objects.OBJECT_SETTING_NAME
 
     """
     def __init__(self, settings_helper, getter_method_name):

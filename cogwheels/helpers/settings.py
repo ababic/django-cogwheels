@@ -16,6 +16,33 @@ from .utils import AttrReferToMethodHelper
 
 
 class BaseAppSettingsHelper:
+    """
+    A base class that provides the core functionality that allows developers to
+    integrate user overridable settings into their app. This class is not
+    intended to be used directly; rather app developers should subclass it to
+    define individual 'settings helper' classes for each app.
+
+    Each settings helper instance is associated with a single 'defaults' module,
+    where developers define the settings they wish to use/support for each app,
+    along with the default values for each setting.
+
+    When a setting value is requested from a settings helper instance, it
+    checks the environmment's Django settings module for an override
+    value with the relevant name (a prefixed version of the variable defined in
+    the ``defaults`` module), and returns that if found. If no override was
+    found, the default value defined for the setting is returned instead.
+
+    Some app settings may refer to Django models, Python modules, classes or
+    methods, in which case a settings helper instance's ``get_model()``,
+    ``get_module()`` and ``get_object()`` methods can be used to import and
+    return the objects themselves (provided the raw setting values are valid
+    'import path' strings).
+
+    App settings can be deprecated by defining a list of
+    ``DeprecatedAppSetting`` instances on the relevant (app specific) helper
+    class, causing the settings helper instance to automatically raise
+    deprecation warnings where appropriate.
+    """
 
     prefix = None
     defaults_path = None
@@ -48,11 +75,14 @@ class BaseAppSettingsHelper:
 
     def __getattr__(self, name):
         """
-        If the requested attribute wasn't found, it's assumed that the caller
-        wants the value of a setting matching 'name'. So, if 'name' looks like
-        a valid setting name, refer the request to 'self.get()', otherwise
-        raise an ``AttributeError``, so that the caller knows the request is
-        invalid.
+        Overrides default Python object behavior to allow direct attribute
+        requests to be routed to ``get()``, making these lines equivalent::
+
+            appsettingshelper.SETTING_NAME
+            appsettingshelper.get('SETTING_NAME')
+
+        Raises an ``AttributeError`` if the requested attribute is not a valid
+        setting name.
         """
         if not self.in_defaults(name):
             self._raise_invalid_setting_name_error(name, error_class=AttributeError)
@@ -60,19 +90,28 @@ class BaseAppSettingsHelper:
 
     def _set_prefix(self, init_supplied_val):
         """
-        Sets this object's ``_prefix`` attribute to a sensible value. If no
-        value was provided to __init__(), and no value has been set using the
-        ``prefix`` class attribute, a default value will be used, based on
-        where the helper class is defined.
+        Called by ``__init()__`` to set the object's ``_prefix`` attribute,
+        which determines the prefix app users must use when overriding
+        settings associated with the helper. For example:
 
-        For example:
+        If the ``_prefix`` attribute were to be set to "YOURAPP", and there
+        exists an app setting called ``SETTING_NAME``, app users would override
+        that setting by adding a variable with the name ``YOURAPP_SETTING_NAME``
+        to their Django settings.
 
-        If the class is defined in ``myapp/conf/settings.py`` or
-        ``myapp/settings.py``, the value ``"MYAPP"`` would be used.
+        Developers can specify the prefix by setting the ``prefix``
+        attribute on their helper class (most likely), or using the
+        ``prefix`` argument when initialising the helper instance (
+        should only really be used for testing purposes).
 
-        If the class is defined in ``myapp/subapp/conf/settings.py`` or
-        ``myapp/subapps/settings.py`` the value ``"MYAPP_SUBAPP"`` would be
-        used.
+        If no value is specified, a deterministic default value is generated,
+        based on the where the helper class is defined. For example:
+
+        A helper class defined in ``yourapp/conf/settings.py`` or
+        ``yourapp/settings.py`` would be assigned the prefix: ``"YOURAPP"``.
+
+        A helper class is defined in ``yourapp/subapp/conf/settings.py`` or
+        ``yourapp/subapp/settings.py`` would be assigned the prefix: ``"YOURAPP_SUBAPP"``.
         """
         if init_supplied_val is not None:
             value = init_supplied_val.rstrip('_')
@@ -89,19 +128,25 @@ class BaseAppSettingsHelper:
 
     def _set_defaults_module_path(self, init_supplied_val):
         """
-        Sets this object's ``_defaults_module_path`` attribute to a sensible
-        value. If no value was provided to __init__(), and no value has been
-        set using the ``defaults_path`` class attribute, a default value will
-        be used, based on where the helper class is defined.
+        Called by ``__init__()`` to set the object's ``_defaults_module_path``
+        attribute, which should be a valid import path string for the
+        ``defaults`` module linked to this helper.
 
-        It is assumed that the defaults module is defined in the same directory
-        as the settings helper. For example:
+        Developers can specify the path by setting the ``defaults_path``
+        attribute on their helper class (most likely), or using the
+        ``defaults_path`` argument when initialising the helper instance (
+        should only really be used for testing purposes).
 
-        If the settings helper is defined in ``myapp/config/settings.py``, the
-        defaults module is assumed to be at ``myapp/config/defaults.py``.
+        If no value is specified, a deterministic default value is generated,
+        based on where the helper class is defined. It is assumed that the
+        defaults module is defined in the same directory as the settings helper
+        class. For example:
 
-        If the settings helper is defined in ``myapp/some_other_directory/settings.py``,
-        the defaults module is assumed to be at ``myapp/some_other_directory/defaults.py``.
+        If the settings helper is defined in ``yourapp/config/settings.py``,
+        the defaults module path is assumed to be ``yourapp/config/defaults.py``.
+
+        If the settings helper is defined in ``yourapp/some_other_directory/settings.py``,
+        the defaults module path is assumed to be ``yourapp/some_other_directory/defaults.py``.
         """
         if init_supplied_val is not None:
             value = init_supplied_val
@@ -125,14 +170,15 @@ class BaseAppSettingsHelper:
 
     def _load_defaults(self):
         """
-        Sets the object's ``_defaults`` attibute value to a dictionary for
-        optimal lookup performance. Items are loaded from the relevant
-        ``defaults.py`` module on initialisation.
+        Called by ``__init__()`` to generate a dictionary of the relevant
+        values from the associated defaults module, and save it to the
+        object's ``_defaults`` attribute to improve lookup performance.
+        Only variables with upper-case names are included.
         """
         module = self._do_import(self._defaults_module_path)
         self._defaults = {
             k: v for k, v in module.__dict__.items()
-            if k.isupper()  # ignore anything that doesn't look like a setting
+            if k.isupper()
         }
 
     def _perepare_deprecation_data(self):
@@ -141,14 +187,13 @@ class BaseAppSettingsHelper:
         ``self._deprecations`` and propulates two new dictionary attributes:
 
         ``self._deprecated_settings``:
-            Uses the deprecated setting names as keys, and will be
-            used to identify if a requested setting value if for a deprecated
-            setting.
+            Uses the deprecated setting name as the keys, and used to
+            check whether a request is for a deprecated setting.
 
         ``self._renamed_settings``:
             Uses the 'replacement setting' names as keys (if supplied), and
             allows us to temporarily support user-defined settings using the
-            old name when the new setting is requested.
+            old name when the values for the new setting are requested.
         """
         if not isinstance(self._deprecations, (list, tuple)):
             raise IncorrectDeprecationsValueType(
@@ -206,6 +251,15 @@ class BaseAppSettingsHelper:
                 self._replacement_settings[item.replacement_name].append(item)
 
     def reset_caches(self, **kwargs):
+        """
+        Called by ``__init__()`` to initialise the caches for a helper
+        instance, and by Django's ``setting_changed`` signal to reset caches
+        when changes to settings are made.
+
+        Although it requires slightly more memory, separate dictionaries are
+        used for raw values, models, modules and other objects to help with
+        lookup performance for each type.
+        """
         self._raw_cache = {}
         self._models_cache = {}
         self._modules_cache = {}
@@ -270,7 +324,6 @@ class BaseAppSettingsHelper:
         warning_stacklevel,
     ):
         """
-        Whether used directly or indirectly (via an attribute shortcut),
         get(), get_object(), get_model() and get_module() must all check
         whether the requested app setting is deprecated before attempting to
         return a value. The variables/arguments that determine whether the
@@ -333,51 +386,73 @@ class BaseAppSettingsHelper:
                     return self.get_user_defined_value(item.setting_name)
         return self.get_default_value(setting_name)
 
-    def is_value_from_deprecated_setting(self, setting_name, deprecated_setting_name):
+    def get(self, setting_name, warn_only_if_overridden=False,
+            accept_deprecated='', suppress_warnings=False,
+            enforce_type=None, check_if_setting_deprecated=True,
+            warning_stacklevel=3):
         """
-        Helps developers to determine where the settings helper got it's value
-        from when dealing with settings that replace deprecated settings.
+        Returns a setting value for the setting named by ``setting_name``. The
+        returned value is actually a reference to the original setting value,
+        so care should be taken to avoid setting the result to a different
+        value.
 
-        Returns ``True`` when the new setting (with the name ``setting_name``)
-        is a replacement for a deprecated setting (with the name
-        ``deprecated_setting_name``) and the user is using the deprecated
-        setting in their Django settings to override behaviour.
-        """
-        if not self.in_defaults(setting_name):
-            self._raise_invalid_setting_name_error(setting_name)
-        if not self.in_defaults(deprecated_setting_name):
-            self._raise_invalid_setting_name_error(deprecated_setting_name)
-        if deprecated_setting_name not in self._deprecated_settings:
-            raise ValueError(
-                "The '%s' setting is not deprecated. When using "
-                "settings.is_value_from_deprecated_setting(), the deprecated "
-                "setting name should be supplied as the second argument." %
-                deprecated_setting_name
-            )
-        if(
-            not self.is_overridden(setting_name) and
-            setting_name in self._replacement_settings
-        ):
-            deprecations = self._replacement_settings[setting_name]
-            for item in deprecations:
-                if(
-                    item.setting_name == deprecated_setting_name and
-                    self.is_overridden(item.setting_name)
-                ):
-                    return True
-        return False
+        :param setting_name:
+            The name of the app setting for which a value is required.
+        :type setting_name: str (e.g. "SETTING_NAME")
+        :param warn_only_if_overridden:
+            If the setting named by ``setting_name`` is deprecated, a value of
+            ``True`` can be provided to silence the immediate deprecation
+            warning that is otherwise raised by default. Instead, a
+            (differently worded) deprecation warning will be raised, but only
+            when the setting is overriden.
+        :type warn_only_if_overridden: bool
+        :param accept_deprecated:
+            If the setting named by ``setting_name`` replaces multiple
+            deprecated settings, the ``accept_deprecated`` keyword argument can
+            be used to specify which of those deprecated settings to accept as
+            an override value.
 
-    def get(self, setting_name, accept_deprecated='', enforce_type=None,
-            check_if_setting_deprecated=True, warn_only_if_overridden=False,
-            suppress_warnings=False, warning_stacklevel=3):
-        """
-        A wrapper for self._get_raw_value(), that caches the raw setting value
-        for faster future access, and (if ``enforce_type`` is supplied) checks
-        that the raw value is the required type.
+            Where the requested setting replaces only a single deprecated
+            setting, override values for that deprecated setting will be
+            accepted automatically, without having to specify anything.
+        :type accept_deprecated: str (e.g. "DEPRECATED_SETTING_NAME")
+        :param suppress_warnings:
+            Use this to prevent the raising of any deprecation warnings that
+            might otherwise be raised. It may be more useful to use
+            ``warn_only_if_overridden`` instead.
+        :type suppress_warnings: bool
+        :param enforce_type:
+            When a setting value of a specific type is required, this can be
+            used to apply some basic validation at the time of retrieval. If
+            supplied, and setting value is found not to be an instance of the
+            supplied type, a ``SettingValueTypeInvalid`` error will be raised.
 
-        In situations where the named setting replaces multiple deprecated
-        settings, the ``accept_deprecated`` keyword argument can be used to
-        specify which of those deprecated settings to accept as the value.
+            In cases where more than one type of value is accepted, a tuple of
+            acceptable types can be provided.
+        :type enforce_type: A type (class), or tuple of types
+        :param check_if_setting_deprecated:
+            Can be used to disable the check that usually happens at the
+            beginning of the method to identify whether the setting named by
+            ``setting_name`` is deprecated, and conditionally raise a warning.
+            This can help to improve efficiency where the same check has
+            already been made.
+        :type check_if_setting_deprecated: bool
+        :param warning_stacklevel:
+            When raising deprecation warnings related to the request, this
+            value is passed on as ``stacklevel`` to Python's
+            ``warnings.warn()`` method, to help give a more accurate indication
+            of the code that caused the warning to be raised.
+        :type warning_stacklevel: int
+        :raises:
+            ValueError, SettingValueTypeInvalid
+
+        Instead of calling this method directly, developers are generally
+        encouraged to use the direct attribute shortcut, which is a
+        syntactically much cleaner way to request values using the default
+        options. For example, the the following lines are equivalent::
+
+            appsettingshelper.SETTING_NAME
+            appsettingshelper.get('SETTING_NAME')
         """
         if check_if_setting_deprecated:
             self._warn_if_deprecated_setting_value_requested(
@@ -426,18 +501,57 @@ class BaseAppSettingsHelper:
         self._raw_cache[cache_key] = result
         return result
 
-    def get_model(self, setting_name, accept_deprecated='', warn_only_if_overridden=False,
-                  suppress_warnings=False, warning_stacklevel=3):
+    def get_model(self, setting_name, warn_only_if_overridden=False,
+                  accept_deprecated='', suppress_warnings=False,
+                  warning_stacklevel=3):
         """
         Returns a Django model referenced by an app setting where the value is
-        expected to be a 'model string' in the format 'app_label.model_name'.
+        expected to be a valid 'model string' in the format:
+        "app_label.model_name".
 
-        Raises an ``ImproperlyConfigured`` error if the setting value is not
-        in the correct format, or refers to a model that is not available.
+        :param setting_name:
+            The name of the app setting for which a value is required.
+        :type setting_name: str (e.g. "SETTING_NAME")
+        :param warn_only_if_overridden:
+            If the setting named by ``setting_name`` is deprecated, a value of
+            ``True`` can be provided to silence the immediate deprecation
+            warning that is otherwise raised by default. Instead, a
+            (differently worded) deprecation warning will be raised, but only
+            when the setting is overriden.
+        :type warn_only_if_overridden: bool
+        :param accept_deprecated:
+            If the setting named by ``setting_name`` replaces multiple
+            deprecated settings, the ``accept_deprecated`` keyword argument can
+            be used to specify which of those deprecated settings to accept as
+            an override value.
 
-        In situations where the named setting replaces multiple deprecated
-        settings, the ``accept_deprecated`` keyword argument can be used to
-        specify which of those deprecated settings to accept as the raw value.
+            Where the requested setting replaces only a single deprecated
+            setting, override values for that deprecated setting will be
+            accepted automatically, without having to specify anything.
+        :type accept_deprecated: str (e.g. "DEPRECATED_SETTING_NAME")
+        :param suppress_warnings:
+            Use this to prevent the raising of any deprecation warnings that
+            might otherwise be raised. It may be more useful to use
+            ``warn_only_if_overridden`` instead.
+        :type suppress_warnings: bool
+        :param warning_stacklevel:
+            When raising deprecation warnings related to the request, this
+            value is passed on as ``stacklevel`` to Python's
+            ``warnings.warn()`` method, to help give a more accurate indication
+            of the code that caused the warning to be raised.
+        :type warning_stacklevel: int
+        :raises:
+            ValueError, SettingValueTypeInvalid, SettingValueFormatInvalid,
+            SettingValueNotImportable
+
+        Instead of calling this method directly, developers are generally
+        encouraged to use the ``models`` attribute shortcut, which is a
+        syntactically much cleaner way to request values using the default
+        options. For example, the the following lines are equivalent::
+
+            appsettingshelper.models.SETTING_NAME
+            appsettingshelper.get_model('SETTING_NAME')
+
         """
         self._warn_if_deprecated_setting_value_requested(
             setting_name, warn_only_if_overridden, suppress_warnings,
@@ -484,15 +598,56 @@ class BaseAppSettingsHelper:
                 value=raw_value
             )
 
-    def get_module(self, setting_name, accept_deprecated='', warn_only_if_overridden=False,
-                   suppress_warnings=False, warning_stacklevel=3):
+    def get_module(self, setting_name, warn_only_if_overridden=False,
+                   accept_deprecated='', suppress_warnings=False,
+                   warning_stacklevel=3):
         """
         Returns a Python module referenced by an app setting where the value is
         expected to be a valid, absolute Python import path, defined as a
         string (e.g. "myproject.app.custom_module").
 
-        Raises an ``ImproperlyConfigured`` error if the setting value is not
-        a valid import path.
+        :param setting_name:
+            The name of the app setting for which a value is required.
+        :type setting_name: str (e.g. "SETTING_NAME")
+        :param warn_only_if_overridden:
+            If the setting named by ``setting_name`` is deprecated, a value of
+            ``True`` can be provided to silence the immediate deprecation
+            warning that is otherwise raised by default. Instead, a
+            (differently worded) deprecation warning will be raised, but only
+            when the setting is overriden.
+        :type warn_only_if_overridden: bool
+        :param accept_deprecated:
+            If the setting named by ``setting_name`` replaces multiple
+            deprecated settings, the ``accept_deprecated`` keyword argument can
+            be used to specify which of those deprecated settings to accept as
+            an override value.
+
+            Where the requested setting replaces only a single deprecated
+            setting, override values for that deprecated setting will be
+            accepted automatically, without having to specify anything.
+        :type accept_deprecated: str (e.g. "DEPRECATED_SETTING_NAME")
+        :param suppress_warnings:
+            Use this to prevent the raising of any deprecation warnings that
+            might otherwise be raised. It may be more useful to use
+            ``warn_only_if_overridden`` instead.
+        :type suppress_warnings: bool
+        :param warning_stacklevel:
+            When raising deprecation warnings related to the request, this
+            value is passed on as ``stacklevel`` to Python's
+            ``warnings.warn()`` method, to help give a more accurate indication
+            of the code that caused the warning to be raised.
+        :type warning_stacklevel: int
+        :raises:
+            ValueError, SettingValueTypeInvalid, SettingValueNotImportable
+
+        Instead of calling this method directly, developers are generally
+        encouraged to use the ``modules`` attribute shortcut, which is a
+        syntactically much cleaner way to request values using the default
+        options. For example, the the following lines are equivalent::
+
+            appsettingshelper.modules.SETTING_NAME
+            appsettingshelper.get_module('SETTING_NAME')
+
         """
         self._warn_if_deprecated_setting_value_requested(
             setting_name, warn_only_if_overridden, suppress_warnings,
@@ -529,16 +684,57 @@ class BaseAppSettingsHelper:
                 value=raw_value
             )
 
-    def get_object(self, setting_name, accept_deprecated='', warn_only_if_overridden=False,
-                   suppress_warnings=False, warning_stacklevel=3):
+    def get_object(self, setting_name, warn_only_if_overridden=False,
+                   accept_deprecated='', suppress_warnings=False,
+                   warning_stacklevel=3):
         """
         Returns a python class, method, or other object referenced by an app
         setting where the value is expected to be a valid, absolute Python
         import path, defined as a string (e.g. "myproject.app.module.MyClass").
 
-        Raises an ``ImproperlyConfigured`` error if the setting value is not
-        a valid import path, or the object cannot be found in the specified
-        module.
+        :param setting_name:
+            The name of the app setting for which a value is required.
+        :type setting_name: str (e.g. "SETTING_NAME")
+        :param warn_only_if_overridden:
+            If the setting named by ``setting_name`` is deprecated, a value of
+            ``True`` can be provided to silence the immediate deprecation
+            warning that is otherwise raised by default. Instead, a
+            (differently worded) deprecation warning will be raised, but only
+            when the setting is overriden.
+        :type warn_only_if_overridden: bool
+        :param accept_deprecated:
+            If the setting named by ``setting_name`` replaces multiple
+            deprecated settings, the ``accept_deprecated`` keyword argument can
+            be used to specify which of those deprecated settings to accept as
+            an override value.
+
+            Where the requested setting replaces only a single deprecated
+            setting, override values for that deprecated setting will be
+            accepted automatically, without having to specify anything.
+        :type accept_deprecated: str (e.g. "DEPRECATED_SETTING_NAME")
+        :param suppress_warnings:
+            Use this to prevent the raising of any deprecation warnings that
+            might otherwise be raised. It may be more useful to use
+            ``warn_only_if_overridden`` instead.
+        :type suppress_warnings: bool
+        :param warning_stacklevel:
+            When raising deprecation warnings related to the request, this
+            value is passed on as ``stacklevel`` to Python's
+            ``warnings.warn()`` method, to help give a more accurate indication
+            of the code that caused the warning to be raised.
+        :type warning_stacklevel: int
+        :raises:
+            ValueError, SettingValueTypeInvalid,
+            SettingValueFormatInvalid, SettingValueNotImportable
+
+        Instead of calling this method directly, developers are generally
+        encouraged to use the ``objects`` attribute shortcut, which is a
+        syntactically much cleaner way to request values using the default
+        options. For example, the the following lines are equivalent::
+
+            appsettingshelper.objects.SETTING_NAME
+            appsettingshelper.get_object('SETTING_NAME')
+
         """
         self._warn_if_deprecated_setting_value_requested(
             setting_name, warn_only_if_overridden, suppress_warnings,
@@ -600,3 +796,37 @@ class BaseAppSettingsHelper:
                 module_path=module_path,
                 object_name=object_name,
             )
+
+    def is_value_from_deprecated_setting(self, setting_name, deprecated_setting_name):
+        """
+        Helps developers to determine where the settings helper got it's value
+        from when dealing with settings that replace deprecated settings.
+
+        Returns ``True`` when the new setting (with the name ``setting_name``)
+        is a replacement for a deprecated setting (with the name
+        ``deprecated_setting_name``) and the user is using the deprecated
+        setting in their Django settings to override behaviour.
+        """
+        if not self.in_defaults(setting_name):
+            self._raise_invalid_setting_name_error(setting_name)
+        if not self.in_defaults(deprecated_setting_name):
+            self._raise_invalid_setting_name_error(deprecated_setting_name)
+        if deprecated_setting_name not in self._deprecated_settings:
+            raise ValueError(
+                "The '%s' setting is not deprecated. When using "
+                "settings.is_value_from_deprecated_setting(), the deprecated "
+                "setting name should be supplied as the second argument." %
+                deprecated_setting_name
+            )
+        if(
+            not self.is_overridden(setting_name) and
+            setting_name in self._replacement_settings
+        ):
+            deprecations = self._replacement_settings[setting_name]
+            for item in deprecations:
+                if(
+                    item.setting_name == deprecated_setting_name and
+                    self.is_overridden(item.setting_name)
+                ):
+                    return True
+        return False
