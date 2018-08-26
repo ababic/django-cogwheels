@@ -138,7 +138,9 @@ class BaseAppSettingsHelper:
         Called by ``__init__()`` to create a dictionary of the relevant
         values from the associated defaults module, and save it to the
         object's ``_defaults`` attribute to improve lookup performance.
-        Only variables with upper-case names are included.
+        Only variables with upper case names are included.
+
+        :raises: ImportError
 
         It is assumed that the defaults module is defined in the same directory
         as ``settings.py`` where the settings helper class is defined. But,
