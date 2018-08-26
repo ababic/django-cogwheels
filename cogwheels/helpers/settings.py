@@ -84,6 +84,9 @@ class BaseAppSettingsHelper:
         Raises an ``AttributeError`` if the requested attribute is not a valid
         setting name.
         """
+        if not name.isupper():
+            raise AttributeError("{} object has no attribute '{}'".format(
+                self.__class__.__name__, name))
         if not self.in_defaults(name):
             self._raise_invalid_setting_name_error(name, error_class=AttributeError)
         return self.get(name, warning_stacklevel=4)
