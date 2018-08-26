@@ -49,20 +49,15 @@ class BaseAppSettingsHelper:
     defaults_path = None
     deprecations = ()
 
-    def __init__(self, prefix=None, defaults_path=None, deprecations=None):
+    def __init__(self):
         self.__module_path_split = self.__class__.__module__.split('.')
-        self._set_prefix(prefix)
+        self._set_prefix()
 
         # Load values from defaults module
-        self._set_defaults_module_path(defaults_path)
         self._load_defaults()
 
         # Load deprecation data
-        if deprecations is not None:
-            self._deprecations = deprecations
-        else:
-            self._deprecations = self.__class__.deprecations
-        self._perepare_deprecation_data()
+        self._prepare_deprecation_data()
 
         # This will create the dictionaries if they don't already exist
         self.reset_caches()
@@ -92,7 +87,7 @@ class BaseAppSettingsHelper:
             self._raise_invalid_setting_name_error(name)
         return self.get(name, warning_stacklevel=4)
 
-    def _set_prefix(self, init_supplied_val):
+    def _set_prefix(self):
         """
         Called by ``__init()__`` to set the object's ``_prefix`` attribute,
         which determines the prefix app users must use when overriding
@@ -117,48 +112,14 @@ class BaseAppSettingsHelper:
         A helper class is defined in ``yourapp/subapp/conf/settings.py`` or
         ``yourapp/subapp/settings.py`` would be assigned the prefix: ``"YOURAPP_SUBAPP"``.
         """
-        if init_supplied_val is not None:
-            value = init_supplied_val.rstrip('_')
-        elif self.__class__.prefix is not None:
-            value = self.__class__.prefix.rstrip('_')
+        if self.prefix is not None:
+            value = self.prefix.rstrip('_')
         else:
             module_path_parts = self.__module_path_split[:-1]
-            try:
-                module_path_parts.remove('conf')
-            except ValueError:
-                pass
+            if module_path_parts[-1] == 'conf':
+                module_path_parts.pop()
             value = '_'.join(module_path_parts)
         self._prefix = value.upper()
-
-    def _set_defaults_module_path(self, init_supplied_val):
-        """
-        Called by ``__init__()`` to set the object's ``_defaults_module_path``
-        attribute, which should be a valid import path string for the
-        ``defaults`` module linked to this helper.
-
-        Developers can specify the path by setting the ``defaults_path``
-        attribute on their helper class (most likely), or using the
-        ``defaults_path`` argument when initialising the helper instance (
-        should only really be used for testing purposes).
-
-        If no value is specified, a deterministic default value is generated,
-        based on where the helper class is defined. It is assumed that the
-        defaults module is defined in the same directory as the settings helper
-        class. For example:
-
-        If the settings helper is defined in ``yourapp/config/settings.py``,
-        the defaults module path is assumed to be ``yourapp/config/defaults.py``.
-
-        If the settings helper is defined in ``yourapp/some_other_directory/settings.py``,
-        the defaults module path is assumed to be ``yourapp/some_other_directory/defaults.py``.
-        """
-        if init_supplied_val is not None:
-            value = init_supplied_val
-        elif self.__class__.defaults_path is not None:
-            value = self.__class__.defaults_path
-        else:
-            value = '.'.join(self.__module_path_split[:-1]) + ".defaults"
-        self._defaults_module_path = value
 
     @staticmethod
     def _do_import(module_path):
@@ -174,21 +135,30 @@ class BaseAppSettingsHelper:
 
     def _load_defaults(self):
         """
-        Called by ``__init__()`` to generate a dictionary of the relevant
+        Called by ``__init__()`` to create a dictionary of the relevant
         values from the associated defaults module, and save it to the
         object's ``_defaults`` attribute to improve lookup performance.
         Only variables with upper-case names are included.
+
+        It is assumed that the defaults module is defined in the same directory
+        as ``settings.py`` where the settings helper class is defined. But,
+        in cases where this differs, developers can specify an alternative
+        import path using the ``defaults_path`` class attribute for their
+        helper class.
         """
+        self._defaults_module_path = self.defaults_path or \
+            '.'.join(self.__module_path_split[:-1]) + ".defaults"
+
         module = self._do_import(self._defaults_module_path)
         self._defaults = {
             k: v for k, v in module.__dict__.items()
             if k.isupper()
         }
 
-    def _perepare_deprecation_data(self):
+    def _prepare_deprecation_data(self):
         """
         Cycles through the list of AppSettingDeprecation instances set on
-        ``self._deprecations`` and propulates two new dictionary attributes:
+        ``self.deprecations`` and prepulates two new dictionary attributes:
 
         ``self._deprecated_settings``:
             Uses the deprecated setting name as the keys, and used to
@@ -199,17 +169,17 @@ class BaseAppSettingsHelper:
             allows us to temporarily support user-defined settings using the
             old name when the values for the new setting are requested.
         """
-        if not isinstance(self._deprecations, (list, tuple)):
+        if not isinstance(self.deprecations, (list, tuple)):
             raise IncorrectDeprecationsValueType(
                 "'deprecations' must be a list or tuple, not a {}."
-                .format(type(self._deprecations).__name__)
+                .format(type(self.deprecations).__name__)
             )
 
         self._deprecated_settings = {}
         self._replacement_settings = defaultdict(list)
 
-        for item in self._deprecations:
-            item.prefix = self._prefix
+        for item in self.deprecations:
+            item.prefix = self.get_prefix()
 
             if not self.in_defaults(item.setting_name):
                 raise InvalidDeprecationDefinition(

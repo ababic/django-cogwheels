@@ -4,7 +4,7 @@ import warnings
 COMMON_REQUESTED_WARNING_FORMAT = (
     "Please update your code to reference the new setting, as continuing to "
     "reference {setting_name} will cause an exception to be raised once support "
-    "is removed in {removed_in_version}."
+    "is removed in {removing_in_version}."
 )
 RENAMED_SETTING_REQUESTED_WARNING_FORMAT = (
     "The {setting_name} app setting has been renamed to {replacement_name}. "
@@ -19,29 +19,29 @@ SIMPLE_DEPRECATION_WARNING_FORMAT = (
     "The {setting_name} app setting is deprecated. Please remove any "
     "references to it from your project, as continuing to reference it will "
     "cause an exception to be raised once support is removed in "
-    "{removed_in_version}."
+    "{removing_in_version}."
 )
 
 DEPRECATED_SETTING_OVERRIDDEN_WARNING_FORMAT = (
     "The {prefix}_{setting_name} setting is deprecated. The override value "
     "from your project's Django settings will no longer have any affect "
-    "once support is removed in {removed_in_version}."
+    "once support is removed in {removing_in_version}."
 )
 
 COMMON_OLD_SETTING_USED_WARNING_FORMAT = (
     "Please update your Django settings to use the new setting, otherwise the "
     "app will revert to it's default behaviour once support for "
-    "{prefix}_{setting_name} is removed in {removed_in_version}."
+    "{prefixed_setting_name} is removed in {removing_in_version}."
 )
 
 RENAMED_OLD_SETTING_USED_WARNING_FORMAT = (
-    "The {prefix}_{setting_name} setting has been renamed to "
-    "{prefix}_{replacement_name}. "
+    "The {prefixed_setting_name} setting has been renamed to "
+    "{prefixed_replacement_name}. "
 ) + COMMON_OLD_SETTING_USED_WARNING_FORMAT
 
 REPLACED_OLD_SETTING_USER_WARNING_FORMAT = (
-    "The {prefix}_{setting_name} setting is deprecated in favour of using "
-    "{prefix}_{replacement_name}. "
+    "The {prefixed_setting_name} setting is deprecated in favour of using "
+    "{prefixed_replacement_name}. "
 ) + COMMON_OLD_SETTING_USED_WARNING_FORMAT
 
 
@@ -76,7 +76,17 @@ class DeprecatedAppSetting:
     def prefix(self, value):
         self._prefix = value
 
-    def get_removed_in_version_text(self):
+    @property
+    def prefixed_setting_name(self):
+        return self.prefix + self.setting_name
+
+    @property
+    def prefixed_replacement_name(self):
+        if self.replacement_name is None:
+            return ''
+        return self.prefix + self.replacement_name
+
+    def get_removing_in_version_text(self):
         # To be removed once 'removed_in' is required.
         if self.removing_in is not None:
             return self.removing_in
@@ -91,7 +101,9 @@ class DeprecatedAppSetting:
             prefix=self.prefix,
             setting_name=self.setting_name,
             replacement_name=self.replacement_name,
-            removed_in_version=self.get_removed_in_version_text(),
+            prefixed_setting_name=self.prefixed_setting_name,
+            prefixed_replacement_name=self.prefixed_replacement_name,
+            removing_in_version=self.get_removing_in_version_text(),
         )
 
     def warn_if_overridden(self, stacklevel=2):

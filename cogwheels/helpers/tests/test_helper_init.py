@@ -1,52 +1,34 @@
 from django.test import TestCase
 
-from cogwheels.helpers import BaseAppSettingsHelper, DeprecatedAppSetting
+from cogwheels import BaseAppSettingsHelper
 
 
 class TestSettingsHelper(BaseAppSettingsHelper):
-    defaults_path = 'cogwheels.tests.conf.defaults'
-    prefix = 'TEST_'
-    deprecations = ()
+    pass
 
 
-class TestHelperInit(TestCase):
+class TestSettingsHelperInit(TestCase):
 
-    def test_providing_prefix_overrides_the_class_attribute_value(self):
-        test_val = 'ABRACADABRA'
-        self.assertEqual(
-            TestSettingsHelper(prefix=test_val)._prefix,
-            test_val
-        )
+    def setUp(self):
+        # Reset TestSettingsHelper class attributes before each test
+        TestSettingsHelper.defaults_path = 'cogwheels.tests.conf.defaults'
+        TestSettingsHelper.prefix = None
+        TestSettingsHelper.deprecations = ()
 
-    def test_prefix_value_is_converted_to_uppercase(self):
+    def test_set_prefix_converts_specified_value_to_uppercase(self):
         lowercase_prefix = 'beep'
         uppercase_prefix = 'BEEP'
-        self.assertEqual(
-            TestSettingsHelper(prefix=lowercase_prefix)._prefix,
-            uppercase_prefix
-        )
 
-    def test_prefix_attribute_never_has_trailing_underscores(self):
-        self.assertEqual(TestSettingsHelper()._prefix, 'TEST')
-        self.assertEqual(TestSettingsHelper(prefix="ABRACADABRA_")._prefix, 'ABRACADABRA')
-        self.assertEqual(TestSettingsHelper(prefix="BEEP_BOOP___")._prefix, 'BEEP_BOOP')
+        TestSettingsHelper.prefix = lowercase_prefix
+        obj = TestSettingsHelper()
+        self.assertEqual(obj._prefix, uppercase_prefix)
 
-    def test_providing_defaults_path_overrides_the_class_attribute_value(self):
-        test_val = 'cogwheels'
-        self.assertIs(
-            TestSettingsHelper(defaults_path=test_val)._defaults_module_path,
-            test_val
-        )
+    def test_set_prefix_strips_trailing_underscores_from_specified_value(self):
+        TestSettingsHelper.prefix = 'TEST___'
+        obj = TestSettingsHelper()
+        self.assertEqual(obj._prefix, 'TEST')
 
-    def test_providing_deprecations_overrides_the_class_attribute_value(self):
-        test_val = (
-            DeprecatedAppSetting('STRING_SETTING'),
-        )
-        self.assertIs(
-            TestSettingsHelper(deprecations=test_val)._deprecations,
-            test_val
-        )
-
-    def test_raises_import_error_if_defaults_module_cannot_be_imported(self):
+    def test_importerror_raised_if_defaults_module_does_not_exist(self):
+        TestSettingsHelper.defaults_path = 'invalid.module.path'
         with self.assertRaises(ImportError):
-            TestSettingsHelper(defaults_path='invalid.module.path')
+            TestSettingsHelper()
