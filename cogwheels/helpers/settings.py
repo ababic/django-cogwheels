@@ -263,11 +263,12 @@ class BaseAppSettingsHelper:
 
     def _raise_invalid_setting_name_error(self, setting_name):
         raise UnknownSettingNameError(
-            "'{}' is not a valid setting name. Valid settings names for "
-            "{} are: {}." .format(
-                setting_name,
-                self.__module__,
-                ', '.join("'%s'" % v for v in self._defaults.keys())
+            "'{setting_name}' is not a valid setting name for this helper, as "
+            "no such variable can be found in {defaults_module_path}. Valid "
+            "setting names are: {valid_names}.".format(
+                setting_name=setting_name,
+                defaults_module_path=self._defaults_module_path,
+                valid_names=', '.join("'%s'" % v for v in self._defaults.keys())
             )
         )
 

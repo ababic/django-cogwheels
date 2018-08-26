@@ -9,7 +9,7 @@ class TestDirectAttributeShortcut(AppSettingTestCase):
 
     @patch.object(BaseAppSettingsHelper, 'get')
     def test_raises_unknownsettingnameerror_if_no_default_defined(self, mocked_method):
-        expected_message = "'UNKNOWN_SETTING' is not a valid setting name"
+        expected_message = "'UNKNOWN_SETTING' is not a valid setting name for this helper"
         with self.assertRaisesRegex(UnknownSettingNameError, expected_message):
             self.appsettingshelper.UNKNOWN_SETTING
         mocked_method.assert_not_called()
@@ -41,7 +41,7 @@ class TestModelsShortcut(AppSettingTestCase):
     """
     @patch.object(BaseAppSettingsHelper, 'get_model')
     def test_raises_unknownsettingnameerror_if_no_default_defined(self, mocked_method):
-        expected_message = "'UNKNOWN_SETTING' is not a valid setting name"
+        expected_message = "'UNKNOWN_SETTING' is not a valid setting name for this helper"
         with self.assertRaisesRegex(UnknownSettingNameError, expected_message):
             self.appsettingshelper.models.UNKNOWN_SETTING
         mocked_method.assert_not_called()
@@ -90,7 +90,7 @@ class TestModulesShortcut(AppSettingTestCase):
     """
     @patch.object(BaseAppSettingsHelper, 'get_module')
     def test_raises_unknownsettingnameerror_if_no_default_defined(self, mocked_method):
-        expected_message = "'UNKNOWN_SETTING' is not a valid setting name"
+        expected_message = "'UNKNOWN_SETTING' is not a valid setting name for this helper"
         with self.assertRaisesRegex(UnknownSettingNameError, expected_message):
             self.appsettingshelper.modules.UNKNOWN_SETTING
         mocked_method.assert_not_called()
@@ -138,7 +138,7 @@ class TestObjectsShortcut(AppSettingTestCase):
     """
     @patch.object(BaseAppSettingsHelper, 'get_object')
     def test_raises_unknownsettingnameerror_if_setting_not_in_defaults(self, mocked_method):
-        expected_message = "'UNKNOWN_SETTING' is not a valid setting name"
+        expected_message = "'UNKNOWN_SETTING' is not a valid setting name for this helper"
         with self.assertRaisesRegex(UnknownSettingNameError, expected_message):
             self.appsettingshelper.objects.UNKNOWN_SETTING
         mocked_method.assert_not_called()
