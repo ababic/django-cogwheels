@@ -7,6 +7,7 @@ from cogwheels import (
     OverrideValueFormatInvalid, OverrideValueNotImportable,
     DefaultValueError, DefaultValueTypeInvalid,
     DefaultValueFormatInvalid, DefaultValueNotImportable,
+    UnknownSettingNameError
 )
 from cogwheels.exceptions.deprecations import (
     IncorrectDeprecationsValueType, InvalidDeprecationDefinition,
@@ -88,7 +89,7 @@ class BaseAppSettingsHelper:
             raise AttributeError("{} object has no attribute '{}'".format(
                 self.__class__.__name__, name))
         if not self.in_defaults(name):
-            self._raise_invalid_setting_name_error(name, error_class=AttributeError)
+            self._raise_invalid_setting_name_error(name)
         return self.get(name, warning_stacklevel=4)
 
     def _set_prefix(self, init_supplied_val):
@@ -288,8 +289,8 @@ class BaseAppSettingsHelper:
         attr_name = self.get_prefixed_setting_name(setting_name)
         return hasattr(django_settings, attr_name)
 
-    def _raise_invalid_setting_name_error(self, setting_name, error_class=ValueError):
-        raise error_class(
+    def _raise_invalid_setting_name_error(self, setting_name):
+        raise UnknownSettingNameError(
             "'{}' is not a valid setting name. Valid settings names for "
             "{} are: {}." .format(
                 setting_name,
@@ -446,8 +447,7 @@ class BaseAppSettingsHelper:
             ``warnings.warn()`` method, to help give a more accurate indication
             of the code that caused the warning to be raised.
         :type warning_stacklevel: int
-        :raises:
-            ValueError, SettingValueTypeInvalid
+        :raises: UnknownSettingNameError, SettingValueTypeInvalid
 
         Instead of calling this method directly, developers are generally
         encouraged to use the direct attribute shortcut, which is a
@@ -544,8 +544,8 @@ class BaseAppSettingsHelper:
             of the code that caused the warning to be raised.
         :type warning_stacklevel: int
         :raises:
-            ValueError, SettingValueTypeInvalid, SettingValueFormatInvalid,
-            SettingValueNotImportable
+            UnknownSettingNameError, SettingValueTypeInvalid,
+            SettingValueFormatInvalid, SettingValueNotImportable
 
         Instead of calling this method directly, developers are generally
         encouraged to use the ``models`` attribute shortcut, which is a
@@ -641,7 +641,8 @@ class BaseAppSettingsHelper:
             of the code that caused the warning to be raised.
         :type warning_stacklevel: int
         :raises:
-            ValueError, SettingValueTypeInvalid, SettingValueNotImportable
+            UnknownSettingNameError, SettingValueTypeInvalid,
+            SettingValueNotImportable
 
         Instead of calling this method directly, developers are generally
         encouraged to use the ``modules`` attribute shortcut, which is a
@@ -727,7 +728,7 @@ class BaseAppSettingsHelper:
             of the code that caused the warning to be raised.
         :type warning_stacklevel: int
         :raises:
-            ValueError, SettingValueTypeInvalid,
+            UnknownSettingNameError, SettingValueTypeInvalid,
             SettingValueFormatInvalid, SettingValueNotImportable
 
         Instead of calling this method directly, developers are generally
