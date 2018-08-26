@@ -1,7 +1,5 @@
 from django.core.exceptions import ImproperlyConfigured
 
-"""Errors relating to a specific setting value"""
-
 
 # -----------------------------------------------------------------------------
 # Common setting value errors
@@ -79,4 +77,17 @@ class OverrideValueFormatInvalid(SettingValueFormatInvalid, OverrideValueError):
 
 class OverrideValueNotImportable(SettingValueNotImportable, OverrideValueError):
     """As SettingValueNotImportable, but specifically for a 'user-provided' value."""
+    pass
+
+
+# -----------------------------------------------------------------------------
+# Misc exceptions
+# -----------------------------------------------------------------------------
+
+class UnknownSettingNameError(AttributeError, ValueError):
+    """A setting name used for a request does not match any settings defined
+    in a helper's associated defaults module. The setting name may have been
+    provided as a string, in which case ValueError is appropriate. But, it may
+    have also been referenced as a attribute, in which case AttributError is
+    also appropriate."""
     pass

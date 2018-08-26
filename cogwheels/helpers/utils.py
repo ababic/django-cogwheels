@@ -25,8 +25,11 @@ class AttrReferToMethodHelper:
         self.getter_method_name = getter_method_name
 
     def __getattr__(self, name):
+        if not name.isupper():
+            raise AttributeError("{} object has no attribute '{}'".format(
+                self.__class__.__name__, name))
         if not self.settings_helper.in_defaults(name):
-            self.settings_helper._raise_invalid_setting_name_error(name, error_class=AttributeError)
+            self.settings_helper._raise_invalid_setting_name_error(name)
         return self.get_value_via_helper_method(name)
 
     def get_value_via_helper_method(self, setting_name):
