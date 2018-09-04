@@ -91,20 +91,17 @@ class BaseAppSettingsHelper:
         """
         Called by ``__init()__`` to set the object's ``_prefix`` attribute,
         which determines the prefix app users must use when overriding
-        settings associated with the helper. For example:
+        settings associated with this helper. For example:
 
         If the ``_prefix`` attribute were to be set to "YOURAPP", and there
         exists an app setting called ``SETTING_NAME``, app users would override
         that setting by adding a variable with the name ``YOURAPP_SETTING_NAME``
         to their Django settings.
 
-        Developers can specify the prefix by setting the ``prefix``
-        attribute on their helper class (most likely), or using the
-        ``prefix`` argument when initialising the helper instance (
-        should only really be used for testing purposes).
-
-        If no value is specified, a deterministic default value is generated,
-        based on the where the helper class is defined. For example:
+        Developers can choose their own prefix by setting the ``prefix``
+        attribute on their helper class. If no value is specified, a deterministic
+        default value is generated, based on the where the helper class is defined.
+        For example:
 
         A helper class defined in ``yourapp/conf/settings.py`` or
         ``yourapp/settings.py`` would be assigned the prefix: ``"YOURAPP"``.
@@ -138,7 +135,7 @@ class BaseAppSettingsHelper:
         Called by ``__init__()`` to create a dictionary of the relevant
         values from the associated defaults module, and save it to the
         object's ``_defaults`` attribute to improve lookup performance.
-        Only variables with upper case names are included.
+        Only variables with upper-case names are included.
 
         :raises: ImportError
 
@@ -163,13 +160,14 @@ class BaseAppSettingsHelper:
         ``self.deprecations`` and prepulates two new dictionary attributes:
 
         ``self._deprecated_settings``:
-            Uses the deprecated setting name as the keys, and used to
+            Uses the deprecated setting names themselves as the keys. Used to
             check whether a request is for a deprecated setting.
 
         ``self._renamed_settings``:
-            Uses the 'replacement setting' names as keys (if supplied), and
-            allows us to temporarily support user-defined settings using the
-            old name when the values for the new setting are requested.
+            Uses the 'replacement setting' names as keys (where supplied).
+            Used to allow the helper to temporarily support override settings
+            defined using the old name, when the values for the new setting are
+            requested.
         """
         if not isinstance(self.deprecations, (list, tuple)):
             raise IncorrectDeprecationsValueType(
@@ -189,8 +187,7 @@ class BaseAppSettingsHelper:
                     "definitions. '{setting_name}' could not be found in "
                     "{defaults_module_path}. Please ensure a default value "
                     "remains there until the end of the setting's deprecation "
-                    "period."
-                    .format(
+                    "period.".format(
                         setting_name=item.setting_name,
                         defaults_module_path=self._defaults_module_path,
                     )
@@ -198,10 +195,9 @@ class BaseAppSettingsHelper:
 
             if item.setting_name in self._deprecated_settings:
                 raise DuplicateDeprecationError(
-                    "The setting name for each deprecation definition "
-                    "must be unique, but '{setting_name}' has been used more "
-                    "than once for {helper_class}. "
-                    .format(
+                    "The setting name for each deprecation definition must be "
+                    "unique, but '{setting_name}' has been used more than once "
+                    "for {helper_class}.".format(
                         setting_name=item.setting_name,
                         helper_class=self.__class__.__name__,
                     )
@@ -228,9 +224,9 @@ class BaseAppSettingsHelper:
 
     def reset_caches(self, **kwargs):
         """
-        Called by ``__init__()`` to initialise the caches for a helper
-        instance, and by Django's ``setting_changed`` signal to reset caches
-        when changes to settings are made.
+        Called by ``__init__()`` to initialise the caches for a helper instance.
+        It is also called by Django's ``setting_changed`` signal to clear the
+        caches when changes to settings are made.
 
         Although it requires slightly more memory, separate dictionaries are
         used for raw values, models, modules and other objects to help with
@@ -302,10 +298,8 @@ class BaseAppSettingsHelper:
     ):
         """
         get(), get_object(), get_model() and get_module() must all check
-        whether the requested app setting is deprecated before attempting to
-        return a value. The variables/arguments that determine whether the
-        warning should be raised is identical for each method, so this method
-        is used to reduce duplication.
+        whether a requested app setting is deprecated. This method allows
+        the helper to do that in a DRY/consistent way.
         """
         if(
             not suppress_warnings and
@@ -319,9 +313,9 @@ class BaseAppSettingsHelper:
                        warn_if_overridden=False, suppress_warnings=False,
                        warning_stacklevel=3):
         """
-        Returns the value of the app setting named by ``setting_name``,
-        exactly as it has been defined in the defaults module or a user's
-        Django settings.
+        Returns the original/raw value for an app setting with the name
+        ``setting_name``, exactly as it has been defined in the defaults
+        module or a user's Django settings.
 
         If the requested setting is deprecated, ``warn_if_overridden`` is
         ``True``, and the setting is overridden by a user, a suitable
