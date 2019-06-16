@@ -4,9 +4,11 @@ Changelog
 0.3 (XX.XX.XXXX) (IN DEVELOPMENT)
 ----------------------------------
 
+- Add support for Django 2.2
 - Added the ``warn_only_if_overridden`` argument to all 'value fetching' methods on ``BaseAppSettingsHelper``, which can be used to request deprecated setting values without raising the usual 'this setting is deprecated' warning, but will raise a warning if the setting is overridden.
 - Improved the consistency of error messages raised when attribute helpers or methods are called with invalid setting names, by introducing a new ``UnknownSettingNameError`` exception class and more helpful messaging.
 - Renamed ``BaseAppSettingsHelper.raise_setting_error()`` to ``_raise_setting_value_error()`` (making it a private method).
+
 
 0.2 (02.08.2018)
 ----------------
