@@ -68,10 +68,11 @@ setup(
         "Framework :: Django :: 1.11",
         "Framework :: Django :: 2.0",
         "Framework :: Django :: 2.1",
+        "Framework :: Django :: 2.2",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    python_requires='>=3.4,<3.8',
+    python_requires='>=3.4',
     extras_require={
         'testing': testing_extras,
         'development': development_extras,
