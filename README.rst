@@ -53,14 +53,14 @@ Goodness for app users!
 Quick start guide
 =================
 
-1.  Install the package using pip: 
+1.  Install the package using pip:
 
     .. code-block:: console
 
         pip install django-cogwheels
 
 2.  ``cd`` into your project's root app directory:
-    
+
     .. code-block:: console
 
         cd your-django-project/yourproject/
@@ -88,7 +88,7 @@ Quick start guide
         # python module, use an 'object import path' string, like so:
         ORDER_FORM_CLASS = 'yourproject.forms.OrderForm'
 
-        
+
 5.  To use setting values in your app, simply import the settings helper, and reference the relevant setting as an attribute, like this:
 
     .. code-block:: console
@@ -96,7 +96,7 @@ Quick start guide
         >>> from yourproject.conf import settings
 
         >>> settings.MAX_ITEMS_PER_ORDER
-        5 
+        5
 
         >>> settings.ORDER_ITEM_MODEL
         'yourproject.SimpleOrderItem'
@@ -108,7 +108,7 @@ Quick start guide
         'yourproject.forms.OrderForm'
 
 
-6.  For settings that refer to Django models, you can use the settings helper's special ``models`` attribute to access model classes themselves, rather than just the string value. For example: 
+6.  For settings that refer to Django models, you can use the settings helper's special ``models`` attribute to access model classes themselves, rather than just the string value. For example:
 
     .. code-block:: console
 
@@ -126,8 +126,8 @@ Quick start guide
     Behind the scenes, Django's ``django.apps.apps.get_model()`` method is called, and the result is cached so that repeat requests for the same model are handled quickly and efficiently.
 
 
-7.  For settings that refer to python modules, you can use the settings helper's special ``modules`` attribute to access the modules themselves, instead of an import path string: 
-    
+7.  For settings that refer to python modules, you can use the settings helper's special ``modules`` attribute to access the modules themselves, instead of an import path string:
+
     .. code-block:: console
 
         >>> from yourproject.conf import settings
@@ -139,7 +139,7 @@ Quick start guide
     Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same module are handled quickly and efficiently.
 
 
-8.  For settings that refer to classes, functions, or other importable python objects, you can use the settings helper's special ``objects`` attribute to access those objects, instead of an import path string: 
+8.  For settings that refer to classes, functions, or other importable python objects, you can use the settings helper's special ``objects`` attribute to access those objects, instead of an import path string:
 
     .. code-block:: console
 
@@ -155,7 +155,7 @@ Quick start guide
     Behind the scenes, python's ``importlib.import_module()`` method is called, and the result is cached so that repeat requests for same object are handled quickly and efficiently.
 
 
-9.  Users of your app can now override any of the default values by adding alternative values to their project's Django settings module. For example: 
+9.  Users of your app can now override any of the default values by adding alternative values to their project's Django settings module. For example:
 
     .. code-block:: python
 
@@ -169,12 +169,12 @@ Quick start guide
 
         YOURAPP_ORDER_FORM_CLASS = 'userproject.orders.forms.CustomOrderForm'
 
-10. You may noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name. 
+10. You may noticed that the above variable names are all prefixed with ``YOURAPP_``. This prefix will differ for your app, depending on the package name.
 
     This 'namespacing' of settings is important. Not only does it helps users of your app to remember which app their override settings are for, but it also helps to prevent setting name clashes between apps.
 
     You can find out what the prefix is for your app by doing:
-    
+
     .. code-block:: console
 
         >>> from yourproject.conf import settings
@@ -186,7 +186,7 @@ Quick start guide
     .. code-block:: python
 
         # yourapp/conf/settings.py
-        
+
         class MyAppSettingsHelper(BaseAppSettingsHelper):
             prefix = 'CUSTOM'  # No need for a trailing underscore here
 
@@ -216,7 +216,7 @@ https://github.com/ababic/django-cogwheels/tree/master/cogwheels/tests
 2. Do ``defaults.py`` and ``settings.py`` have to live in a ``conf`` app?
 -------------------------------------------------------------------------
 
-No. This is just a recommendation. Everyone has their own preferences for how they structure their projects, and that's all well and good. So long as you keep ``defaults.py`` and ``settings.py`` in the same directory, things should work just fine out of the box. 
+No. This is just a recommendation. Everyone has their own preferences for how they structure their projects, and that's all well and good. So long as you keep ``defaults.py`` and ``settings.py`` in the same directory, things should work just fine out of the box.
 
 If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``cogwheels`` supports that too. But, you'll have to set the ``defaults_path`` attribute on your settings helper class, so that it knows where to find the default values. For example:
 
@@ -231,13 +231,13 @@ If you want ``defaults.py`` and ``settings.py`` to live in separate places, ``co
 3. You mentioned support for setting deprecation. How does that work?
 ---------------------------------------------------------------------
 
-More complete documentation will be added soon. In the meantime, if you're curious about what deprecation definitions look like, you may want to check out the ``tests`` app's setting helper definition: https://github.com/ababic/django-cogwheels/blob/master/cogwheels/tests/conf/settings.py 
-        
+More complete documentation will be added soon. In the meantime, if you're curious about what deprecation definitions look like, you may want to check out the ``tests`` app's setting helper definition: https://github.com/ababic/django-cogwheels/blob/master/cogwheels/tests/conf/settings.py
+
 
 4. How do specify validation rules for certain settings?
 --------------------------------------------------------
 
-The only validation that ``cogwheels`` performs is on setting values that are supposed to reference Django models and other importables, and this validation is only triggered when you use ``settings.models.SETTING_NAME``, ``settings.modules.SETTING_NAME`` or ``settings.objects.SETTING_NAME`` in your code to import and access the object. 
+The only validation that ``cogwheels`` performs is on setting values that are supposed to reference Django models and other importables, and this validation is only triggered when you use ``settings.models.SETTING_NAME``, ``settings.modules.SETTING_NAME`` or ``settings.objects.SETTING_NAME`` in your code to import and access the object.
 
 **There's currently no way to configure ``cogwheels`` to apply validation to other setting values.**
 
@@ -251,16 +251,16 @@ If this puts you off, keep in mind that it's not in anybody's interest for devel
 
 Ahh, yes. The ``sys.modules[__name__] = MyAppSettingsHelper()`` bit. I understand that some developers might think this dirty/hacky/unpythonic/whatever. I have to admit, I was unsure about it for a while, too.
 
-I'll agree that it is somewhat 'uncommon' to see this code in use. Perhaps because it's not particularly useful in a lot situations, or perhaps because using such features incorrectly can break things in strange, hard-to-debug ways. But, support for this hack is not going anywhere, and in `cogwheels` case, it's useful, as it removes the need to instantiate things in ``__init__.py`` (which I dislike for a number of reasons). 
+I'll agree that it is somewhat 'uncommon' to see this code in use. Perhaps because it's not particularly useful in a lot situations, or perhaps because using such features incorrectly can break things in strange, hard-to-debug ways. But, support for this hack is not going anywhere, and in `cogwheels` case, it's useful, as it removes the need to instantiate things in ``__init__.py`` (which I dislike for a number of reasons).
 
 If you're still not reassured, perhaps Guido van Rossum (Founder of Python) can put your mind at rest?
 https://mail.python.org/pipermail/python-ideas/2012-May/014969.html
-        
+
 
 Compatibility
 =============
 
-The current version is tested for compatiblily with the following: 
+The current version is tested for compatiblily with the following:
 
-- Django versions 1.11 to 2.1
-- Python versions 3.4 to 3.7
+- Django versions 1.11 to 2.2
+- Python versions 3.4 to 3.8
